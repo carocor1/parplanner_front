@@ -1,14 +1,11 @@
 import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
 
-export default function TabTwoScreen() {
+//ESTA ES LA RUTA DE LOS DOCUMENTOS
+export default function DocumentosScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>55 AÑOS</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
+      <Text style={styles.title}>PANTALLA DE CARO - CALENDARIOS</Text>
     </View>
   );
 }

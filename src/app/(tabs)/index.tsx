@@ -1,12 +1,11 @@
 import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
 
-export default function TabOneScreen() {
+//ESTA ES LA PANTALLA DEL CALENDARIO
+export default function CalendarioScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>DEJA DE QUEJARTE TATI!</Text>
+      <Text style={styles.title}>PANTALLA DEL CALENDARIO</Text>
     </View>
   );
 }
@@ -18,7 +17,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#778c43'
   },
 });
