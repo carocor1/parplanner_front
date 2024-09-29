@@ -5,7 +5,7 @@ import { Text, View } from '@/src/components/Themed';
 export default function CalendarioScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>PANTALLA DEL CALENDARIO</Text>
+      <Text style={styles.title}>PANTALLa DEL CALENDARIO</Text>
     </View>
   );
 }
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#778c43'
   },

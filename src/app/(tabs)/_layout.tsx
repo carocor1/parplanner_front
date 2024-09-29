@@ -20,14 +20,15 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="calendario" // 
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#778c43',
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="index"
+        name="calendario"
         options={{
           title: 'Calendario',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
@@ -54,6 +55,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="child" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="iniciarSesion"
+        options={{
+          title: 'Iniciar Sesión',
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
+        }}
+      />
     </Tabs>
+    
   );
 }
