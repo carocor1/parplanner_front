@@ -5,6 +5,7 @@ import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
 // Obtener el ancho de la pantalla
 const { width } = Dimensions.get('window');
 
+
 export default function DocumentosScreen() {
   return (
     <View style={styles.screenContainer}>
