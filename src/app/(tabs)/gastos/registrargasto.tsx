@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
-import DropdownComponent from '../components/dropdown';
-import SaveButton from '../components/SaveButton';
-import CancelButton from '../components/CancelButton';
-import InputContainer from '../components/InputComponent';
+import DropdownComponent from '../../../components/dropdown';
+import SaveButton from '../../../components/SaveButton';
+import CancelButton from '../../../components/CancelButton';
+import InputContainer from '../../../components/InputComponent';
 
 const RegistrarGastoScreen = () => {
   const [nombre, setNombre] = useState('');
@@ -129,8 +129,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   grupoParticion: {
+    paddingTop: 10,
     flexDirection: 'row',         // Alinea los elementos en línea
-    alignItems: 'center',         // Centra los elementos verticalmente // Espacio uniforme entre los elementos
+    alignItems: 'center',         // Centra los elementos verticalmente // Espacio uniforme entre los 
     marginBottom: 15,             // Espacio abajo del grupo
   },
   particion: {

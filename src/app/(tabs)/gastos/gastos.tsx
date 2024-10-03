@@ -9,7 +9,7 @@ export default function GastosScreen() {
       <Text style={styles.title}>GASTOS</Text>
       <Button
         title="Registrar gasto"
-        onPress={() => router.push('../registrargasto')}
+        onPress={() => router.push('./registrargasto') }
       />
     </View>
   );
