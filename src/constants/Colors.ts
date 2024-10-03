@@ -17,4 +17,8 @@ export default {
     tabIconSelected: tintColorDark,
     verde: '#778c43'
   },
+  verde: {
+    verde1: '#b0ca87',
+    verde2: '#96ac60'
+  }
 };
