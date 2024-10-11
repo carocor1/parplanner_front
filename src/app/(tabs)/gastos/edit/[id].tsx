@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
-import DropdownComponent from '../../../components/dropdown';
-import SaveButton from '../../../components/SaveButton';
-import CancelButton from '../../../components/CancelButton';
-import InputContainer from '../../../components/InputComponent';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import DropdownComponent from '../../../../components/dropdown';
+import SaveButton from '../../../../components/SaveButton';
+import CancelButton from '../../../../components/CancelButton';
+import InputContainer from '../../../../components/InputComponent';
 import InputSpinner from "react-native-input-spinner";
 import CurrencyInput from 'react-native-currency-input';
 import * as ImagePicker from 'expo-image-picker';
-import { MaterialIcons } from '@expo/vector-icons'; // Asegúrate de instalar expo/vector-icons
+import { MaterialIcons } from '@expo/vector-icons';
+import { gastos } from '../../../../data/data';
 
-const RegistrarGastoScreen = () => {
+const EditarGastoScreen = () => {
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
   const [nombre, setNombre] = useState<string>(''); 
   const [monto, setMonto] = useState<number>(1000); 
   const [descripcion, setDescripcion] = useState<string>(''); 
@@ -19,8 +22,28 @@ const RegistrarGastoScreen = () => {
   const [particion2Seleccionada, setParticion2Seleccionada] = useState<number>(50); 
   const [errors, setErrors] = useState<string>(''); 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const router = useRouter();
+  const [imageSuccess, setImageSuccess] = useState<boolean>(false);
   const categorias = ['Indumentaria', 'Educación', 'Salud', 'Recreación'];
+
+  useEffect(() => {
+    const fetchGasto = async () => {
+      const fetchedGasto = gastos.find(gasto => gasto.id === Number(id));
+
+      if (fetchedGasto) {
+        setNombre(fetchedGasto.titulo);
+        setMonto(fetchedGasto.monto);
+        setDescripcion(fetchedGasto.descripcion);
+        setCategoriaSeleccionada(fetchedGasto.categoria.nombre);
+        setParticion1Seleccionada(fetchedGasto.particionProgenitorCreador);
+        setParticion2Seleccionada(fetchedGasto.particionProgenitorParticipe);
+        setSelectedImage(fetchedGasto.comprobanteCompra);
+      } else {
+        console.error('Gasto no encontrado');
+      }
+    };
+
+    fetchGasto();
+  }, [id]);
 
   const validateInput = () => {
     setErrors('');
@@ -48,48 +71,32 @@ const RegistrarGastoScreen = () => {
       setErrors('No se indicó la partición');
       return false;
     }
-    if (!selectedImage) { // Validación para la imagen
+    if (!selectedImage) {
       setErrors('Se requiere adjuntar un comprobante de compra');
       return false;
     }
     return true;
   };
 
-  const crearGasto = () => {
+  const actualizarGasto = () => {
     if (!validateInput()) {
       return;
     }
-    console.log('Creando gasto', { 
+    console.log('Actualizando gasto', { 
       nombre, 
       monto, 
       descripcion, 
       categoriaSeleccionada, 
       particion1Seleccionada, 
       particion2Seleccionada, 
-      selectedImage, // Incluir la imagen en el registro
+      selectedImage,
     });
     
-    setNombre('');
-    setMonto(0);
-    setDescripcion('');
-    setCategoriaSeleccionada('');
-    setParticion1Seleccionada(50);
-    setParticion2Seleccionada(50); 
-    setSelectedImage(null); // Resetear imagen al guardar
-  };
-
-  const noGuardarGasto = () => {
     router.back();
   };
 
-  const handleParticionChange = (value: number) => {
-    setParticion1Seleccionada(value);
-    setParticion2Seleccionada(100 - value);
-  };
-
-  const handleParticion2Change = (num: number) => {
-    setParticion2Seleccionada(num);
-    setParticion1Seleccionada(100 - num);
+  const noActualizarGasto = () => {
+    router.back();
   };
 
   const pickImage = async () => {
@@ -106,7 +113,8 @@ const RegistrarGastoScreen = () => {
     });
 
     if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri); // Guarda la URI de la imagen seleccionada
+      setSelectedImage(result.assets[0].uri);
+      setImageSuccess(true);
     }
   };
 
@@ -116,14 +124,14 @@ const RegistrarGastoScreen = () => {
 
       <Text style={styles.label}>Categoría</Text>
       <View style={{ paddingBottom: 15 }}>
-        <DropdownComponent title="Categoría" labels={categorias} onSelect={setCategoriaSeleccionada} />
+        <DropdownComponent title={categoriaSeleccionada} labels={categorias} onSelect={setCategoriaSeleccionada} />
       </View>
       <InputContainer label="Descripción" value={descripcion} setFunction={setDescripcion} />
 
       <Text style={styles.label}>Monto: </Text>
       <CurrencyInput
         value={monto}
-        onChangeValue={(value) => setMonto(value ?? 0)} // Handle the null case
+        onChangeValue={(value) => setMonto(value ?? 0)}
         prefix="$"
         delimiter=","
         precision={0}
@@ -131,55 +139,19 @@ const RegistrarGastoScreen = () => {
         style={styles.currencyInput}
       />
 
-      {/* Particiones individuales */}
-      <View style={styles.particiones}>
-        <View style={styles.grupoParticionIndividual}>
-          <Text style={styles.labelParticion}>Vos %: </Text>
-          <InputSpinner
-            max={100}
-            min={0}
-            step={10}
-            skin='round'
-            style={styles.spinner}
-            value={particion1Seleccionada}
-            onChange={(num: number) => handleParticionChange(num)}
-            color='#cccccc'
-          />
-          <Text style={styles.pagarLabel}>Pagarás: </Text>
-          <Text style={styles.pagarValue}>${particion1Seleccionada * monto / 100}</Text>
-        </View>
-
-        <View style={styles.grupoParticionIndividual}>
-          <Text style={styles.labelParticion}>Máximo %: </Text>
-          <InputSpinner
-            max={100}
-            min={0}
-            step={10}
-            skin="round"
-            value={particion2Seleccionada}
-            onChange={(num: number) => handleParticion2Change(num)}
-            color='#cccccc'
-            style={styles.spinner}
-          />
-          <Text style={styles.pagarLabel}>Pagará: </Text>
-          <Text style={styles.pagarValue}>${particion2Seleccionada * monto / 100}</Text>
-        </View>
-      </View>
 
       <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
         <MaterialIcons name="attach-file" size={24} color="white" />
-        <Text style={styles.uploadButtonText}>Adjuntar comprobante de Compra</Text>
+        <Text style={styles.uploadButtonText}>Adjuntar nuevo comprobante de Compra</Text>
       </TouchableOpacity>
 
-      {selectedImage && (
-        <Text style={styles.uploadSuccessText}>Comprobante adjuntado con éxito!</Text> // Mensaje de éxito
-      )}
-      
+      {imageSuccess && <Text style={styles.uploadSuccessText}>¡Comprobante adjuntado con éxito!</Text>}
+
       <Text style={styles.error}>{errors}</Text>
 
       <View style={styles.buttonContainer}>
-        <CancelButton texto="Cancelar" onPress={noGuardarGasto} />
-        <SaveButton texto="Guardar" onPress={crearGasto} />
+        <CancelButton texto="Cancelar" onPress={noActualizarGasto} />
+        <SaveButton texto="Actualizar" onPress={actualizarGasto} />
       </View>
     </View>
   );
@@ -191,23 +163,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     backgroundColor: '#f5f5f5',
-  },
-  particiones: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-  },
-  grupoParticionIndividual: {
-    paddingTop: 10,
-    flexDirection: 'column',         
-    alignItems: 'center',         
-    marginBottom: 5,             
-  },
-  labelParticion: {
-    fontSize: 14,                 
-    fontWeight: 'bold',
-    marginBottom: 5         
   },
   label: {
     color: '#000',
@@ -231,14 +186,12 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     textAlign: 'center',
+    marginBottom: 5, 
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  spinner: {
-    width: 150,
   },
   uploadButton: {
     flexDirection: 'row',
@@ -248,6 +201,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     marginTop: 13,
+    marginBottom: 20,
     paddingHorizontal: 30,
   },
   uploadButtonText: {
@@ -271,4 +225,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistrarGastoScreen;
+  export default EditarGastoScreen;
+  

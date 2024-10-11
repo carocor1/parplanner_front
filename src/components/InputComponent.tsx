@@ -1,13 +1,14 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 
 type InputComponentProps = {
     label: string;
     value: string;
     setFunction: (text: string) => void;
+    style?: ViewStyle | TextStyle;
 };
 
-const InputComponent: React.FC<InputComponentProps> = ({ label, value, setFunction }) => {
+const InputComponent: React.FC<InputComponentProps> = ({ label, value, setFunction, style }) => {
     return (
         <View style={styles.inputGroup}>
             <Text style={styles.label}>{label}</Text>
@@ -15,7 +16,7 @@ const InputComponent: React.FC<InputComponentProps> = ({ label, value, setFuncti
                 value={value}                    // Se asigna el valor actual del input
                 onChangeText={setFunction}       // Se pasa la función para actualizar el valor
                 placeholder={label}              // Usa el label como placeholder
-                style={styles.input}
+                style={[styles.input, style]}
             />
         </View>
     );
@@ -24,9 +25,8 @@ const InputComponent: React.FC<InputComponentProps> = ({ label, value, setFuncti
 
 const styles = StyleSheet.create({
     inputGroup: {
-        width: '100%',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 20,
       },
       label: {
         color: '#000',
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         padding: 10,
         backgroundColor: 'white',
-        borderRadius: 15,
+        borderRadius: 20,
       },
 
 })
