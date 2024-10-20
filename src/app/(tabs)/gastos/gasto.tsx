@@ -1,51 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { gastos } from '../../../data/data'; 
-import { router } from 'expo-router'; 
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import GastoItem from '@/src/components/GastoItem';
 import { FontAwesome } from '@expo/vector-icons';
+import { Gasto } from '@/src/interfaces/Gasto';
+import { getGastosByProgenitor } from '@/src/services/gastoService';
+import { progenitorLogueadoId } from '@/src/constants/constants';
 
-export interface Gasto {
-  id: number; 
-  titulo: string;
-  monto: number; 
-  descripcion: string; 
-  comprobanteCompra: string; 
-  particionProgenitorCreador: number; 
-  particionProgenitorParticipe: number;
-  progenitorCreador: { 
-    id: number;
-    nombre: string; 
-    apellido: string;
-  };
-  progenitorParticipe: { 
-    id: number; 
-    nombre: string;
-    apellido: string;
-  };
-  estado: {
-    nombre: string; // Nombre del estado (e.g., 'Pendiente' o 'Pagada')
-  };
-  fecha: string; // Considera que la fecha debe estar en un formato reconocible
-  categoria: {id:number; nombre:string}
-}
-
-const progenitorLogueadoId = 1; 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
   const [deudaTotal, setDeudaTotal] = useState<number>(0); // Estado para almacenar la deuda total
+  const [loading, setLoading] = useState<boolean>(true); // Estado para controlar la carga
 
-  useEffect(() => {
-    // Simula la recuperación de los gastos
-    setListaGastos(gastos); 
-  }, []);
+  const fetchGastos = async () => {
+    setLoading(true); // Mostrar indicador de carga
+    try {
+      const gastos = await getGastosByProgenitor(progenitorLogueadoId);
+      setListaGastos(gastos);
+    } catch (error) {
+      console.error('Error al recuperar los gastos:', error);
+    } finally {
+      setLoading(false); // Ocultar indicador de carga
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchGastos(); // Cada vez que la pantalla esté en foco, se refrescan los gastos
+    }, [])
+  );
 
 
   useEffect(() => {
     const calcularDeuda = () => {
       const deuda = listaGastos.reduce((total, gasto) => {
         if (gasto.estado.nombre === 'Pendiente' && gasto.progenitorParticipe.id === progenitorLogueadoId) {
-          return total + ((gasto.monto * gasto.particionProgenitorParticipe)/100);
+          return total + ((gasto.monto * gasto.particionProgenitorParticipe) / 100);
         }
         return total;
       }, 0);
@@ -54,6 +44,16 @@ const GastosScreen = () => {
 
     calcularDeuda(); // Llama a la función de cálculo al cargar la lista de gastos
   }, [listaGastos]);
+
+  // Si está cargando, mostrar pantalla de carga
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#6A5ACD" />
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -91,31 +91,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5', // Color de fondo
   },
   deudaContainer: {
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    backgroundColor: '#6A5ACD', 
-    paddingBottom: 90, 
-    paddingTop:60,
-    width: '100%', 
-
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#6A5ACD',
+    paddingBottom: 90,
+    paddingTop: 60,
+    width: '100%',
   },
   debeText: {
-    color: 'rgba(255, 255, 255, 0.7)', 
-    fontSize: 16, 
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 16,
   },
   cantidadText: {
     color: 'white',
-    fontSize: 35, 
-    fontWeight: 'bold', 
-    paddingBottom: 5
+    fontSize: 35,
+    fontWeight: 'bold',
+    paddingBottom: 5,
   },
   pagoText: {
-    fontSize: 16, 
-    textAlign: 'right', 
-    color: 'rgba(255, 255, 255, 0.7)'
+    fontSize: 16,
+    textAlign: 'right',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   gastosContainer: {
-    marginTop: -65, // Se superpone al rectángulo lila (1/4 del alto del contenedor) 
+    marginTop: -65, // Se superpone al rectángulo lila (1/4 del alto del contenedor)
     backgroundColor: '#fff', // Fondo blanco para los gastos
     borderRadius: 15, // Bordes redondeados
     shadowColor: '#000', // Sombra
@@ -151,6 +150,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5, // Sombra para Android
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5', // Color de fondo de la pantalla de carga
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#6A5ACD', // Color del texto de carga
   },
 });
 

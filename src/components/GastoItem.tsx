@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Gasto } from '../app/(tabs)/gastos/gasto';
 import { router } from 'expo-router';
+import { Gasto } from '../interfaces/Gasto';
 
 interface GastoItemProps {
   gasto: Gasto; // Objeto de gasto

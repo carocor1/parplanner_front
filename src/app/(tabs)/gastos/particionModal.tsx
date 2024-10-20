@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import InputSpinner from 'react-native-input-spinner';
-import { Gasto } from './gasto';
 import SaveButton from '@/src/components/SaveButton';
 import CancelButton from '@/src/components/CancelButton';
+import { Gasto } from '@/src/interfaces/Gasto';
+import axios from 'axios';
+import { url } from '@/src/constants/constants';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -29,9 +31,16 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
     setParticionCreadorSeleccionada(100 - num);
   };
 
-  const handleSubmit = () => {
-    console.log('Proposed Partition:', { particionCreadorSeleccionada, particionParticipeSeleccionada });
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      await axios.post(`${url}/gasto/${gasto.id}/proponerParticion`, {
+        particionProgenitorCreador: particionCreadorSeleccionada,
+        particionProgenitorParticipe: particionParticipeSeleccionada,
+      });
+      onClose();
+    } catch (error) {
+      console.error('Error al enviar la partición:', error);
+    }
   };
 
   return (

@@ -1,118 +1,131 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import ProponerParticionScreen from './particionModal';
-import { categorias, gastos } from '@/src/data/data';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { url } from '@/src/constants/constants';
+import { getGastoById } from '@/src/services/gastoService';
 
-//OBTIENE COMO PARÁMETRO EL GASTO Y EL USUARIOID
+// OBTIENE COMO PARÁMETRO EL GASTO Y EL USUARIOID
 const DetalleGastoScreen: React.FC = () => {
-  const { id, usuarioId } = useLocalSearchParams(); // Usa useLocalSearchParams para obtener los parámetros
-  const parsedGastoId = id ? Number(id) : null; // Convertir a número, si existe
-  const parsedGasto = gastos.find(gasto => gasto.id === parsedGastoId);
+  const { id, usuarioId } = useLocalSearchParams(); 
+  const parsedGastoId = id ? Number(id) : null; 
 
-
-   console.log(parsedGastoId)
-    console.log(usuarioId)
-
-
-  // Si el gasto no está disponible
-  if (!parsedGasto) {
-    return <Text>Gasto no disponible</Text>;
-  }
-
+  const [gasto, setGasto] = useState<any>(null);  
+  const [loading, setLoading] = useState<boolean>(true);  
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const openModal = () => setModalVisible(true);
-  const closeModal = () => setModalVisible(false);
 
-  if (!parsedGasto) {
+  
+  const openModal = () => setModalVisible(true);
+  const closeModal = () => {
+    setModalVisible(false);
+    fetchGasto();
+  }
+
+  const fetchGasto = async () => {
+    try {
+      if (parsedGastoId){
+        setLoading(true);
+        const gasto = await getGastoById(parsedGastoId);
+        setGasto(gasto);
+      }
+    } catch (error) {
+      console.error("Error al cargar el gasto:", error);
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { 
+    fetchGasto(); 
+  }, [parsedGastoId]);
+
+  // Si estamos cargando los datos
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#6A5ACD" />
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
+
+  if (!gasto) {
     return <Text>Gasto no disponible</Text>;
   }
 
-  const esPendiente = parsedGasto.estado.nombre === 'Pendiente';
-
-  // Obtener el nombre de la categoría del gasto
-
+  const esPendiente = gasto.estado.nombre === 'Pendiente';
 
   return (
     <View style={styles.container}>
       <View style={[esPendiente ? styles.rectanguloPendiente : styles.rectanguloPagada, { marginBottom: 5 }]}>
         <Text style={esPendiente ? styles.textoPendiente : styles.textoPagada}>
-          {parsedGasto.estado.nombre.toUpperCase()}
+          {gasto.estado.nombre.toUpperCase()}
         </Text>
       </View>
 
-      {/* Título y descripción del gasto */}
       <Text style={styles.tituloLabel}>Título del gasto: </Text>
-      <Text style={styles.titulo}>{parsedGasto.titulo}</Text>
-      <Text style={styles.descripcion}>{parsedGasto.descripcion}</Text>
+      <Text style={styles.titulo}>{gasto.titulo}</Text>
+      <Text style={styles.descripcion}>{gasto.descripcion}</Text>
 
-      {/* Mostrar la categoría del gasto */}
       <View style={styles.categoriaConteiner}>
         <Text style={styles.categoriaLabel}>Categoría: </Text>
-        <Text style={styles.categoria}>{parsedGasto.categoria.nombre}</Text>  
+        <Text style={styles.categoria}>{gasto.categoria.nombre}</Text>  
       </View>
 
-      {/* Monto total del gasto */}
       <View style={styles.contenedorMonto}>
         <Text style={styles.monto}>Total:</Text>
-        <Text style={styles.montoImportado}>${parsedGasto.monto}</Text>
+        <Text style={styles.montoImportado}>${gasto.monto}</Text>
       </View>
 
-      {/* Particiones del gasto */}
       <View style={styles.contenedorParticiones}>
-        <View
-          style={[
-            styles.particionIndividual,
-            parsedGasto.progenitorCreador.id === Number(usuarioId) && styles.particionUsuarioLogueado,
-          ]}
-        >
+        <View style={[
+          styles.particionIndividual,
+          gasto.progenitorCreador.id === Number(usuarioId) && styles.particionUsuarioLogueado,
+        ]}>
           <Text style={styles.tituloParticion}>Partición de</Text>
-          <Text style={styles.tituloParticion}>{parsedGasto.progenitorCreador.nombre}:</Text>
-          <Text style={styles.particionValue}>{parsedGasto.particionProgenitorCreador}%</Text>
+          <Text style={styles.tituloParticion}>{gasto.progenitorCreador.nombre}:</Text>
+          <Text style={styles.particionValue}>{gasto.particionProgenitorCreador}%</Text>
           <View style={styles.lineaDivisoria}></View>
           <Text style={styles.corresponde}>Corresponde:</Text>
-          <Text style={styles.particionValue}>
-            ${(parsedGasto.particionProgenitorCreador * parsedGasto.monto) / 100}
-          </Text>
+          <Text style={styles.particionValue}>${(gasto.particionProgenitorCreador * gasto.monto) / 100}</Text>
         </View>
 
-        <View
-          style={[
-            styles.particionIndividual,
-            parsedGasto.progenitorParticipe.id === Number(usuarioId) && styles.particionUsuarioLogueado,
-          ]}
-        >
+        <View style={[
+          styles.particionIndividual,
+          gasto.progenitorParticipe.id === Number(usuarioId) && styles.particionUsuarioLogueado,
+        ]}>
           <Text style={styles.tituloParticion}>Partición de</Text>
-          <Text style={styles.tituloParticion}>{parsedGasto.progenitorParticipe.nombre}:</Text>
-          <Text style={styles.particionValue}>{parsedGasto.particionProgenitorParticipe}%</Text>
+          <Text style={styles.tituloParticion}>{gasto.progenitorParticipe.nombre}:</Text>
+          <Text style={styles.particionValue}>{gasto.particionProgenitorParticipe}%</Text>
           <View style={styles.lineaDivisoria}></View>
           <Text style={styles.corresponde}>Corresponde:</Text>
-          <Text style={styles.particionValue}>
-            ${(parsedGasto.particionProgenitorParticipe * parsedGasto.monto) / 100}
-          </Text>
+          <Text style={styles.particionValue}>${(gasto.particionProgenitorParticipe * gasto.monto) / 100}</Text>
         </View>
       </View>
 
-      {/* Botón para descargar comprobante de compra */}
       <TouchableOpacity>
         <MaterialIcons name="attach-file" size={24} color="white" />
         <Text>Descargar comprobante de compra</Text>
       </TouchableOpacity>
 
-      {/* Botón para proponer nueva partición si el estado es pendiente y no es el creador */}
       {esPendiente && (
         <TouchableOpacity style={styles.botonProponerParticion} onPress={openModal}>
           <Text style={styles.buttonText}>PROPONER NUEVA PARTICIÓN</Text>
         </TouchableOpacity>
       )}
 
-      {/* Modal para proponer nueva partición */}
       <ProponerParticionScreen
         visible={modalVisible}
         onClose={closeModal}
-        gasto={parsedGasto}
-        idUsuarioLogueado={Number(usuarioId)} // Convertir el usuarioId a número
+        gasto={gasto}
+        idUsuarioLogueado={Number(usuarioId)}
       />
     </View>
   );
@@ -123,6 +136,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     backgroundColor: '#f5f5f5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5', // Color de fondo de la pantalla de carga
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#6A5ACD', // Color del texto de carga
   },
   tituloLabel: {
     fontSize: 18,
@@ -148,12 +172,6 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 10,
     textAlign: 'center'
-  },
-  loadingText: {
-    alignSelf: 'center',
-    fontSize: 18,
-    fontStyle: 'italic',
-    color: '#888',
   },
   errorText: {
     alignSelf: 'center',

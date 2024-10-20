@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import DropdownComponent from '../../../components/dropdown';
 import SaveButton from '../../../components/SaveButton';
@@ -8,19 +8,51 @@ import InputContainer from '../../../components/InputComponent';
 import InputSpinner from "react-native-input-spinner";
 import CurrencyInput from 'react-native-currency-input';
 import * as ImagePicker from 'expo-image-picker';
-import { MaterialIcons } from '@expo/vector-icons'; // Asegúrate de instalar expo/vector-icons
+import { MaterialIcons } from '@expo/vector-icons';
+import axios from 'axios';
+import { progenitorLogueadoId, url } from '@/src/constants/constants';
 
 const RegistrarGastoScreen = () => {
   const [nombre, setNombre] = useState<string>(''); 
+  const[progenitorCreadorId, setProgenitorCreadorId] = useState<number>(progenitorLogueadoId);
+  const [progenitorParticipeId, setProgenitorParticipeId] = useState<number>(1);
   const [monto, setMonto] = useState<number>(1000); 
   const [descripcion, setDescripcion] = useState<string>(''); 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>(''); 
   const [particion1Seleccionada, setParticion1Seleccionada] = useState<number>(50); 
   const [particion2Seleccionada, setParticion2Seleccionada] = useState<number>(50); 
   const [errors, setErrors] = useState<string>(''); 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const router = useRouter();
-  const categorias = ['Indumentaria', 'Educación', 'Salud', 'Recreación'];
+  
+
+  const [categorias, setCategorias] = useState<Array<{ id: number, nombre: string }>>([]);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
+  const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<number | null>(null); // Para guardar el ID de la categoría seleccionada
+  
+    useEffect(() => {
+      const fetchCategorias = async () => {
+        try {
+          const response = await axios.get(`${url}/categoria`);
+          const categoriasData = response.data;
+
+          setCategorias(categoriasData);
+        } catch (error) {
+          console.error('Error al obtener categorías:', error);
+        }
+      };
+  
+      fetchCategorias();
+    }, []);
+    
+    const handleCategoriaSelect = (nombreCategoria: string) => {
+      setCategoriaSeleccionada(nombreCategoria);
+  
+      const categoria = categorias.find(cat => cat.nombre === nombreCategoria);
+      if (categoria) {
+        setCategoriaSeleccionadaId(categoria.id);
+      }
+    };
+  
 
   const validateInput = () => {
     setErrors('');
@@ -48,34 +80,48 @@ const RegistrarGastoScreen = () => {
       setErrors('No se indicó la partición');
       return false;
     }
-    if (!selectedImage) { // Validación para la imagen
+    if (!selectedImage) {
       setErrors('Se requiere adjuntar un comprobante de compra');
       return false;
     }
     return true;
   };
 
-  const crearGasto = () => {
+  const crearGasto = async () => {
     if (!validateInput()) {
-      return;
+        return;
     }
-    console.log('Creando gasto', { 
-      nombre, 
-      monto, 
-      descripcion, 
-      categoriaSeleccionada, 
-      particion1Seleccionada, 
-      particion2Seleccionada, 
-      selectedImage, // Incluir la imagen en el registro
-    });
-    
-    setNombre('');
-    setMonto(0);
-    setDescripcion('');
-    setCategoriaSeleccionada('');
-    setParticion1Seleccionada(50);
-    setParticion2Seleccionada(50); 
-    setSelectedImage(null); // Resetear imagen al guardar
+
+    const gastoDTO = {
+        titulo: nombre,
+        monto: monto,
+        descripcion: descripcion,
+        comprobanteCompra: selectedImage, // Suponiendo que esta es la URI de la imagen
+        progenitorCreadorId:  progenitorCreadorId,
+        progenitorParticipeId: progenitorParticipeId,
+        particionProgenitorCreador: particion1Seleccionada,
+        particionProgenitorParticipe: particion2Seleccionada,
+        categoriaId: categoriaSeleccionadaId, 
+    };
+
+    try {
+        console.log(gastoDTO);
+        const response = await axios.post(`${url}/gasto`, gastoDTO);
+        console.log('Gasto creado:', response.data);
+        
+        // Resetear el estado después de guardar
+        setNombre('');
+        setMonto(0);
+        setDescripcion('');
+        setCategoriaSeleccionada('');
+        setParticion1Seleccionada(50);
+        setParticion2Seleccionada(50); 
+        setSelectedImage(null); 
+        router.back();
+    } catch (error) {
+        console.error('Error al crear gasto:', error);
+        setErrors('Ocurrió un error al guardar el gasto.');
+    }
   };
 
   const noGuardarGasto = () => {
@@ -116,7 +162,7 @@ const RegistrarGastoScreen = () => {
 
       <Text style={styles.label}>Categoría</Text>
       <View style={{ paddingBottom: 15 }}>
-        <DropdownComponent title="Categoría" labels={categorias} onSelect={setCategoriaSeleccionada} />
+        <DropdownComponent title="Categoría" labels={categorias.map(cat => cat.nombre)} onSelect={handleCategoriaSelect} />
       </View>
       <InputContainer label="Descripción" value={descripcion} setFunction={setDescripcion} />
 
@@ -184,7 +230,6 @@ const RegistrarGastoScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

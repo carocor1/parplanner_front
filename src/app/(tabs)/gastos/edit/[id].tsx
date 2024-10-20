@@ -5,11 +5,11 @@ import DropdownComponent from '../../../../components/dropdown';
 import SaveButton from '../../../../components/SaveButton';
 import CancelButton from '../../../../components/CancelButton';
 import InputContainer from '../../../../components/InputComponent';
-import InputSpinner from "react-native-input-spinner";
 import CurrencyInput from 'react-native-currency-input';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
-import { gastos } from '../../../../data/data';
+import axios from 'axios';
+import { url } from '@/src/constants/constants';
 
 const EditarGastoScreen = () => {
   const router = useRouter();
@@ -17,33 +17,62 @@ const EditarGastoScreen = () => {
   const [nombre, setNombre] = useState<string>(''); 
   const [monto, setMonto] = useState<number>(1000); 
   const [descripcion, setDescripcion] = useState<string>(''); 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>(''); 
   const [particion1Seleccionada, setParticion1Seleccionada] = useState<number>(50); 
   const [particion2Seleccionada, setParticion2Seleccionada] = useState<number>(50); 
   const [errors, setErrors] = useState<string>(''); 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageSuccess, setImageSuccess] = useState<boolean>(false);
-  const categorias = ['Indumentaria', 'Educación', 'Salud', 'Recreación'];
+  const [categorias, setCategorias] = useState<Array<{ id: number, nombre: string }>>([]);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
+  const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<number | null>(null);
 
   useEffect(() => {
+    // Fetch del gasto basado en el ID
     const fetchGasto = async () => {
-      const fetchedGasto = gastos.find(gasto => gasto.id === Number(id));
-
-      if (fetchedGasto) {
-        setNombre(fetchedGasto.titulo);
-        setMonto(fetchedGasto.monto);
-        setDescripcion(fetchedGasto.descripcion);
-        setCategoriaSeleccionada(fetchedGasto.categoria.nombre);
-        setParticion1Seleccionada(fetchedGasto.particionProgenitorCreador);
-        setParticion2Seleccionada(fetchedGasto.particionProgenitorParticipe);
-        setSelectedImage(fetchedGasto.comprobanteCompra);
-      } else {
-        console.error('Gasto no encontrado');
+      try {
+        const response = await axios.get(`${url}/gasto/${id}`);
+        console.log('Response: ', response.data);
+        const fetchedGasto = response.data;
+        
+        if (fetchedGasto) {
+          setNombre(fetchedGasto.titulo);
+          setMonto(fetchedGasto.monto);
+          setDescripcion(fetchedGasto.descripcion);
+          setCategoriaSeleccionada(fetchedGasto.nombreCategoria);
+          setParticion1Seleccionada(fetchedGasto.particionProgenitorCreador);
+          setParticion2Seleccionada(fetchedGasto.particionProgenitorParticipe);
+          setSelectedImage(fetchedGasto.comprobanteCompra);
+        } else {
+          console.error('Gasto no encontrado');
+        }
+      } catch (error) {
+        console.error('Error al obtener el gasto:', error);
       }
     };
 
+    // Fetch de categorías
+    const fetchCategorias = async () => {
+      try {
+        const response = await axios.get(`${url}/categoria`);
+        const categoriasData = response.data;
+        setCategorias(categoriasData);
+      } catch (error) {
+        console.error('Error al obtener categorías:', error);
+      }
+    };
+
+    fetchCategorias();
     fetchGasto();
   }, [id]);
+
+  const handleCategoriaSelect = (nombreCategoria: string) => {
+    setCategoriaSeleccionada(nombreCategoria);
+
+    const categoria = categorias.find(cat => cat.nombre === nombreCategoria);
+    if (categoria) {
+      setCategoriaSeleccionadaId(categoria.id);
+    }
+  };
 
   const validateInput = () => {
     setErrors('');
@@ -78,21 +107,27 @@ const EditarGastoScreen = () => {
     return true;
   };
 
-  const actualizarGasto = () => {
+  const actualizarGasto = async () => {
     if (!validateInput()) {
       return;
     }
-    console.log('Actualizando gasto', { 
-      nombre, 
-      monto, 
-      descripcion, 
-      categoriaSeleccionada, 
-      particion1Seleccionada, 
-      particion2Seleccionada, 
-      selectedImage,
-    });
-    
-    router.back();
+    const gastoActualizado = {
+      titulo: nombre,
+      monto: monto,
+      descripcion: descripcion,
+      categoriaId: categoriaSeleccionadaId,
+      comprobanteCompra: selectedImage,
+    };
+    console.log('Gasto actualizado: ', gastoActualizado)
+    try {
+      await axios.put(`${url}/gasto/${id}`, gastoActualizado);
+      console.log('Gasto actualizado con éxito', gastoActualizado);
+  
+      router.back();
+    } catch (error) {
+      console.error('Error al actualizar el gasto', error);
+      setErrors('Hubo un error al actualizar el gasto. Intenta de nuevo.');
+    }
   };
 
   const noActualizarGasto = () => {
@@ -124,7 +159,7 @@ const EditarGastoScreen = () => {
 
       <Text style={styles.label}>Categoría</Text>
       <View style={{ paddingBottom: 15 }}>
-        <DropdownComponent title={categoriaSeleccionada} labels={categorias} onSelect={setCategoriaSeleccionada} />
+      <DropdownComponent title={categoriaSeleccionada} labels={categorias.map(cat => cat.nombre)} onSelect={handleCategoriaSelect} />
       </View>
       <InputContainer label="Descripción" value={descripcion} setFunction={setDescripcion} />
 
