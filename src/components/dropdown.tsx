@@ -55,22 +55,17 @@ export default DropdownComponent;
 
 const styles = StyleSheet.create({
   container: { // Eliminar el padding para que no haya espacio entre el dropdown y otros elementos
-    borderRadius: 15,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    paddingHorizontal: 35,
+    paddingBottom:15,
+    paddingHorizontal: 33
   },
   dropdown: {
     height: 50,
     borderColor: 'gray', // Cambiar el color del borde a gris
     borderWidth: 1,
-    borderRadius: 15, // Bordes redondeados en el dropdown
-    paddingHorizontal: 8,
+    borderRadius: 20, // Bordes redondeados en el dropdown
     backgroundColor: '#ffffff',
     padding: 10 // Color de fondo blanco para el dropdown
   },
@@ -83,7 +78,8 @@ const styles = StyleSheet.create({
     color: 'gray', // Cambiar el color del texto seleccionado a gris
   },
   inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
+    height: 30,
+    fontSize: 15,
+    borderRadius: 5,
   },
 });
