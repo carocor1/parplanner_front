@@ -10,16 +10,19 @@ import SaveButton from '@/src/components/SaveButton';
 //ESTA ES LA PANTALLA DEL CALENDARIO
 
 
-const IniciarSesion = () =>{
+const registrarUsuarioPantalla = () =>{
   const [user, SetUser]= useState('');
   const [password, SetPassword]= useState('');
   const [errors, setErrors] = useState('');
-
+  const [email, setEmail]=useState('');
+  const [hidePassword, setHidePassword] = useState(true);
   const router=useRouter()
   
   
   const validarInput = () => {
     setErrors('');
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     if (!user) {
       setErrors('No se ha ingresado el usuario');
       return false;
@@ -28,56 +31,56 @@ const IniciarSesion = () =>{
       setErrors('No se ha ingresado la contraseña');
       return false;
     }
+    if (!email){
+      setErrors("No se ha ingresado el email")
+    }
+    if (!emailRegex.test(email)) {
+      setErrors('El email ingresado no es válido');
+      return false;
+    }
 
     return true;
   };
   
-  const olvidarContraseña= () =>{
-    console.log("Enviando a la pantalla de recuperar contraseña")
-  }
-  const onLogin = () => {
+
+  const registrarse = () => {
     if (!validarInput()) {
       return;
     }
-    
-   
+    console.log({user,password,email})
+    setEmail('')
     SetUser('')
     SetPassword('')
+   
     
 
-    router.push('/registroProgenitor'); 
+    router.push('/iniciarSesion'); 
+    
 
   };
 
-  const RegistrarUsuario = () => {
-    router.push('/registroUsuario')
-
-  }
+  
 
   
 
   return (
     <View style={styles.container}>
       
+      <Text style={styles.text}>Registrate</Text>
       
- 
+      <InputComponentInicioSesion label="Email" value={email} setFunction={setEmail} iconName="envelope" iconType="font-awesome" />
    
-      <InputComponentInicioSesion label="Usuario" value={user} setFunction={SetUser} iconName="user" iconType="font-awesome"  />
+      <InputComponentInicioSesion label="Usuario" value={user} setFunction={SetUser} iconName="user" iconType="font-awesome" />
       <InputComponentInicioSesion label="Contraseña" value={password} setFunction={SetPassword} iconName="eye" iconType="font-awesome" secureTextEntry />
-      <TouchableOpacity onPress={olvidarContraseña}>
-        <Text style={styles.forgotPasswordText}> Olvidé mi contraseña</Text>
-
-      </TouchableOpacity>
+  
 
       <Text style={styles.error}>{errors}</Text>
 
       <View style={styles.buttonContainer}>
-        <SaveButton texto="Iniciar Sesión" onPress={onLogin}/>
+        <SaveButton texto="Crear Cuenta" onPress={registrarse}/>
       </View>
-      <Text style={styles.SignUp}>No tenes una cuenta? </Text>
-      <TouchableOpacity onPress={RegistrarUsuario}>
-        <Text style={styles.SignUp2}> Registrate</Text>
-      </TouchableOpacity>
+
+    
 
 
       
@@ -126,9 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#a9bb7c", 
-    marginBottom:20, 
-    marginTop:30
+    backgroundColor: "#a9bb7c"
   },
   forgotPasswordText: {
     color: '#FFFFFF', // Color azul para el texto clickeable
@@ -137,22 +138,16 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontWeight:"bold" // Subrayar el texto para indicar que es clickeable
   },
-  SignUp:{
-    marginVertical: 1,      // Espaciado vertical
-    fontSize: 14,
-    color: "black", 
-    fontWeight:"bold", 
-    textAlign:"center"
-  }, 
-  SignUp2:{
-    marginVertical: 1,      // Espaciado vertical
-    fontSize: 14,
-    color: "black", 
+  text:{
+    fontFamily: 'sans-serif', 
+    fontSize: 36, 
+    color:"white", 
     fontWeight:"bold", 
     textAlign:"center", 
-    textDecorationLine:"underline"
-
+    marginBottom: 90, // Añadir margen inferior
+    marginTop: -30,
+    
   }
 });
 
-export default IniciarSesion;
+export default registrarUsuarioPantalla;

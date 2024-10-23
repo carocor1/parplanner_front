@@ -76,6 +76,7 @@ const RegistrarGastoScreen = () => {
 
   return (
     <View style={styles.container}>
+      
       <InputContainer label="Nombre del gasto" value={nombre} setFunction={setNombre} />
 
       <Text style={styles.label}>Categoría</Text>

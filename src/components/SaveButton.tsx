@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontWeight: 'bold',
-        textAlign: 'center', // Centra el texto en el botón
+        textAlign: 'center',
+        fontSize:17, // Centra el texto en el botón
     },
 });
 

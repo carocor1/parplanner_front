@@ -6,7 +6,9 @@ export default function CalendarioScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>PANTALLa DEL CALENDARIO</Text>
+ 
     </View>
+    
   );
 }
 
