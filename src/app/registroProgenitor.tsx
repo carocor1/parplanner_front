@@ -20,6 +20,7 @@ import {
   registroProgenitor,
   verificarHijoAsociado,
 } from "../services/userService";
+import { verificarSegundoProgenitorAsociado } from "../services/hijoService";
 
 const registrarProgenitorScreen = () => {
   const [nroTelefono, setNroTelefono] = useState("");
@@ -81,7 +82,6 @@ const registrarProgenitorScreen = () => {
     if (!ValidateInput()) {
       return;
     }
-
     try {
       await registroProgenitor(
         nroTelefono,
@@ -92,8 +92,6 @@ const registrarProgenitorScreen = () => {
         sexoSeleccionado,
         Cbu
       );
-      const tieneHijoAsociado = await verificarHijoAsociado();
-
       setFechaNacimiento(new Date());
       setProvinciaSeleccionada("");
       setCiudadSeleccionada("");
@@ -105,14 +103,20 @@ const registrarProgenitorScreen = () => {
       setNroTelefono("");
       setTimeout(() => setResetAvatar(false), 500);
 
-      if (tieneHijoAsociado) {
-        //ver a donde ir si tiejeHijoAsociado pero hijo no tiene vinculado el 2do progenitor
-        router.push("/(tabs)/gastos/");
+      const tieneHijoAsociado = await verificarHijoAsociado();
+      if (!tieneHijoAsociado) {
+        router.push("/registroHijoOIngresoCodigo");
       } else {
-        router.push("../vinculacionHijoORegistroHijo"); //ir a registro de hijo o vinculación
+        const segundoProgenitorAsociado =
+          await verificarSegundoProgenitorAsociado();
+        if (segundoProgenitorAsociado) {
+          router.push("/(tabs)/gastos/");
+        } else {
+          router.push("/vinculacionHijoOIngresoCodigo");
+        }
       }
     } catch (error) {
-      console.error("Error al registrar progenitor:", error);
+      alert("Error al registrar progenitor. Por favor, inténtalo de nuevo.");
     }
   };
 

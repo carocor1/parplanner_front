@@ -25,3 +25,39 @@ export const registrarHijo = async (
     throw error;
   }
 };
+
+export const verificarSegundoProgenitorAsociado = async () => {
+  try {
+    const response = await api.get("/hijos/verificar-vinculacion");
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error al verificar si el segundo progenitor tiene hijo asociado:",
+      error
+    );
+  }
+};
+
+export const verificarCodigoVinculacion = async (codigo: string) => {
+  try {
+    const response = await api.post("/hijos/vincular-codigo", {
+      codigo,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al verificar el código de vinculación:", error);
+    throw error;
+  }
+};
+
+export const enviarCodigoDeVinculacion = async (email_progenitor: string) => {
+  try {
+    const response = await api.post("/hijos/vinculacion", {
+      email_progenitor,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al enviar el código de vinculación:", error);
+    throw error;
+  }
+};

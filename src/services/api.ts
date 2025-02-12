@@ -2,7 +2,7 @@ import axios from "axios";
 import { obtenerToken, eliminarToken } from "../utils/storage";
 
 const api = axios.create({
-  baseURL: "https://rested-present-trout.ngrok-free.app/parplanner",
+  baseURL: "https://de87-190-244-241-204.ngrok-free.app/parplanner",
   headers: {
     "ngrok-skip-browser-warning": "true",
   },
