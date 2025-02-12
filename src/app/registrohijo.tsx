@@ -8,7 +8,10 @@ import React, { useEffect, useState } from "react";
 import { State, City } from "country-state-city";
 import DateTimePicker from "@/src/components/DatePicker";
 import BasicAvatar from "@/src/dataDisplay/avatarPicker";
-import { registrarHijo } from "../services/hijoService";
+import {
+  registrarHijo,
+  verificarSegundoProgenitorAsociado,
+} from "../services/hijoService";
 
 const registrarHijoScreen = () => {
   const [nombre, setNombre] = useState("");
@@ -91,11 +94,16 @@ const registrarHijoScreen = () => {
       setResetAvatar(true);
       setTimeout(() => setResetAvatar(false), 500);
 
-      //verificar si el hijo ya tiene vinculado el 2do progenitor, si es asi, enviar a gastos, sino, enviar a pantalla de vinculación.
-      router.push("/documentos"); //aca tengo que enviarlo a la pantalla para generar el link de invitación.
+      const tieneSegundoProgenitorAsociado =
+        await verificarSegundoProgenitorAsociado();
+      if (tieneSegundoProgenitorAsociado) {
+        router.push("/(tabs)/gastos/");
+      } else {
+        router.push("/vinculacionHijoOIngresoCodigo");
+      }
     } catch (error) {
+      alert("Error al registrar el hijo. Por favor, inténtalo de nuevo.");
       setErrors("Error al registrar el hijo.");
-      console.error("Error al registrar el hijo:", error);
     }
   };
 

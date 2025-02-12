@@ -16,6 +16,7 @@ import {
   verificarHijoAsociado,
   verificarRegistroUsuario,
 } from "@/src/services/userService";
+import { verificarSegundoProgenitorAsociado } from "@/src/services/hijoService";
 
 const IniciarSesion = () => {
   const [email, SetEmail] = useState("");
@@ -50,29 +51,24 @@ const IniciarSesion = () => {
       //SetEmail("");
       //SetPassword("");
 
-
-
-
-
-
       const tieneHijoAsociado = await verificarHijoAsociado();
       const estaRegistrado = await verificarRegistroUsuario();
-      const segundoProgenitorAsociado = await verificar2doProgenitorAsociado();
 
+      if (!estaRegistrado) {
+        router.push("/registroProgenitor");
+      }
       if (estaRegistrado && !tieneHijoAsociado) {
         router.push("/registroHijoOIngresoCodigo");
       }
-      if (!estaRegistrado){
-        router.push("/registroProgenitor");
+      if (estaRegistrado && tieneHijoAsociado) {
+        const segundoProgenitorAsociado =
+          await verificarSegundoProgenitorAsociado();
+        if (segundoProgenitorAsociado) {
+          router.push("/(tabs)/gastos/");
+        } else {
+          router.push("/vinculacionHijoOIngresoCodigo");
+        }
       }
-      if (estaRegistrado && tieneHijoAsociado !segundoProgenitorAsociado){
-        router.push("/vinculacionHijoORegistroHijo")
-      }
-
-      if (estaRegistrado && tieneHijoAsociado && segundoProgenitorAsociado){
-        router.push("/(tabs)/gastos/");
-      }
-      
     } catch (error) {
       setErrors(
         "Error al iniciar sesión. Por favor, verifica tus credenciales e intenta nuevamente."

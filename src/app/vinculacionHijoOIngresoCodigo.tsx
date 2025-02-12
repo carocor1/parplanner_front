@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
-import { Button, Platform, StyleSheet } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import {
   CodeField,
   Cursor,
@@ -12,7 +12,7 @@ import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
 
-const registroHijoOIngresoCodigoScreen = () => {
+const vinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
   const CELL_COUNT = 6;
 
@@ -22,6 +22,7 @@ const registroHijoOIngresoCodigoScreen = () => {
     value,
     setValue,
   });
+  const [email, setEmail] = useState("");
 
   const verificarCodigo = async () => {
     if (value.length !== CELL_COUNT) {
@@ -39,17 +40,40 @@ const registroHijoOIngresoCodigoScreen = () => {
     }
   };
 
+  const enviarCodigoDeVinculacion = async () => {
+    if (!email) {
+      alert("Ingresá un email válido");
+      return;
+    }
+    try {
+      await enviarCodigoDeVinculacion(email);
+      alert("Se ha enviado el código de vinculación al email ingresado");
+    } catch (error) {
+      alert(
+        "Error al enviar el código de vinculación. Por favor, inténtalo de nuevo."
+      );
+    }
+  };
+
   return (
     <View style={styles.container_mayor}>
-      <Text style={styles.titulo}>¡Sólo te falta vincular a tu hijo!</Text>
+      <Text style={styles.titulo}>¡Ya registraste a tu hijo!</Text>
       <View style={styles.container}>
         <Text style={styles.text}>
-          Registrá a tu hijo y luego enviale un código de vinculación al email
-          del otro progenitor para que se asocie
+          A continuación, ingresá el email del otro progenitor para enviarle un
+          código de vinculación que deberá introducir para finalizar la
+          asociación.
         </Text>
+        <TextInput
+          placeholder="carolinapaulacorazza@gmail.com"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          keyboardType="email-address"
+        />
         <SaveButton
-          texto="REGISTRAR HIJO"
-          onPress={() => router.push("/registrohijo")}
+          texto="ENVIAR"
+          onPress={() => enviarCodigoDeVinculacion()}
         />
       </View>
       <View style={styles.container}>
@@ -68,7 +92,7 @@ const registroHijoOIngresoCodigoScreen = () => {
           onChangeText={setValue}
           cellCount={CELL_COUNT}
           rootStyle={styles.codeFieldRoot}
-          keyboardType="name-phone-pad"
+          keyboardType="number-pad"
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
           renderCell={({ index, symbol, isFocused }) => (
@@ -107,6 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 25,
     marginHorizontal: 20,
+    lineHeight: 40, // Aumenta el interlineado
   },
   text: {
     color: "grey",
@@ -114,7 +139,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "normal",
     marginBottom: 20,
-    lineHeight: 28,
+    lineHeight: 28, // Aumenta el interlineado
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ced4da",
+    borderRadius: 15,
+    marginBottom: 20,
+    width: "100%",
+    padding: 10,
+    fontSize: 16,
+    backgroundColor: "#e9ecef",
   },
   o_text: {
     color: "grey",
@@ -122,6 +157,7 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontSize: 20,
     marginBottom: 30,
+    lineHeight: 30, // Aumenta el interlineado
   },
   root: { flex: 1, padding: 20 },
   title: { textAlign: "center", fontSize: 30, color: "black" },
@@ -146,4 +182,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default registroHijoOIngresoCodigoScreen;
+export default vinculacionHijoOIngresoCodigoScreen;
