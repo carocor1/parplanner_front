@@ -11,7 +11,6 @@ interface GastoItemProps {
 const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
   const esCreador = gasto.progenitorCreador.id === usuarioLogueadoId; 
   const esPendiente = gasto.estado.nombre === 'Pendiente';
-  console.log(gasto.id)
 
   const responsabilidadParticipante = (gasto.monto * (gasto.particionProgenitorParticipe / 100)).toFixed(2);
 

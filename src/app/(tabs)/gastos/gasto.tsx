@@ -9,8 +9,8 @@ import { progenitorLogueadoId } from '@/src/constants/constants';
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
-  const [deudaTotal, setDeudaTotal] = useState<number>(0); // Estado para almacenar la deuda total
-  const [loading, setLoading] = useState<boolean>(true); // Estado para controlar la carga
+  const [deudaTotal, setDeudaTotal] = useState<number>(0); 
+  const [loading, setLoading] = useState<boolean>(true); 
 
   const fetchGastos = async () => {
     setLoading(true); // Mostrar indicador de carga
@@ -20,7 +20,7 @@ const GastosScreen = () => {
     } catch (error) {
       console.error('Error al recuperar los gastos:', error);
     } finally {
-      setLoading(false); // Ocultar indicador de carga
+      setLoading(false); 
     }
   };
 
