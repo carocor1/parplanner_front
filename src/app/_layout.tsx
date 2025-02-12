@@ -69,7 +69,10 @@ function RootLayoutNav() {
           name="registrohijo"
           options={{ title: "Registro Hijo" }}
         />
-        <Stack.Screen name="vinculacionHijoORegistroHijo" />
+        <Stack.Screen
+          name="vinculacionHijoOIngresoCodigo"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </ThemeProvider>
   );
