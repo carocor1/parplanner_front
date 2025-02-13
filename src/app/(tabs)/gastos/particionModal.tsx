@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native';
-import InputSpinner from 'react-native-input-spinner';
-import SaveButton from '@/src/components/SaveButton';
-import CancelButton from '@/src/components/CancelButton';
-import { Gasto } from '@/src/interfaces/Gasto';
-import axios from 'axios';
-import { url } from '@/src/constants/constants';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableWithoutFeedback,
+  Dimensions,
+} from "react-native";
+import InputSpinner from "react-native-input-spinner";
+import SaveButton from "@/src/components/SaveButton";
+import CancelButton from "@/src/components/CancelButton";
+import { Gasto } from "@/src/interfaces/GastoInterface";
+import axios from "axios";
+import { url } from "@/src/constants/constants";
 
-const screenHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get("window").height;
 
 type Props = {
   visible: boolean;
@@ -16,10 +23,17 @@ type Props = {
   idUsuarioLogueado: number;
 };
 
-const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idUsuarioLogueado }) => {
-  const esCreador = gasto.progenitorCreador.id === idUsuarioLogueado;
-  const [particionCreadorSeleccionada, setParticionCreadorSeleccionada] = useState(gasto.particionProgenitorCreador);
-  const [particionParticipeSeleccionada, setParticionParticipeSeleccionada] = useState(gasto.particionProgenitorParticipe);
+const ProponerParticionScreen: React.FC<Props> = ({
+  visible,
+  onClose,
+  gasto,
+  idUsuarioLogueado,
+}) => {
+  const esCreador = gasto.usuario_creador.id === idUsuarioLogueado;
+  const [particionCreadorSeleccionada, setParticionCreadorSeleccionada] =
+    useState(gasto.particion_usuario_creador);
+  const [particionParticipeSeleccionada, setParticionParticipeSeleccionada] =
+    useState(gasto.particion_usuario_participe);
 
   const handleParticionChange = (value: number) => {
     setParticionCreadorSeleccionada(value);
@@ -39,7 +53,7 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
       });
       onClose();
     } catch (error) {
-      console.error('Error al enviar la partición:', error);
+      console.error("Error al enviar la partición:", error);
     }
   };
 
@@ -59,7 +73,9 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
               <View style={styles.particiones}>
                 <View style={styles.grupoParticionIndividual}>
                   <Text style={styles.labelParticion}>
-                    {esCreador ? 'Vos %:' : `${gasto.progenitorCreador.nombre} %:`}
+                    {esCreador
+                      ? "Vos %:"
+                      : `${gasto.usuario_creador.nombre} %:`}
                   </Text>
                   <InputSpinner
                     max={100}
@@ -71,13 +87,19 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
                     color="#cccccc"
                     style={styles.spinner}
                   />
-                  <Text style={styles.pagarLabel}>{esCreador ? 'Pagarás:' : `Pagará:`}</Text>
-                  <Text style={styles.pagarValue}>${particionCreadorSeleccionada * gasto.monto / 100}</Text>
+                  <Text style={styles.pagarLabel}>
+                    {esCreador ? "Pagarás:" : `Pagará:`}
+                  </Text>
+                  <Text style={styles.pagarValue}>
+                    ${(particionCreadorSeleccionada * gasto.monto) / 100}
+                  </Text>
                 </View>
 
                 <View style={styles.grupoParticionIndividual}>
                   <Text style={styles.labelParticion}>
-                    {!esCreador ? 'Vos %:' : `${gasto.progenitorParticipe.nombre} %:`}
+                    {!esCreador
+                      ? "Vos %:"
+                      : `${gasto.usuario_participe.nombre} %:`}
                   </Text>
                   <InputSpinner
                     max={100}
@@ -89,8 +111,12 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
                     color="#cccccc"
                     style={styles.spinner}
                   />
-                  <Text style={styles.pagarLabel}>{!esCreador ? 'Pagarás:' : `Pagará:`}</Text>
-                  <Text style={styles.pagarValue}>${particionParticipeSeleccionada * gasto.monto / 100}</Text>
+                  <Text style={styles.pagarLabel}>
+                    {!esCreador ? "Pagarás:" : `Pagará:`}
+                  </Text>
+                  <Text style={styles.pagarValue}>
+                    ${(particionParticipeSeleccionada * gasto.monto) / 100}
+                  </Text>
                 </View>
               </View>
 
@@ -109,53 +135,53 @@ const ProponerParticionScreen: React.FC<Props> = ({ visible, onClose, gasto, idU
 const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
-    justifyContent: 'flex-end', // Align modal at the bottom
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
   modalContainer: {
-    width: '100%',
-    height: screenHeight * 0.38, // Set height as 32% of the screen
-    backgroundColor: 'white',
+    width: "100%",
+    height: screenHeight * 0.38,
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   particiones: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
-    marginTop: 10, 
+    marginTop: 10,
   },
   grupoParticionIndividual: {
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 20,
   },
   labelParticion: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   spinner: {
     width: 140,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
   },
   pagarLabel: {
-    marginTop: 10, 
+    marginTop: 10,
   },
   pagarValue: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 22,
-    color: '#555',
+    color: "#555",
   },
 });
 

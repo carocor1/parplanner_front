@@ -1,26 +1,44 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
-import GastoItem from '@/src/components/GastoItem';
-import { FontAwesome } from '@expo/vector-icons';
-import { Gasto } from '@/src/interfaces/Gasto';
-import { getGastosByProgenitor } from '@/src/services/gastoService';
-import { progenitorLogueadoId } from '@/src/constants/constants';
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { router, useFocusEffect } from "expo-router";
+import GastoItem from "@/src/components/GastoItem";
+import { FontAwesome } from "@expo/vector-icons";
+import { Gasto } from "@/src/interfaces/GastoInterface";
+import { getGastosByProgenitor } from "@/src/services/gastoService";
+import { getProgenitorIdFromToken } from "@/src/utils/storage";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
-  const [deudaTotal, setDeudaTotal] = useState<number>(0); 
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [deudaTotal, setDeudaTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<
+    number | null
+  >(null);
 
   const fetchGastos = async () => {
-    setLoading(true); // Mostrar indicador de carga
+    setLoading(true);
     try {
-      const gastos = await getGastosByProgenitor(progenitorLogueadoId);
+      console.log("intentado obtener id del progenitor");
+
+      const id = await getProgenitorIdFromToken();
+      if (id) {
+        setProgenitorLogueadoId(id);
+      }
+      console.log(id);
+      const gastos = await getGastosByProgenitor();
       setListaGastos(gastos);
     } catch (error) {
-      console.error('Error al recuperar los gastos:', error);
+      console.error("Error al recuperar los gastos:", error);
     } finally {
-      setLoading(false); 
+      console.log;
+      setLoading(false);
     }
   };
 
@@ -30,22 +48,27 @@ const GastosScreen = () => {
     }, [])
   );
 
-
   useEffect(() => {
+    if (!progenitorLogueadoId) return;
+
     const calcularDeuda = () => {
       const deuda = listaGastos.reduce((total, gasto) => {
-        if (gasto.estado.nombre === 'Pendiente' && gasto.progenitorParticipe.id === progenitorLogueadoId) {
-          return total + ((gasto.monto * gasto.particionProgenitorParticipe) / 100);
+        if (
+          gasto.estado.nombre === "Pendiente" &&
+          gasto.usuario_participe.id === progenitorLogueadoId
+        ) {
+          return (
+            total + (gasto.monto * gasto.particion_usuario_participe) / 100
+          );
         }
         return total;
       }, 0);
       setDeudaTotal(deuda);
     };
 
-    calcularDeuda(); // Llama a la función de cálculo al cargar la lista de gastos
-  }, [listaGastos]);
+    calcularDeuda();
+  }, [listaGastos, progenitorLogueadoId]);
 
-  // Si está cargando, mostrar pantalla de carga
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -65,19 +88,23 @@ const GastosScreen = () => {
           <Text style={styles.pagoText}>Pagá con Mercado Pago</Text>
         </View>
 
-        {/* Contenedor de la lista de gastos */}
         <View style={styles.gastosContainer}>
           <Text style={styles.gastosTitle}>Gastos</Text>
-          {listaGastos.map((gasto) => (
-            <GastoItem key={gasto.id} gasto={gasto} usuarioLogueadoId={progenitorLogueadoId} />
-          ))}
+          {progenitorLogueadoId &&
+            listaGastos.map((gasto) => (
+              <GastoItem
+                key={gasto.id}
+                gasto={gasto}
+                usuarioLogueadoId={progenitorLogueadoId}
+              />
+            ))}
         </View>
       </ScrollView>
 
       {/* Botón flotante circular */}
       <TouchableOpacity
         style={styles.botonFlotante}
-        onPress={() => router.push('/gastos/registrargasto')}
+        onPress={() => router.push("/gastos/registrargasto")}
       >
         <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>
@@ -88,79 +115,79 @@ const GastosScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Color de fondo
+    backgroundColor: "#f5f5f5",
   },
   deudaContainer: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#6A5ACD',
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#6A5ACD",
     paddingBottom: 90,
     paddingTop: 60,
-    width: '100%',
+    width: "100%",
   },
   debeText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: "rgba(255, 255, 255, 0.7)",
     fontSize: 16,
   },
   cantidadText: {
-    color: 'white',
+    color: "white",
     fontSize: 35,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingBottom: 5,
   },
   pagoText: {
     fontSize: 16,
-    textAlign: 'right',
-    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: "right",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   gastosContainer: {
-    marginTop: -65, // Se superpone al rectángulo lila (1/4 del alto del contenedor)
-    backgroundColor: '#fff', // Fondo blanco para los gastos
-    borderRadius: 15, // Bordes redondeados
-    shadowColor: '#000', // Sombra
+    marginTop: -65,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    elevation: 4, // Elevación para Android
-    zIndex: 1, // Este contenedor se renderiza por encima del rectángulo lila
-    width: '92%', // Ajusta el ancho a un porcentaje de la pantalla
-    alignSelf: 'center', // Centra el contenedor horizontalmente
+    elevation: 4,
+    zIndex: 1,
+    width: "92%",
+    alignSelf: "center",
   },
   gastosTitle: {
     marginLeft: 10,
     marginTop: 10,
-    fontSize: 18, // Tamaño de fuente
-    fontWeight: 'bold', // Negrita
-    marginBottom: 10, // Espaciado debajo del título
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   botonFlotante: {
-    position: 'absolute',
+    position: "absolute",
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#778c43', // Color del botón
-    alignItems: 'center',
-    justifyContent: 'center',
-    right: 20, // A 20px del borde derecho
-    bottom: 20, // A 20px del borde inferior
-    zIndex: 2, // Asegura que esté sobre todo lo demás
-    shadowColor: '#000',
+    backgroundColor: "#778c43",
+    alignItems: "center",
+    justifyContent: "center",
+    right: 20,
+    bottom: 20,
+    zIndex: 2,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5, // Sombra para Android
+    elevation: 5,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5', // Color de fondo de la pantalla de carga
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
   },
   loadingText: {
     marginTop: 10,
     fontSize: 18,
-    color: '#6A5ACD', // Color del texto de carga
+    color: "#6A5ACD",
   },
 });
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { obtenerToken, eliminarToken } from "../utils/storage";
+import { router } from "expo-router";
 
 const api = axios.create({
   baseURL: "https://de87-190-244-241-204.ngrok-free.app/parplanner",
@@ -21,8 +22,7 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await eliminarToken();
-      // Redirigir al usuario a la pantalla de login
-      // Ejemplo: navigation.navigate('Login');
+      router.push("/iniciarSesion");
     }
     return Promise.reject(error);
   }
