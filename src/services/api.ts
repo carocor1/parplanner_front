@@ -1,9 +1,14 @@
 import axios from "axios";
-import { obtenerToken, eliminarToken } from "../utils/storage";
+import {
+  eliminarTokens,
+  guardarToken,
+  obtenerRefreshToken,
+  obtenerToken,
+} from "../utils/storage";
 import { router } from "expo-router";
 
 const api = axios.create({
-  baseURL: "https://de87-190-244-241-204.ngrok-free.app/parplanner",
+  baseURL: " https://rested-present-trout.ngrok-free.app/parplanner",
   headers: {
     "ngrok-skip-browser-warning": "true",
   },
@@ -21,11 +26,31 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      await eliminarToken();
-      router.push("/iniciarSesion");
+      const newAccessToken = await renovarAccessToken();
+      if (newAccessToken) {
+        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(error.config);
+      }
     }
     return Promise.reject(error);
   }
 );
+
+export const renovarAccessToken = async () => {
+  const refreshToken = await obtenerRefreshToken();
+  console.log("refresh_token", refreshToken);
+  try {
+    const response = await api.post("/auth/refresh", {
+      refresh_token: refreshToken,
+    });
+    const { access_token, refresh_token } = response.data;
+    guardarToken(access_token, refresh_token);
+    return access_token;
+  } catch (error) {
+    console.error("Error al renovar el access token:", error);
+    await eliminarTokens();
+    router.push("/iniciarSesion");
+  }
+};
 
 export default api;
