@@ -57,17 +57,19 @@ export default function TabLayout() {
           title: "Documentos",
           tabBarIcon: ({ color }) => <TabBarIcon name="child" color={color} />,
           headerStyle: {
-            backgroundColor: "#96ac60", // Color de fondo del header
+            backgroundColor: "#96ac60",
           },
           headerTintColor: "#fff",
         }}
       />
       <Tabs.Screen
-        name="iniciarSesion"
+        name="perfil"
         options={{
-          title: "Inicio de Sesion",
-          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
-          headerShown: false,
+          title: "Perfil",
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerStyle: {
+            backgroundColor: "#96ac60",
+          },
           headerTintColor: "#fff",
         }}
       />

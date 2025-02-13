@@ -1,13 +1,7 @@
-import {
-  StyleSheet,
-  TextInput,
-  Button,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/src/components/Themed";
 import React, { useState, useEffect } from "react";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
 import SaveButton from "@/src/components/SaveButton";

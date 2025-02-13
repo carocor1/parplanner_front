@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 
-//ESTA ES LA PANTALLA DEL CALENDARIO
 export default function CalendarioScreen() {
   return (
     <View style={styles.container}>

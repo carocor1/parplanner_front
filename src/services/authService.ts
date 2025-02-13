@@ -1,5 +1,7 @@
 import api from "./api";
-import { guardarToken } from "../utils/storage";
+import { eliminarTokens, guardarToken } from "../utils/storage";
+import { router } from "expo-router";
+
 export const login = async (email: string, password: string) => {
   try {
     const response = await api.post("/auth/login", { email, password });
@@ -27,5 +29,14 @@ export const register = async (
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+export const cerrarSesion = async () => {
+  try {
+    await eliminarTokens();
+    router.push("/iniciarSesion");
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
   }
 };

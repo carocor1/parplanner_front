@@ -38,7 +38,6 @@ api.interceptors.response.use(
 
 export const renovarAccessToken = async () => {
   const refreshToken = await obtenerRefreshToken();
-  console.log("refresh_token", refreshToken);
   try {
     const response = await api.post("/auth/refresh", {
       refresh_token: refreshToken,
@@ -47,7 +46,6 @@ export const renovarAccessToken = async () => {
     guardarToken(access_token, refresh_token);
     return access_token;
   } catch (error) {
-    console.error("Error al renovar el access token:", error);
     await eliminarTokens();
     router.push("/iniciarSesion");
   }

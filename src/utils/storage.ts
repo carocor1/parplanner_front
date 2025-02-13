@@ -15,7 +15,6 @@ export const obtenerToken = async () => {
   try {
     return await AsyncStorage.getItem("access_token");
   } catch (error) {
-    console.log("Error al obtener el token");
     return null;
   }
 };
@@ -24,7 +23,6 @@ export const obtenerRefreshToken = async (): Promise<string | null> => {
   try {
     return await AsyncStorage.getItem("refresh_token");
   } catch (error) {
-    console.log("Error al obtener el refresh_token");
     return null;
   }
 };

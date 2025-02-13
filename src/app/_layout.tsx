@@ -73,6 +73,7 @@ function RootLayoutNav() {
           name="vinculacionHijoOIngresoCodigo"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="iniciarSesion" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

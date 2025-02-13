@@ -1,3 +1,5 @@
+import { Usuario } from "../interfaces/UsuarioInterface";
+import { getProgenitorIdFromToken } from "../utils/storage";
 import api from "./api";
 
 export const verificarHijoAsociado = async () => {
@@ -45,6 +47,18 @@ export const registroProgenitor = async (
     return response.data;
   } catch (error) {
     console.error("Error al registrar el progenitor:", error);
+    throw error;
+  }
+};
+
+export const obtenerUsuario = async () => {
+  try {
+    const usuarioId = await getProgenitorIdFromToken();
+    const response = await api.get(`/usuarios/${usuarioId}`);
+    const usuario: Usuario = response.data;
+    return usuario;
+  } catch (error) {
+    console.error("Error al obtener el usuario:", error);
     throw error;
   }
 };
