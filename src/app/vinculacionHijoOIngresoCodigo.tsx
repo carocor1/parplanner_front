@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
+import { enviarCodigoDeVinculacion } from "../services/hijoService";
 
 const vinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
     }
   };
 
-  const enviarCodigoDeVinculacion = async () => {
+  const enviarCodigo = async () => {
     if (!email) {
       alert("Ingresá un email válido");
       return;
@@ -71,10 +72,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           style={styles.input}
           keyboardType="email-address"
         />
-        <SaveButton
-          texto="ENVIAR"
-          onPress={() => enviarCodigoDeVinculacion()}
-        />
+        <SaveButton texto="ENVIAR" onPress={() => enviarCodigo()} />
       </View>
       <View style={styles.container}>
         <Text style={styles.o_text}>
