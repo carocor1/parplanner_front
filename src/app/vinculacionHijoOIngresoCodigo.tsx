@@ -66,7 +66,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           asociación.
         </Text>
         <TextInput
-          placeholder="carolinapaulacorazza@gmail.com"
+          placeholder="otroprogenitor@gmail.com"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
@@ -114,12 +114,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center", // Centra los contenedores internos verticalmente
     alignItems: "center", // Centra los contenedores internos horizontalmente
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#f5f5f5",
   },
   container: {
     justifyContent: "center", // Centra el contenido verticalmente
     alignItems: "center", // Centra el contenido horizontalmente
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#f5f5f5",
     padding: 20,
   },
   titulo: {
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontSize: 20,
     marginBottom: 30,
-    lineHeight: 30, // Aumenta el interlineado
+    lineHeight: 30,
   },
   root: { flex: 1, padding: 20 },
   title: { textAlign: "center", fontSize: 30, color: "black" },

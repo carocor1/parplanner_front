@@ -11,8 +11,7 @@ import InputSpinner from "react-native-input-spinner";
 import SaveButton from "@/src/components/SaveButton";
 import CancelButton from "@/src/components/CancelButton";
 import { Gasto } from "@/src/interfaces/GastoInterface";
-import axios from "axios";
-import { url } from "@/src/constants/constants";
+import { proponerParticion } from "@/src/services/gastoService";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -47,10 +46,11 @@ const ProponerParticionScreen: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`${url}/gasto/${gasto.id}/proponerParticion`, {
-        particionProgenitorCreador: particionCreadorSeleccionada,
-        particionProgenitorParticipe: particionParticipeSeleccionada,
-      });
+      await proponerParticion(
+        gasto.id,
+        particionCreadorSeleccionada,
+        particionParticipeSeleccionada
+      );
       onClose();
     } catch (error) {
       console.error("Error al enviar la partición:", error);

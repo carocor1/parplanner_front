@@ -90,14 +90,14 @@ const registroHijoOIngresoCodigoScreen = () => {
 const styles = StyleSheet.create({
   container_mayor: {
     flex: 1,
-    justifyContent: "center", // Centra los contenedores internos verticalmente
-    alignItems: "center", // Centra los contenedores internos horizontalmente
-    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
   },
   container: {
-    justifyContent: "center", // Centra el contenido verticalmente
-    alignItems: "center", // Centra el contenido horizontalmente
-    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
     padding: 20,
   },
   titulo: {

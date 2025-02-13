@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import DropdownComponent from "../../../components/dropdown";
@@ -17,13 +10,12 @@ import CurrencyInput from "react-native-currency-input";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
-import { progenitorLogueadoId, url } from "@/src/constants/constants";
+import { getCategorias } from "@/src/services/categoriasService";
+import { getProgenitorIdFromToken } from "@/src/utils/storage";
+import { registrarGasto } from "@/src/services/gastoService";
 
 const RegistrarGastoScreen = () => {
-  const [nombre, setNombre] = useState<string>("");
-  const [progenitorCreadorId, setProgenitorCreadorId] =
-    useState<number>(progenitorLogueadoId);
-  const [progenitorParticipeId, setProgenitorParticipeId] = useState<number>(1);
+  const [titulo, setTitulo] = useState<string>("");
   const [monto, setMonto] = useState<number>(1000);
   const [descripcion, setDescripcion] = useState<string>("");
   const [particion1Seleccionada, setParticion1Seleccionada] =
@@ -39,38 +31,28 @@ const RegistrarGastoScreen = () => {
   >([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] =
     useState<string>("");
-  const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<
-    number | null
-  >(null);
 
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await axios.get(`${url}/categoria`);
-        const categoriasData = response.data;
-
-        setCategorias(categoriasData);
+        const categorias = await getCategorias();
+        console.log("categorias:", categorias);
+        setCategorias(categorias);
       } catch (error) {
         console.error("Error al obtener categorías:", error);
       }
     };
-
     fetchCategorias();
   }, []);
 
   const handleCategoriaSelect = (nombreCategoria: string) => {
     setCategoriaSeleccionada(nombreCategoria);
-
-    const categoria = categorias.find((cat) => cat.nombre === nombreCategoria);
-    if (categoria) {
-      setCategoriaSeleccionadaId(categoria.id);
-    }
   };
 
   const validateInput = () => {
     setErrors("");
-    if (!nombre) {
-      setErrors("El nombre es requerido");
+    if (!titulo) {
+      setErrors("El titulo es requerido");
       return false;
     }
     if (!monto) {
@@ -105,25 +87,19 @@ const RegistrarGastoScreen = () => {
       return;
     }
 
-    const gastoDTO = {
-      titulo: nombre,
-      monto: monto,
-      descripcion: descripcion,
-      comprobanteCompra: selectedImage,
-      progenitorCreadorId: progenitorCreadorId,
-      progenitorParticipeId: progenitorParticipeId,
-      particionProgenitorCreador: particion1Seleccionada,
-      particionProgenitorParticipe: particion2Seleccionada,
-      categoriaId: categoriaSeleccionadaId,
-    };
-
     try {
-      console.log(gastoDTO);
-      const response = await axios.post(`${url}/gasto`, gastoDTO);
-      console.log("Gasto creado:", response.data);
+      await registrarGasto(
+        titulo,
+        monto,
+        new Date(),
+        particion1Seleccionada,
+        particion2Seleccionada,
+        categoriaSeleccionada,
+        descripcion
+      );
+      console.log("Gasto creado");
 
-      // Resetear el estado después de guardar
-      setNombre("");
+      setTitulo("");
       setMonto(0);
       setDescripcion("");
       setCategoriaSeleccionada("");
@@ -165,22 +141,22 @@ const RegistrarGastoScreen = () => {
     });
 
     if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri); // Guarda la URI de la imagen seleccionada
+      setSelectedImage(result.assets[0].uri);
     }
   };
 
   return (
     <View style={styles.container}>
       <InputContainer
-        label="Nombre del gasto"
-        value={nombre}
-        setFunction={setNombre}
+        label="Titulo del gasto"
+        value={titulo}
+        setFunction={setTitulo}
       />
 
-      <Text style={styles.label}>Categoría</Text>
+      <Text style={styles.label}>Categoria</Text>
       <View style={{ paddingBottom: 15 }}>
         <DropdownComponent
-          title="Categoría"
+          title="Categoria"
           labels={categorias.map((cat) => cat.nombre)}
           onSelect={handleCategoriaSelect}
         />
@@ -194,7 +170,7 @@ const RegistrarGastoScreen = () => {
       <Text style={styles.label}>Monto: </Text>
       <CurrencyInput
         value={monto}
-        onChangeValue={(value) => setMonto(value ?? 0)} // Handle the null case
+        onChangeValue={(value) => setMonto(value ?? 0)}
         prefix="$"
         delimiter=","
         precision={0}
@@ -223,7 +199,7 @@ const RegistrarGastoScreen = () => {
         </View>
 
         <View style={styles.grupoParticionIndividual}>
-          <Text style={styles.labelParticion}>Máximo %: </Text>
+          <Text style={styles.labelParticion}>Otro progenitor %: </Text>
           <InputSpinner
             max={100}
             min={0}
@@ -251,7 +227,7 @@ const RegistrarGastoScreen = () => {
       {selectedImage && (
         <Text style={styles.uploadSuccessText}>
           Comprobante adjuntado con éxito!
-        </Text> // Mensaje de éxito
+        </Text>
       )}
 
       <Text style={styles.error}>{errors}</Text>

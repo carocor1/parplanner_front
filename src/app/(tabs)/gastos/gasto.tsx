@@ -25,19 +25,15 @@ const GastosScreen = () => {
   const fetchGastos = async () => {
     setLoading(true);
     try {
-      console.log("intentado obtener id del progenitor");
-
       const id = await getProgenitorIdFromToken();
       if (id) {
         setProgenitorLogueadoId(id);
       }
-      console.log(id);
       const gastos = await getGastosByProgenitor();
       setListaGastos(gastos);
     } catch (error) {
       console.error("Error al recuperar los gastos:", error);
     } finally {
-      console.log;
       setLoading(false);
     }
   };

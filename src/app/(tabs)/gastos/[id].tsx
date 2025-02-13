@@ -10,14 +10,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import ProponerParticionScreen from "./particionModal";
 import { useLocalSearchParams } from "expo-router";
 import { getGastoById } from "@/src/services/gastoService";
+import { Gasto } from "@/src/interfaces/GastoInterface";
 
 const DetalleGastoScreen: React.FC = () => {
   const { id, usuarioId } = useLocalSearchParams();
   const parsedGastoId = id ? Number(id) : null;
 
-  const [gasto, setGasto] = useState<any>(null);
+  const [gasto, setGasto] = useState<Gasto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => setModalVisible(true);
@@ -31,7 +31,11 @@ const DetalleGastoScreen: React.FC = () => {
       if (parsedGastoId) {
         setLoading(true);
         const gasto = await getGastoById(parsedGastoId);
-        setGasto(gasto);
+        if (!gasto) {
+          throw new Error("Gasto no encontrado");
+        } else {
+          setGasto(gasto);
+        }
       }
     } catch (error) {
       console.error("Error al cargar el gasto:", error);
@@ -44,7 +48,6 @@ const DetalleGastoScreen: React.FC = () => {
     fetchGasto();
   }, [parsedGastoId]);
 
-  // Si estamos cargando los datos
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -52,10 +55,6 @@ const DetalleGastoScreen: React.FC = () => {
         <Text style={styles.loadingText}>Cargando...</Text>
       </View>
     );
-  }
-
-  if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
   }
 
   if (!gasto) {
@@ -95,42 +94,42 @@ const DetalleGastoScreen: React.FC = () => {
         <View
           style={[
             styles.particionIndividual,
-            gasto.progenitorCreador.id === Number(usuarioId) &&
+            gasto.usuario_creador.id === Number(usuarioId) &&
               styles.particionUsuarioLogueado,
           ]}
         >
           <Text style={styles.tituloParticion}>Partición de</Text>
           <Text style={styles.tituloParticion}>
-            {gasto.progenitorCreador.nombre}:
+            {gasto.usuario_creador.nombre}:
           </Text>
           <Text style={styles.particionValue}>
-            {gasto.particionProgenitorCreador}%
+            {gasto.particion_usuario_creador}%
           </Text>
           <View style={styles.lineaDivisoria}></View>
           <Text style={styles.corresponde}>Corresponde:</Text>
           <Text style={styles.particionValue}>
-            ${(gasto.particionProgenitorCreador * gasto.monto) / 100}
+            ${(gasto.particion_usuario_creador * gasto.monto) / 100}
           </Text>
         </View>
 
         <View
           style={[
             styles.particionIndividual,
-            gasto.progenitorParticipe.id === Number(usuarioId) &&
+            gasto.usuario_participe.id === Number(usuarioId) &&
               styles.particionUsuarioLogueado,
           ]}
         >
           <Text style={styles.tituloParticion}>Partición de</Text>
           <Text style={styles.tituloParticion}>
-            {gasto.progenitorParticipe.nombre}:
+            {gasto.usuario_participe.nombre}:
           </Text>
           <Text style={styles.particionValue}>
-            {gasto.particionProgenitorParticipe}%
+            {gasto.particion_usuario_participe}%
           </Text>
           <View style={styles.lineaDivisoria}></View>
           <Text style={styles.corresponde}>Corresponde:</Text>
           <Text style={styles.particionValue}>
-            ${(gasto.particionProgenitorParticipe * gasto.monto) / 100}
+            ${(gasto.particion_usuario_participe * gasto.monto) / 100}
           </Text>
         </View>
       </View>
@@ -169,12 +168,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5", // Color de fondo de la pantalla de carga
+    backgroundColor: "#f5f5f5",
   },
   loadingText: {
     marginTop: 10,
     fontSize: 18,
-    color: "#6A5ACD", // Color del texto de carga
+    color: "#6A5ACD",
   },
   tituloLabel: {
     fontSize: 18,
@@ -184,7 +183,7 @@ const styles = StyleSheet.create({
   },
   categoriaConteiner: {
     flexDirection: "row",
-    justifyContent: "center", // Centramos en el eje X
+    justifyContent: "center",
     marginTop: 10,
     marginBottom: 8,
   },
@@ -215,7 +214,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontWeight: "bold",
     fontSize: 40,
-    color: "#0353a4", // Azul no tan brillante
+    color: "#0353a4",
   },
   titulo: {
     fontSize: 28,
@@ -226,8 +225,9 @@ const styles = StyleSheet.create({
   },
   descripcion: {
     fontSize: 18,
-    color: "#666", // Color de la descripción
+    color: "#666",
     alignSelf: "center",
+    textAlign: "center",
   },
   categoria: {
     fontSize: 18,
@@ -263,21 +263,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   particionUsuarioLogueado: {
-    borderColor: "#014f86", // Color del borde para el usuario logueado
+    borderColor: "#014f86",
     borderWidth: 5,
   },
   contenedorParticiones: {
     flexDirection: "row",
-    justifyContent: "space-around", // Espaciado uniforme entre particiones
+    justifyContent: "space-around",
   },
   lineaDivisoria: {
-    borderBottomColor: "#ddd", // Color de la línea divisoria
+    borderBottomColor: "#ddd",
     borderBottomWidth: 1,
     width: "100%",
-    marginVertical: 5, // Espacio alrededor de la línea
+    marginVertical: 5,
   },
   botonProponerParticion: {
-    backgroundColor: "#DF732E", // Color de fondo naranja
+    backgroundColor: "#DF732E",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -290,26 +290,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   rectanguloPendiente: {
-    backgroundColor: "#FFE5B4", // Naranja claro
+    backgroundColor: "#FFE5B4",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 15,
     alignSelf: "center",
   },
   textoPendiente: {
-    color: "#cd8d0d", // Naranja oscuro
+    color: "#cd8d0d",
     fontWeight: "bold",
     fontSize: 25,
   },
   rectanguloPagada: {
-    backgroundColor: "#ccdaed", // Azul claro
+    backgroundColor: "#ccdaed",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 15,
     alignSelf: "center",
   },
   textoPagada: {
-    color: "#5f80ad", // Azul oscuro
+    color: "#5f80ad",
     fontWeight: "bold",
     fontSize: 25,
   },
