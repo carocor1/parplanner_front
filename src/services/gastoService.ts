@@ -1,4 +1,3 @@
-import { url } from "../constants/constants";
 import { Gasto } from "../interfaces/GastoInterface";
 import api from "./api";
 
@@ -61,5 +60,25 @@ export const registrarGasto = async (
     return response.data;
   } catch (error) {
     console.error("Error al registrar el gasto:", error);
+  }
+};
+
+export const actualizarGasto = async (
+  id: number,
+  titulo?: string,
+  monto?: number,
+  descripcion?: string,
+  categoria?: string
+) => {
+  try {
+    const response = await api.patch(`/gastos/${id}`, {
+      titulo,
+      monto,
+      descripcion,
+      categoria,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el gasto", error);
   }
 };

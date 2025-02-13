@@ -40,7 +40,7 @@ const GastosScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchGastos(); // Cada vez que la pantalla esté en foco, se refrescan los gastos
+      fetchGastos();
     }, [])
   );
 
