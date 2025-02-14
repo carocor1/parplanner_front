@@ -47,7 +47,7 @@ export const renovarAccessToken = async () => {
     return access_token;
   } catch (error) {
     await eliminarTokens();
-    router.push("/iniciarSesion");
+    router.replace("/inicioSesion");
   }
 };
 
