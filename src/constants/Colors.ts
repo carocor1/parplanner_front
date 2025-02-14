@@ -24,4 +24,17 @@ export default {
   negro: {
     negroNormal: "#343a40",
   },
+  rojo: {
+    rojoBrillante: "#e63946",
+  },
+  naranja: {
+    naranjaClaro: "#FFE5B4",
+    naranjaOscuro: "#cd8d0d",
+  },
+  azul: {
+    azulClaro: "#ccdaed",
+    azulOscuro: "#5f80ad",
+    celeste: "#0077b6",
+  },
+  lila: {},
 };
