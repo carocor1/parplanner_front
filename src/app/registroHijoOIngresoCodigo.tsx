@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
+import Colors from "../constants/Colors";
 
 const registroHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
@@ -44,8 +45,9 @@ const registroHijoOIngresoCodigoScreen = () => {
       <Text style={styles.titulo}>¡Sólo te falta vincular a tu hijo!</Text>
       <View style={styles.container}>
         <Text style={styles.text}>
-          Registrá a tu hijo y luego enviale un código de vinculación al email
-          del otro progenitor para que se asocie
+          <Text style={styles.bold}>Registrá a tu hijo</Text> y luego enviale un{" "}
+          <Text style={styles.bold}>código de vinculación</Text> al email del
+          otro progenitor para que se asocie
         </Text>
         <SaveButton
           texto="REGISTRAR HIJO"
@@ -57,8 +59,10 @@ const registroHijoOIngresoCodigoScreen = () => {
           ------------------------- Ó -------------------------
         </Text>
         <Text style={styles.text}>
-          Si ya recibiste un código de vinculación por parte del otro
-          progenitor, entonces ingresalo a continuación:
+          Si ya recibiste un{" "}
+          <Text style={styles.bold}>código de vinculación</Text> por parte del
+          otro progenitor, entonces <Text style={styles.bold}>ingresalo</Text> a
+          continuación:
         </Text>
 
         <CodeField
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 30,
     textAlign: "center",
-    color: "black",
+    color: Colors.verde.verdeMuyOscuro,
     fontWeight: "bold",
     marginBottom: 25,
     marginHorizontal: 20,
@@ -122,6 +126,10 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontSize: 20,
     marginBottom: 30,
+  },
+  bold: {
+    fontWeight: "bold",
+    color: Colors.negro.negroNormal,
   },
   root: { flex: 1, padding: 20 },
   title: { textAlign: "center", fontSize: 30, color: "black" },

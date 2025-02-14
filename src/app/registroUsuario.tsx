@@ -52,7 +52,7 @@ const registrarUsuarioPantalla = () => {
       SetNombre("");
       SetPassword("");
       SetApellido("");
-      router.push("/iniciarSesion");
+      router.replace("/registroProgenitor");
     } catch (error) {
       setErrors("Error al registrar usuario.");
       console.error("Error al registrar usuario:", error);

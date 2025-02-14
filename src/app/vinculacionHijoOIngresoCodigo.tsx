@@ -90,7 +90,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           onChangeText={setValue}
           cellCount={CELL_COUNT}
           rootStyle={styles.codeFieldRoot}
-          keyboardType="number-pad"
+          keyboardType="name-phone-pad"
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
           renderCell={({ index, symbol, isFocused }) => (

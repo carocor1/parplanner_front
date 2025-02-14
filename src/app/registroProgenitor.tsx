@@ -3,10 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TextInput,
-  Image,
-  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import CancelButton from "@/src/components/CancelButton";
 import DropdownComponent from "@/src/components/dropdown";
@@ -21,6 +21,7 @@ import {
   verificarHijoAsociado,
 } from "../services/userService";
 import { verificarSegundoProgenitorAsociado } from "../services/hijoService";
+import Colors from "../constants/Colors";
 
 const registrarProgenitorScreen = () => {
   const [nroTelefono, setNroTelefono] = useState("");
@@ -40,10 +41,10 @@ const registrarProgenitorScreen = () => {
   const sexo = ["Masculino", "Femenino", "Otro"];
 
   const handleImageSelected = (uri: string) => {
-    setImage(uri); // Guardar la imagen seleccionada en el estado
+    setImage(uri);
   };
   const handleImageSelect = (imageUrl: string | null) => {
-    setImage(imageUrl); // Actualiza el estado de la imagen
+    setImage(imageUrl);
   };
   const ValidateInput = () => {
     setErrors("");
@@ -60,7 +61,6 @@ const registrarProgenitorScreen = () => {
       return false;
     }
     if (!ciudadSeleccionada) {
-      setErrors("No se ha seleccionado la ciudad ");
       return false;
     }
     if (!documento) {
@@ -105,14 +105,14 @@ const registrarProgenitorScreen = () => {
 
       const tieneHijoAsociado = await verificarHijoAsociado();
       if (!tieneHijoAsociado) {
-        router.push("/registroHijoOIngresoCodigo");
+        router.replace("/registroHijoOIngresoCodigo");
       } else {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
-          router.push("/(tabs)/gastos/");
+          router.replace("/(tabs)/gastos/");
         } else {
-          router.push("/vinculacionHijoOIngresoCodigo");
+          router.replace("/vinculacionHijoOIngresoCodigo");
         }
       }
     } catch (error) {
@@ -146,75 +146,90 @@ const registrarProgenitorScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container2}>
-        <BasicAvatar
-          onImageSelected={handleImageSelected}
-          reset={resetAvatar}
-        />
-      </View>
-      <InputComponent
-        label="Número de teléfono"
-        value={nroTelefono}
-        setFunction={setNroTelefono}
-      />
-      <InputComponent label="Cbu" value={Cbu} setFunction={setCbu} />
-      <DateTimePicker
-        currentDate={fechaNacimiento}
-        onChange={setFechaNacimiento}
-        label="Fecha de Nacimiento"
-      />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    >
+      <ScrollView keyboardShouldPersistTaps="handled">
+        <View style={styles.container}>
+          <View style={styles.container2}>
+            <Text style={styles.titulo}>¡Finalizá tu registro!</Text>
+            <Text style={styles.subtitulo}>
+              Completá con tus datos personales para registrarte.
+            </Text>
+          </View>
+          <View style={styles.avatarContainer}>
+            <BasicAvatar
+              onImageSelected={handleImageSelected}
+              reset={resetAvatar}
+            />
+          </View>
+          <View style={styles.container_mayor}>
+            <InputComponent
+              label="Número de teléfono"
+              value={nroTelefono}
+              setFunction={setNroTelefono}
+            />
+            <InputComponent label="Cbu" value={Cbu} setFunction={setCbu} />
+            <DateTimePicker
+              currentDate={fechaNacimiento}
+              onChange={setFechaNacimiento}
+              label="Fecha de Nacimiento"
+            />
 
-      <View style={styles.row}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Provincia</Text>
-          <DropdownComponent
-            title="Seleccionar provincia"
-            labels={provincias}
-            onSelect={handleProvinciaSelect}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Ciudad</Text>
-          <DropdownComponent
-            title="Seleccionar ciudad"
-            labels={ciudades}
-            onSelect={setCiudadSeleccionada}
-          />
-        </View>
-      </View>
+            <View style={styles.row}>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.label}>Provincia</Text>
+                <DropdownComponent
+                  title="Seleccionar provincia"
+                  labels={provincias}
+                  onSelect={handleProvinciaSelect}
+                />
+              </View>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.label}>Ciudad</Text>
+                <DropdownComponent
+                  title="Seleccionar ciudad"
+                  labels={ciudades}
+                  onSelect={setCiudadSeleccionada}
+                />
+              </View>
+            </View>
 
-      <View style={styles.row}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Documento</Text>
-          <TextInput
-            value={documento ? documento.toString() : ""}
-            onChangeText={(text) => setDocumento(parseInt(text, 10))}
-            placeholder="12.456.789"
-            style={styles.smallInput}
-            keyboardType="numeric"
-            maxLength={8}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Sexo</Text>
-          <DropdownComponent
-            title="Seleccionar sexo"
-            labels={sexo}
-            onSelect={setSexo}
-          />
-        </View>
-      </View>
+            <View style={styles.row}>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.label}>Documento</Text>
+                <TextInput
+                  value={documento ? documento.toString() : ""}
+                  onChangeText={(text) => setDocumento(parseInt(text, 10))}
+                  placeholder="12.456.789"
+                  style={styles.smallInput}
+                  keyboardType="numeric"
+                  maxLength={8}
+                />
+              </View>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.label}>Sexo</Text>
+                <DropdownComponent
+                  title="Seleccionar sexo"
+                  labels={sexo}
+                  onSelect={setSexo}
+                />
+              </View>
+            </View>
 
-      <Text style={styles.error}>{errors}</Text>
-      <View style={styles.buttonContainer}>
-        <CancelButton texto="Cancelar" onPress={noGuardarRegistro} />
-        <SaveButton texto="Guardar" onPress={registrarProgenitor} />
-      </View>
-    </View>
+            <Text style={styles.error}>{errors}</Text>
+            <View style={styles.buttonContainer}>
+              <CancelButton texto="Cancelar" onPress={noGuardarRegistro} />
+              <SaveButton texto="Guardar" onPress={registrarProgenitor} />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -223,23 +238,25 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   container2: {
-    backgroundColor: "#a9bb7c",
-
-    borderTopLeftRadius: 10, // Esquinas superiores rectas
-    borderTopRightRadius: 10, // Esquinas superiores rectas
-    borderBottomLeftRadius: 100, // Ajusta este valor para el semicirculo
-    borderBottomRightRadius: 100,
-    flex: 1,
+    backgroundColor: Colors.verde.verdeIntermedio,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
     overflow: "hidden",
-    justifyContent: "center",
     alignItems: "center",
+    height: "20%",
     width: "100%",
+    marginBottom: 20,
+    marginTop: 30,
+  },
+  avatarContainer: {
+    alignItems: "center",
+    marginTop: -80,
+    zIndex: 1,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginVertical: 1,
-    width: "90%",
+    width: "100%",
   },
   dropdownContainer: {
     flex: 1,
@@ -247,7 +264,7 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   smallInput: {
-    width: "90%", // Ajustar al 90% para que tenga un tamaño consistente
+    width: "70%",
     borderWidth: 1,
     borderColor: "gray",
     padding: 10,
@@ -264,6 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: -30,
   },
   label: {
     color: "#000",
@@ -278,8 +296,23 @@ const styles = StyleSheet.create({
     width: "50%",
     aspectRatio: 1,
     alignSelf: "center",
-    borderRadius: 25, // Esto hará que la imagen sea redonda
+    borderRadius: 25,
     overflow: "hidden",
+  },
+  titulo: {
+    marginTop: 30,
+    fontSize: 30,
+    textAlign: "center",
+    color: Colors.negro.negroNormal,
+    fontWeight: "bold",
+  },
+  subtitulo: {
+    color: Colors.negro.negroNormal,
+  },
+  container_mayor: {
+    marginTop: 20,
+    paddingBottom: 100,
+    backgroundColor: "white",
   },
 });
 

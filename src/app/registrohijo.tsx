@@ -1,5 +1,13 @@
 import { useRouter } from "expo-router";
-import { StyleSheet, View, Text, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+} from "react-native";
 import CancelButton from "@/src/components/CancelButton";
 import DropdownComponent from "@/src/components/dropdown";
 import SaveButton from "@/src/components/SaveButton";
@@ -12,6 +20,7 @@ import {
   registrarHijo,
   verificarSegundoProgenitorAsociado,
 } from "../services/hijoService";
+import Colors from "../constants/Colors";
 
 const registrarHijoScreen = () => {
   const [nombre, setNombre] = useState("");
@@ -97,9 +106,9 @@ const registrarHijoScreen = () => {
       const tieneSegundoProgenitorAsociado =
         await verificarSegundoProgenitorAsociado();
       if (tieneSegundoProgenitorAsociado) {
-        router.push("/(tabs)/gastos/");
+        router.replace("/(tabs)/gastos/");
       } else {
-        router.push("/vinculacionHijoOIngresoCodigo");
+        router.replace("/vinculacionHijoOIngresoCodigo");
       }
     } catch (error) {
       alert("Error al registrar el hijo. Por favor, inténtalo de nuevo.");
@@ -133,101 +142,125 @@ const registrarHijoScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container2}>
-        <BasicAvatar
-          onImageSelected={handleImageSelected}
-          reset={resetAvatar}
-        />
-      </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    >
+      <ScrollView keyboardShouldPersistTaps="handled">
+        <View style={styles.container}>
+          <View style={styles.container2}>
+            <Text style={styles.titulo}>¡Registrá a tu hijo!</Text>
+            <Text style={styles.subtitulo}>
+              Completá con los datos personales de tu hijo para registrarlo.
+            </Text>
+          </View>
 
-      <InputComponent label="Nombre" value={nombre} setFunction={setNombre} />
-      <InputComponent
-        label="Apellido"
-        value={apellido}
-        setFunction={setApellido}
-      />
-      <DateTimePicker
-        currentDate={fechaNacimiento}
-        onChange={setFechaNacimiento}
-        label="Fecha de Nacimiento"
-      />
+          <View style={styles.avatarContainer}>
+            <BasicAvatar
+              onImageSelected={handleImageSelected}
+              reset={resetAvatar}
+            />
+            <View style={styles.container_mayor}>
+              <InputComponent
+                label="Nombre"
+                value={nombre}
+                setFunction={setNombre}
+              />
+              <InputComponent
+                label="Apellido"
+                value={apellido}
+                setFunction={setApellido}
+              />
+              <DateTimePicker
+                currentDate={fechaNacimiento}
+                onChange={setFechaNacimiento}
+                label="Fecha de Nacimiento"
+              />
 
-      <View style={styles.row}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Provincia</Text>
-          <DropdownComponent
-            title="Seleccionar provincia"
-            labels={provincias}
-            onSelect={handleProvinciaSelect}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Ciudad</Text>
-          <DropdownComponent
-            title="Seleccionar ciudad"
-            labels={ciudades}
-            onSelect={setCiudadSeleccionada}
-          />
-        </View>
-      </View>
+              <View style={styles.row}>
+                <View style={styles.dropdownContainer}>
+                  <Text style={styles.label}>Provincia</Text>
+                  <DropdownComponent
+                    title="Seleccionar provincia"
+                    labels={provincias}
+                    onSelect={handleProvinciaSelect}
+                  />
+                </View>
+                <View style={styles.dropdownContainer}>
+                  <Text style={styles.label}>Ciudad</Text>
+                  <DropdownComponent
+                    title="Seleccionar ciudad"
+                    labels={ciudades}
+                    onSelect={setCiudadSeleccionada}
+                  />
+                </View>
+              </View>
 
-      <View style={styles.row}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Documento</Text>
-          <TextInput
-            value={documento ? documento.toString() : ""}
-            onChangeText={(text) => setDocumento(parseInt(text, 10))}
-            placeholder="12.456.789"
-            style={styles.smallInput}
-            keyboardType="numeric"
-            maxLength={8}
-          />
-        </View>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>Sexo</Text>
-          <DropdownComponent
-            title="Seleccionar sexo"
-            labels={sexo}
-            onSelect={setSexo}
-          />
-        </View>
-      </View>
+              <View style={styles.row}>
+                <View style={styles.dropdownContainer}>
+                  <Text style={styles.label}>Documento</Text>
+                  <TextInput
+                    value={documento ? documento.toString() : ""}
+                    onChangeText={(text) => setDocumento(parseInt(text, 10))}
+                    placeholder="12.456.789"
+                    style={styles.smallInput}
+                    keyboardType="numeric"
+                    maxLength={8}
+                  />
+                </View>
+                <View style={styles.dropdownContainer}>
+                  <Text style={styles.label}>Sexo</Text>
+                  <DropdownComponent
+                    title="Seleccionar sexo"
+                    labels={sexo}
+                    onSelect={setSexo}
+                  />
+                </View>
+              </View>
 
-      <Text style={styles.error}>{errors}</Text>
-      <View style={styles.buttonContainer}>
-        <CancelButton texto="Cancelar" onPress={noGuardarRegistro} />
-        <SaveButton texto="Guardar" onPress={registroHijo} />
-      </View>
-    </View>
+              <Text style={styles.error}>{errors}</Text>
+              <View style={styles.buttonContainer}>
+                <CancelButton texto="Cancelar" onPress={noGuardarRegistro} />
+                <SaveButton texto="Guardar" onPress={registroHijo} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     justifyContent: "center",
     alignContent: "center",
   },
   container2: {
-    backgroundColor: "#a9bb7c",
-
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderBottomLeftRadius: 100,
-    borderBottomRightRadius: 100,
-    flex: 1,
+    backgroundColor: Colors.verde.verdeIntermedio,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
     overflow: "hidden",
-    justifyContent: "center",
     alignItems: "center",
+    height: "0%",
     width: "100%",
+    marginBottom: 30,
+    flex: 1,
+    paddingBottom: 60,
+    paddingTop: 30,
+  },
+  avatarContainer: {
+    alignItems: "center",
+    marginTop: -80,
+    zIndex: 1,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginVertical: 1,
-    width: "90%",
+    width: "100%",
   },
   dropdownContainer: {
     flex: 1,
@@ -235,7 +268,7 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   smallInput: {
-    width: "90%",
+    width: "70%",
     borderWidth: 1,
     borderColor: "gray",
     padding: 10,
@@ -252,6 +285,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: -30,
   },
   label: {
     color: "#000",
@@ -268,6 +302,21 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 25,
     overflow: "hidden",
+  },
+  titulo: {
+    marginTop: 10,
+    fontSize: 30,
+    textAlign: "center",
+    color: Colors.negro.negroNormal,
+    fontWeight: "bold",
+  },
+  subtitulo: {
+    color: Colors.negro.negroNormal,
+    textAlign: "center",
+  },
+  container_mayor: {
+    marginTop: 7,
+    paddingBottom: 100,
   },
 });
 

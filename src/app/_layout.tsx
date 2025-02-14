@@ -63,17 +63,21 @@ function RootLayoutNav() {
         />
         <Stack.Screen
           name="registroProgenitor"
-          options={{ title: "Registro Progenitor" }}
+          options={{ title: "Registro Progenitor", headerShown: false }}
         />
         <Stack.Screen
           name="registrohijo"
-          options={{ title: "Registro Hijo" }}
+          options={{ title: "Registro Hijo", headerShown: false }}
         />
         <Stack.Screen
           name="vinculacionHijoOIngresoCodigo"
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="iniciarSesion" options={{ headerShown: false }} />
+        <Stack.Screen name="inicioSesion" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="registroHijoOIngresoCodigo"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </ThemeProvider>
   );
