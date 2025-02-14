@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
-import { Button, Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   CodeField,
   Cursor,

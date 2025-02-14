@@ -62,3 +62,33 @@ export const obtenerUsuario = async () => {
     throw error;
   }
 };
+
+export const actualizarUsuario = async (
+  nombre?: string,
+  apellido?: string,
+  email?: string,
+  nro_telefono?: string,
+  provincia?: string,
+  ciudad?: string,
+  documento?: number,
+  sexo?: string,
+  cbu?: string
+) => {
+  try {
+    const usuarioId = await getProgenitorIdFromToken();
+    const response = await api.patch(`/usuarios/${usuarioId}`, {
+      nombre,
+      apellido,
+      email,
+      nro_telefono,
+      provincia,
+      ciudad,
+      documento,
+      sexo,
+      cbu,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el usuario:", error);
+  }
+};
