@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { Gasto } from "../interfaces/GastoInterface";
+import Colors from "../constants/Colors";
 
 interface GastoItemProps {
   gasto: Gasto;
@@ -12,7 +13,6 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
   const esCreador = gasto.usuario_creador.id === usuarioLogueadoId;
   const esPendiente = gasto.estado.nombre === "Pendiente";
 
-  //gasto.fecha.toLocaleDateString()
   const responsabilidadParticipante = (
     gasto.monto *
     (gasto.particion_usuario_participe / 100)
@@ -32,13 +32,19 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
 
   const mensajeDeuda = calcularMensajeDeuda();
 
+  const fechaFormateada = new Date(gasto.fecha).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
   return (
     <View style={styles.gastoContainer}>
       <View style={styles.estiloAlineacion}>
         {/* Sección de 60% del contenedor */}
         <View style={{ flex: 0.6 }}>
           <Text style={styles.titulo}>{gasto.titulo}</Text>
-          <Text style={{ marginBottom: 2 }}>{"fecha"}</Text>
+          <Text style={{ marginBottom: 2 }}>{fechaFormateada}</Text>
           <Text style={esCreador ? styles.textoLila : styles.textoNaranja}>
             {gasto.usuario_creador.nombre} {gasto.usuario_creador.apellido}
             {esCreador && " (Vos)"}
@@ -164,27 +170,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   rectanguloPendiente: {
-    backgroundColor: "#FFE5B4", // Naranja claro
+    backgroundColor: Colors.naranja.naranjaClaro,
     padding: 5,
     borderRadius: 10,
   },
   textoPendiente: {
-    color: "#cd8d0d", // Naranja oscuro
+    color: Colors.naranja.naranjaOscuro,
     fontWeight: "bold",
   },
   rectanguloPagada: {
-    backgroundColor: "#ccdaed", // Azul claro
+    backgroundColor: Colors.azul.azulClaro,
     paddingHorizontal: 14,
     padding: 5,
     borderRadius: 10,
   },
   textoPagada: {
-    color: "#5f80ad", // Azul oscuro
+    color: Colors.azul.azulOscuro,
     fontWeight: "bold",
   },
   botonAbrir: {
     backgroundColor: "white",
-    borderColor: "#0077b6",
+    borderColor: Colors.azul.celeste,
     borderWidth: 2,
     borderRadius: 15,
     padding: 3,
@@ -194,7 +200,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   textoBoton: {
-    color: "#0077b6",
+    color: Colors.azul.celeste,
     fontSize: 12,
     marginRight: 8,
     marginLeft: 8,
