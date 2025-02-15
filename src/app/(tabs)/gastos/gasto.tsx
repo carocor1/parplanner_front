@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import GastoItem from "@/src/components/GastoItem";
@@ -13,6 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Gasto } from "@/src/interfaces/GastoInterface";
 import { getGastosByProgenitor } from "@/src/services/gastoService";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
@@ -66,12 +66,7 @@ const GastosScreen = () => {
   }, [listaGastos, progenitorLogueadoId]);
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6A5ACD" />
-        <Text style={styles.loadingText}>Cargando...</Text>
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
@@ -173,17 +168,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#6A5ACD",
   },
 });
 

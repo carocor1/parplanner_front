@@ -52,7 +52,7 @@ const RegistrarGastoScreen = () => {
   const renderLabel = () => {
     if (categoriaSeleccionada || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: "#5f80ad" }]}>
+        <Text style={[styles.label, isFocus && { color: "#6A5ACD" }]}>
           Categoria del gasto
         </Text>
       );
@@ -167,13 +167,13 @@ const RegistrarGastoScreen = () => {
             setTitulo(titulo);
           }}
           keyboardType="default"
-          primaryColor={Colors.azul.azulOscuro}
+          primaryColor={Colors.lila.lilaNormal}
         />
 
         <View style={{ paddingBottom: 15 }}>
           {renderLabel()}
           <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: "#5f80ad" }]}
+            style={[styles.dropdown, isFocus && { borderColor: "#6A5ACD" }]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             data={categorias.map((categoria) => ({
@@ -199,7 +199,7 @@ const RegistrarGastoScreen = () => {
             setDescripcion(descripcion);
           }}
           keyboardType="default"
-          primaryColor={Colors.azul.azulOscuro}
+          primaryColor={Colors.lila.lilaNormal}
         />
 
         <CustomTextInput
@@ -210,7 +210,7 @@ const RegistrarGastoScreen = () => {
             setMonto(Number(monto));
           }}
           keyboardType="numeric"
-          primaryColor={Colors.azul.azulOscuro}
+          primaryColor={Colors.lila.lilaNormal}
           icon=""
         />
         <View style={styles.particionesContenedor}>
@@ -311,6 +311,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 2,
     textAlign: "center",
+    color: Colors.lila.lilaNormal,
   },
   particionesLabelSubtitulo: {
     fontSize: 15,
@@ -334,6 +335,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 5,
+    color: Colors.lila.lilaNormal,
   },
   error: {
     color: "red",

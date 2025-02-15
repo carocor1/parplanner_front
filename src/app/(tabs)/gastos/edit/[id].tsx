@@ -1,22 +1,19 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import DropdownComponent from "../../../../components/dropdown";
 import SaveButton from "../../../../components/SaveButton";
 import CancelButton from "../../../../components/CancelButton";
-import InputContainer from "../../../../components/InputComponent";
-import CurrencyInput from "react-native-currency-input";
-import * as ImagePicker from "expo-image-picker";
-import { MaterialIcons } from "@expo/vector-icons";
 import { actualizarGasto, getGastoById } from "@/src/services/gastoService";
 import { getCategorias } from "@/src/services/categoriasService";
-import { Categoria } from "@/src/interfaces/CategoriaInterface";
+import CustomTextInput from "@/src/components/TextInput";
+import CustomDropdown from "@/src/components/CustomDropdown";
+import Colors from "@/src/constants/Colors";
+import { Gasto } from "@/src/interfaces/GastoInterface";
+import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
+import { getProgenitorIdFromToken } from "@/src/utils/storage";
+import ProponerParticionScreen from "../particionModal";
+import CustomButton from "@/src/components/CustomButton";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const EditarGastoScreen = () => {
   const router = useRouter();
@@ -24,31 +21,42 @@ const EditarGastoScreen = () => {
   const [titulo, setTitulo] = useState<string>("");
   const [monto, setMonto] = useState<number>(1000);
   const [descripcion, setDescripcion] = useState<string>("");
-  const [particion1Seleccionada, setParticion1Seleccionada] =
-    useState<number>(50);
-  const [particion2Seleccionada, setParticion2Seleccionada] =
-    useState<number>(50);
   const [errors, setErrors] = useState<string>("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [imageSuccess, setImageSuccess] = useState<boolean>(false);
-  const [categorias, setCategorias] = useState<Array<Categoria>>([]);
+  const [categorias, setCategorias] = useState<
+    Array<{ id: number; nombre: string }>
+  >([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] =
     useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [isFocus, setIsFocus] = useState(false);
+  const [gasto, setGasto] = useState<Gasto | null>(null);
+  const [usuarioLogueado, setUsuarioLogueado] = useState<number | null>(null);
+  const openModal = () => setModalVisible(true);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const closeModal = async () => {
+    setModalVisible(false);
+    try {
+      const fetchedGasto = await getGastoById(Number(id));
+      setGasto(fetchedGasto);
+    } catch (error) {
+      console.error("Error al obtener el gasto:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchGasto = async () => {
       setLoading(true);
       try {
         const fetchedGasto = await getGastoById(Number(id));
+        const usuarioLogueadoId = await getProgenitorIdFromToken();
+        setUsuarioLogueado(usuarioLogueadoId);
+        setGasto(fetchedGasto);
         if (fetchedGasto) {
           setTitulo(fetchedGasto.titulo);
           setMonto(fetchedGasto.monto);
           setDescripcion(fetchedGasto.descripcion);
           setCategoriaSeleccionada(fetchedGasto.categoria.nombre);
-          setParticion1Seleccionada(fetchedGasto.particion_usuario_creador);
-          setParticion2Seleccionada(fetchedGasto.particion_usuario_participe);
-          //setSelectedImage(fetchedGasto.comprobanteCompra);
         } else {
           console.error("Gasto no encontrado");
         }
@@ -72,42 +80,24 @@ const EditarGastoScreen = () => {
     fetchGasto();
   }, [id]);
 
-  const handleCategoriaSelect = (nombreCategoria: string) => {
-    setCategoriaSeleccionada(nombreCategoria);
-  };
-
   const validateInput = () => {
+    const validationRules = [
+      { condition: !titulo, message: "El nombre es requerido" },
+      { condition: !monto, message: "El monto es requerido" },
+      { condition: isNaN(monto), message: "El monto debería ser un número" },
+      { condition: monto <= 0, message: "El monto debería ser positivo" },
+      {
+        condition: !categoriaSeleccionada,
+        message: "No se seleccionó una categoría",
+      },
+    ];
+    for (const rule of validationRules) {
+      if (rule.condition) {
+        setErrors(rule.message);
+        return false;
+      }
+    }
     setErrors("");
-    if (!titulo) {
-      setErrors("El nombre es requerido");
-      return false;
-    }
-    if (!monto) {
-      setErrors("El monto es requerido");
-      return false;
-    }
-    if (isNaN(monto)) {
-      setErrors("El monto debería ser un número");
-      return false;
-    }
-    if (!categoriaSeleccionada) {
-      setErrors("No se seleccionó una categoría");
-      return false;
-    }
-    if (!particion1Seleccionada) {
-      setErrors("No se indicó la partición");
-      return false;
-    }
-    if (!particion2Seleccionada) {
-      setErrors("No se indicó la partición");
-      return false;
-    }
-    /*
-    if (!selectedImage) {
-      setErrors('Se requiere adjuntar un comprobante de compra');
-      return false;
-    }
-      */
     return true;
   };
 
@@ -116,7 +106,6 @@ const EditarGastoScreen = () => {
       return;
     }
     try {
-      console.log("intentando actualizar gasto:", id);
       await actualizarGasto(
         Number(id),
         titulo,
@@ -135,115 +124,108 @@ const EditarGastoScreen = () => {
     router.back();
   };
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Se requiere permiso para acceder a la galería");
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-      setImageSuccess(true);
-    }
-  };
-
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6A5ACD" />
-        <Text style={styles.loadingText}>Cargando...</Text>
-      </View>
-    );
+    return <LoadingIndicator />;
   }
-
+  if (!gasto || !usuarioLogueado) {
+    return null;
+  }
   return (
-    <View style={styles.container}>
-      <InputContainer
-        label="Nombre del gasto"
-        value={titulo}
-        setFunction={setTitulo}
-      />
-
-      <Text style={styles.label}>Categoría</Text>
-      <View style={{ paddingBottom: 15 }}>
-        <DropdownComponent
-          title={categoriaSeleccionada}
-          labels={categorias.map((cat) => cat.nombre)}
-          onSelect={handleCategoriaSelect}
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <CustomTextInput
+          label="Titulo del gasto"
+          placeholder="Escribe el titulo del gasto"
+          value={titulo}
+          onChangeText={(titulo) => {
+            setTitulo(titulo);
+          }}
+          keyboardType="default"
+          primaryColor={Colors.lila.lilaNormal}
+          icon="pencil"
         />
+
+        <CustomDropdown
+          label="Categoría del gasto"
+          data={categorias.map((categoria) => ({
+            label: categoria.nombre,
+            value: categoria.nombre,
+          }))}
+          value={categoriaSeleccionada}
+          onChange={setCategoriaSeleccionada}
+          isFocus={isFocus}
+          setIsFocus={setIsFocus}
+          primaryColor={Colors.lila.lilaNormal}
+        />
+
+        <CustomTextInput
+          label="Descripción del gasto"
+          placeholder="Escriba la descripción del gasto"
+          value={descripcion}
+          onChangeText={(descripcion) => {
+            setDescripcion(descripcion);
+          }}
+          keyboardType="default"
+          primaryColor={Colors.lila.lilaNormal}
+          icon="pencil"
+        />
+
+        <CustomTextInput
+          label="Monto del gasto"
+          placeholder="Escriba el monto del gasto"
+          value={monto ? monto.toString() : ""}
+          onChangeText={(monto) => {
+            setMonto(Number(monto));
+          }}
+          keyboardType="numeric"
+          primaryColor={Colors.lila.lilaNormal}
+          icon="pencil"
+        />
+
+        <ParticionesCuadrados
+          usuarioCreador={gasto.usuario_creador}
+          usuarioParticipe={gasto.usuario_participe}
+          usuarioId={usuarioLogueado}
+          monto={monto}
+          particionUsuarioCreador={gasto.particion_usuario_creador}
+          particionUsuarioParticipe={gasto.particion_usuario_participe}
+        ></ParticionesCuadrados>
+
+        <CustomButton
+          onPress={openModal}
+          title="PROPONER NUEVA PARTICIÓN"
+          backgroundColor={Colors.amarillo.amarilloNormal}
+          textColor="white"
+        />
+
+        <ProponerParticionScreen
+          visible={modalVisible}
+          onClose={closeModal}
+          gasto={gasto}
+          idUsuarioLogueado={usuarioLogueado}
+        />
+
+        <Text style={styles.error}>{errors}</Text>
+
+        <View style={styles.buttonContainer}>
+          <CancelButton texto="Cancelar" onPress={noActualizarGasto} />
+          <SaveButton texto="Actualizar" onPress={editarGasto} />
+        </View>
       </View>
-      <InputContainer
-        label="Descripción"
-        value={descripcion}
-        setFunction={setDescripcion}
-      />
-
-      <Text style={styles.label}>Monto: </Text>
-      <CurrencyInput
-        value={monto}
-        onChangeValue={(value) => setMonto(value ?? 0)}
-        prefix="$"
-        delimiter=","
-        precision={0}
-        minValue={0}
-        style={styles.currencyInput}
-      />
-
-      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-        <MaterialIcons name="attach-file" size={24} color="white" />
-        <Text style={styles.uploadButtonText}>
-          Adjuntar nuevo comprobante de Compra
-        </Text>
-      </TouchableOpacity>
-
-      {imageSuccess && (
-        <Text style={styles.uploadSuccessText}>
-          ¡Comprobante adjuntado con éxito!
-        </Text>
-      )}
-
-      <Text style={styles.error}>{errors}</Text>
-
-      <View style={styles.buttonContainer}>
-        <CancelButton texto="Cancelar" onPress={noActualizarGasto} />
-        <SaveButton texto="Actualizar" onPress={editarGasto} />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  label: {
-    color: "#000",
-    fontSize: 14,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
-    marginBottom: 5,
-    marginLeft: "10%",
-    marginRight: 10,
-  },
-  currencyInput: {
-    backgroundColor: "white",
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 18,
-    padding: 10,
-    fontSize: 14,
-    marginBottom: 15,
-    marginHorizontal: 37,
+    backgroundColor: Colors.gris.fondo,
+    paddingVertical: 20,
   },
   error: {
     color: "red",
@@ -254,47 +236,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  uploadButton: {
-    flexDirection: "row",
-    verticalAlign: "middle",
-    alignItems: "center",
-    backgroundColor: "#3a87e7",
-    padding: 10,
-    borderRadius: 15,
-    marginTop: 13,
-    marginBottom: 20,
-    paddingHorizontal: 30,
-  },
-  uploadButtonText: {
-    color: "white",
-    marginLeft: 10,
-    alignItems: "center",
-  },
-  uploadSuccessText: {
-    color: "#586e26",
-    fontSize: 15,
-    fontWeight: "heavy",
-    textAlign: "center",
-  },
-  pagarLabel: {
-    marginTop: 10,
-  },
-  pagarValue: {
-    fontWeight: "bold",
-    fontSize: 22,
-    color: "#555",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#6A5ACD",
   },
 });
 

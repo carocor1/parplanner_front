@@ -11,6 +11,9 @@ import ProponerParticionScreen from "./particionModal";
 import { useLocalSearchParams } from "expo-router";
 import { getGastoById } from "@/src/services/gastoService";
 import { Gasto } from "@/src/interfaces/GastoInterface";
+import Colors from "@/src/constants/Colors";
+import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
+import CustomButton from "@/src/components/CustomButton";
 
 const DetalleGastoScreen: React.FC = () => {
   const { id, usuarioId } = useLocalSearchParams();
@@ -90,49 +93,14 @@ const DetalleGastoScreen: React.FC = () => {
         <Text style={styles.montoImportado}>${gasto.monto}</Text>
       </View>
 
-      <View style={styles.contenedorParticiones}>
-        <View
-          style={[
-            styles.particionIndividual,
-            gasto.usuario_creador.id === Number(usuarioId) &&
-              styles.particionUsuarioLogueado,
-          ]}
-        >
-          <Text style={styles.tituloParticion}>Partición de</Text>
-          <Text style={styles.tituloParticion}>
-            {gasto.usuario_creador.nombre}:
-          </Text>
-          <Text style={styles.particionValue}>
-            {gasto.particion_usuario_creador}%
-          </Text>
-          <View style={styles.lineaDivisoria}></View>
-          <Text style={styles.corresponde}>Corresponde:</Text>
-          <Text style={styles.particionValue}>
-            ${(gasto.particion_usuario_creador * gasto.monto) / 100}
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.particionIndividual,
-            gasto.usuario_participe.id === Number(usuarioId) &&
-              styles.particionUsuarioLogueado,
-          ]}
-        >
-          <Text style={styles.tituloParticion}>Partición de</Text>
-          <Text style={styles.tituloParticion}>
-            {gasto.usuario_participe.nombre}:
-          </Text>
-          <Text style={styles.particionValue}>
-            {gasto.particion_usuario_participe}%
-          </Text>
-          <View style={styles.lineaDivisoria}></View>
-          <Text style={styles.corresponde}>Corresponde:</Text>
-          <Text style={styles.particionValue}>
-            ${(gasto.particion_usuario_participe * gasto.monto) / 100}
-          </Text>
-        </View>
-      </View>
+      <ParticionesCuadrados
+        usuarioCreador={gasto.usuario_creador}
+        usuarioParticipe={gasto.usuario_participe}
+        usuarioId={Number(usuarioId)}
+        monto={gasto.monto}
+        particionUsuarioCreador={gasto.particion_usuario_creador}
+        particionUsuarioParticipe={gasto.particion_usuario_participe}
+      ></ParticionesCuadrados>
 
       <TouchableOpacity>
         <MaterialIcons name="attach-file" size={24} color="white" />
@@ -140,12 +108,12 @@ const DetalleGastoScreen: React.FC = () => {
       </TouchableOpacity>
 
       {esPendiente && (
-        <TouchableOpacity
-          style={styles.botonProponerParticion}
+        <CustomButton
           onPress={openModal}
-        >
-          <Text style={styles.buttonText}>PROPONER NUEVA PARTICIÓN</Text>
-        </TouchableOpacity>
+          title="PROPONER NUEVA PARTICIÓN"
+          backgroundColor={Colors.naranja.naranjaNormal}
+          textColor="white"
+        />
       )}
 
       <ProponerParticionScreen
@@ -162,18 +130,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: Colors.gris.fondo,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: Colors.gris.fondo,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 18,
-    color: "#6A5ACD",
+    color: Colors.lila.lilaNormal,
   },
   tituloLabel: {
     fontSize: 18,
@@ -196,7 +164,7 @@ const styles = StyleSheet.create({
   },
   categoriaLabel: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.rosa.rosaNormal,
     marginBottom: 10,
     textAlign: "center",
   },
@@ -214,7 +182,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontWeight: "bold",
     fontSize: 40,
-    color: "#0353a4",
+    color: Colors.azul.azulMuyOscuro,
   },
   titulo: {
     fontSize: 28,
@@ -232,60 +200,6 @@ const styles = StyleSheet.create({
   categoria: {
     fontSize: 18,
     color: "#bd4f6c",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  tituloParticion: {
-    fontSize: 16,
-    color: "#333",
-  },
-  particionValue: {
-    fontSize: 30,
-    color: "#555",
-    fontWeight: "bold",
-  },
-  corresponde: {
-    fontSize: 14,
-    color: "#333",
-    marginVertical: 5,
-  },
-  particionIndividual: {
-    flex: 1,
-    padding: 10,
-    marginHorizontal: 5,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-    alignItems: "center",
-  },
-  particionUsuarioLogueado: {
-    borderColor: "#014f86",
-    borderWidth: 5,
-  },
-  contenedorParticiones: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  lineaDivisoria: {
-    borderBottomColor: "#ddd",
-    borderBottomWidth: 1,
-    width: "100%",
-    marginVertical: 5,
-  },
-  botonProponerParticion: {
-    backgroundColor: "#DF732E",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginLeft: 10,
-    marginTop: 30,
-  },
-  buttonText: {
-    color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
