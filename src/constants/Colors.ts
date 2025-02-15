@@ -36,5 +36,7 @@ export default {
     azulOscuro: "#5f80ad",
     celeste: "#0077b6",
   },
-  lila: {},
+  gris: {
+    fondo: "#f5f5f5",
+  },
 };

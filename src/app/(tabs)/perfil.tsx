@@ -9,11 +9,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { TextInput } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown";
 import { State, City } from "country-state-city";
 import BasicAvatar from "@/src/dataDisplay/avatarPicker";
 import Colors from "@/src/constants/Colors";
+import CustomTextInput from "@/src/components/TextInput";
 
 const dataSexo = [
   { label: "Masculino", value: "Masculino" },
@@ -148,8 +148,7 @@ const PerfilScreen = () => {
             {usuarioLogueado.nombre} {usuarioLogueado.apellido}
           </Text>
 
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Nombre"
             placeholder="Escribe tu nombre"
             value={nombre}
@@ -157,17 +156,10 @@ const PerfilScreen = () => {
               setNombre(nombre);
               setUsuarioLogueado({ ...usuarioLogueado, nombre });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Apellido"
             placeholder="Escribe tu apellido"
             value={apellido}
@@ -175,17 +167,10 @@ const PerfilScreen = () => {
               setApellido(apellido);
               setUsuarioLogueado({ ...usuarioLogueado, apellido });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Email"
             placeholder="Escribe tu email"
             value={email}
@@ -193,18 +178,11 @@ const PerfilScreen = () => {
               setEmail(email);
               setUsuarioLogueado({ ...usuarioLogueado, email });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
             keyboardType="email-address"
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Documento"
             placeholder="Escribe tu documento"
             value={documento ? documento.toString() : ""}
@@ -213,18 +191,11 @@ const PerfilScreen = () => {
               setDocumento(docNumber);
               setUsuarioLogueado({ ...usuarioLogueado, documento: docNumber });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
             keyboardType="numeric"
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Cbu"
             placeholder="Escribe tu cbu"
             value={cbu}
@@ -232,19 +203,11 @@ const PerfilScreen = () => {
               setCbu(cbu);
               setUsuarioLogueado({ ...usuarioLogueado, cbu });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
             keyboardType="numeric"
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
-
-          <TextInput
-            mode="outlined"
+          <CustomTextInput
             label="Nro. de teléfono"
             placeholder="Escribe tu número de teléfono"
             value={nro_telefono}
@@ -252,15 +215,9 @@ const PerfilScreen = () => {
               setNroTelefono(nro_telefono);
               setUsuarioLogueado({ ...usuarioLogueado, nro_telefono });
             }}
-            style={styles.textInput}
-            theme={{
-              colors: {
-                primary: "purple",
-              },
-            }}
-            right={<TextInput.Icon icon="pencil" />}
             keyboardType="phone-pad"
-            outlineStyle={styles.outlineStyle}
+            primaryColor="purple"
+            icon="pencil"
           />
           <View style={styles.container}>
             {renderLabel("Sexo", isFocusSexo)}
@@ -373,7 +330,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   outlineStyle: {
-    borderWidth: 2.5,
+    borderWidth: 1.5,
     borderRadius: 10,
   },
   textInput: {
@@ -387,7 +344,7 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     borderColor: "gray",
-    borderWidth: 2.5,
+    borderWidth: 1.5,
     borderRadius: 10,
     paddingHorizontal: 8,
     backgroundColor: "white",
