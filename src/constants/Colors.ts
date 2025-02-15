@@ -20,6 +20,7 @@ export default {
     verdeOscuro: "#96ac60",
     verdeIntermedio: "#a9bb7c",
     verdeMuyOscuro: "#809155",
+    verdeMuyMuyOscuro: "#fff",
   },
   negro: {
     negroNormal: "#343a40",

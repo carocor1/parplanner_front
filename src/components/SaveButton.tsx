@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import Colors from "../constants/Colors";
 
 type SaveButtonProps = {
   texto: string;
@@ -15,10 +16,10 @@ const SaveButton: React.FC<SaveButtonProps> = ({ texto, onPress }) => {
 
 const styles = StyleSheet.create({
   saveButton: {
-    backgroundColor: "#DF732E",
+    backgroundColor: Colors.naranja.naranjaNormal,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: 10,
     marginLeft: 10,
     width: "45%",
   },

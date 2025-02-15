@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import ProponerParticionScreen from "./particionModal";
 import { useLocalSearchParams } from "expo-router";
 import { getGastoById } from "@/src/services/gastoService";
@@ -14,11 +7,11 @@ import { Gasto } from "@/src/interfaces/GastoInterface";
 import Colors from "@/src/constants/Colors";
 import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
 import CustomButton from "@/src/components/CustomButton";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const DetalleGastoScreen: React.FC = () => {
   const { id, usuarioId } = useLocalSearchParams();
   const parsedGastoId = id ? Number(id) : null;
-
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,12 +45,7 @@ const DetalleGastoScreen: React.FC = () => {
   }, [parsedGastoId]);
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6A5ACD" />
-        <Text style={styles.loadingText}>Cargando...</Text>
-      </View>
-    );
+    return <LoadingIndicator />;
   }
 
   if (!gasto) {
@@ -102,11 +90,6 @@ const DetalleGastoScreen: React.FC = () => {
         particionUsuarioParticipe={gasto.particion_usuario_participe}
       ></ParticionesCuadrados>
 
-      <TouchableOpacity>
-        <MaterialIcons name="attach-file" size={24} color="white" />
-        <Text>Descargar comprobante de compra</Text>
-      </TouchableOpacity>
-
       {esPendiente && (
         <CustomButton
           onPress={openModal}
@@ -131,17 +114,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     backgroundColor: Colors.gris.fondo,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.gris.fondo,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: Colors.lila.lilaNormal,
   },
   tituloLabel: {
     fontSize: 18,

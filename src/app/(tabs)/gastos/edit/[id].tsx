@@ -141,7 +141,7 @@ const EditarGastoScreen = () => {
             setTitulo(titulo);
           }}
           keyboardType="default"
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulMuyOscuro}
           icon="pencil"
         />
 
@@ -155,7 +155,7 @@ const EditarGastoScreen = () => {
           onChange={setCategoriaSeleccionada}
           isFocus={isFocus}
           setIsFocus={setIsFocus}
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulMuyOscuro}
         />
 
         <CustomTextInput
@@ -166,7 +166,7 @@ const EditarGastoScreen = () => {
             setDescripcion(descripcion);
           }}
           keyboardType="default"
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulMuyOscuro}
           icon="pencil"
         />
 
@@ -178,7 +178,7 @@ const EditarGastoScreen = () => {
             setMonto(Number(monto));
           }}
           keyboardType="numeric"
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulMuyOscuro}
           icon="pencil"
         />
 
@@ -194,7 +194,7 @@ const EditarGastoScreen = () => {
         <CustomButton
           onPress={openModal}
           title="PROPONER NUEVA PARTICIÓN"
-          backgroundColor={Colors.amarillo.amarilloNormal}
+          backgroundColor={Colors.azul.azulMuyOscuro}
           textColor="white"
         />
 
@@ -234,7 +234,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-around",
+
     alignItems: "center",
   },
 });

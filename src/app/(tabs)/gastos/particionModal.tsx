@@ -7,11 +7,11 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from "react-native";
-import InputSpinner from "react-native-input-spinner";
 import SaveButton from "@/src/components/SaveButton";
 import CancelButton from "@/src/components/CancelButton";
 import { Gasto } from "@/src/interfaces/GastoInterface";
 import { proponerParticion } from "@/src/services/gastoService";
+import InputSpinner from "react-native-input-spinner";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -152,6 +152,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
   particiones: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -169,11 +174,6 @@ const styles = StyleSheet.create({
   },
   spinner: {
     width: 140,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
   },
   pagarLabel: {
     marginTop: 10,

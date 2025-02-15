@@ -1,22 +1,14 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import SaveButton from "../../../components/SaveButton";
 import CancelButton from "../../../components/CancelButton";
-import InputSpinner from "react-native-input-spinner";
-import * as ImagePicker from "expo-image-picker";
-import { MaterialIcons } from "@expo/vector-icons";
 import { getCategorias } from "@/src/services/categoriasService";
 import { registrarGasto } from "@/src/services/gastoService";
 import CustomTextInput from "@/src/components/TextInput";
 import Colors from "@/src/constants/Colors";
-import { Dropdown } from "react-native-element-dropdown";
+import CustomDropdown from "@/src/components/CustomDropdown";
+import InputSpinner from "react-native-input-spinner";
 
 const RegistrarGastoScreen = () => {
   const [titulo, setTitulo] = useState<string>("");
@@ -27,7 +19,6 @@ const RegistrarGastoScreen = () => {
   const [particion2Seleccionada, setParticion2Seleccionada] =
     useState<number>(50);
   const [errors, setErrors] = useState<string>("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const router = useRouter();
   const [isFocus, setIsFocus] = useState(false);
 
@@ -49,47 +40,32 @@ const RegistrarGastoScreen = () => {
     fetchCategorias();
   }, []);
 
-  const renderLabel = () => {
-    if (categoriaSeleccionada || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: "#6A5ACD" }]}>
-          Categoria del gasto
-        </Text>
-      );
-    }
-    return null;
-  };
-
   const validateInput = () => {
+    const validationRules = [
+      { condition: !titulo, message: "El titulo es requerido" },
+      { condition: !monto, message: "El monto es requerido" },
+      {
+        condition: !categoriaSeleccionada,
+        message: "No se seleccionó una categoría",
+      },
+      {
+        condition: !particion1Seleccionada,
+        message: "No se indicó la partición",
+      },
+      {
+        condition: !particion2Seleccionada,
+        message: "No se indicó la partición",
+      },
+    ];
+
+    for (const rule of validationRules) {
+      if (rule.condition) {
+        setErrors(rule.message);
+        return false;
+      }
+    }
+
     setErrors("");
-    if (!titulo) {
-      setErrors("El titulo es requerido");
-      return false;
-    }
-    if (!monto) {
-      setErrors("El monto es requerido");
-      return false;
-    }
-    if (isNaN(monto)) {
-      setErrors("El monto debería ser un número");
-      return false;
-    }
-    if (!categoriaSeleccionada) {
-      setErrors("No se seleccionó una categoría");
-      return false;
-    }
-    if (!particion1Seleccionada) {
-      setErrors("No se indicó la partición");
-      return false;
-    }
-    if (!particion2Seleccionada) {
-      setErrors("No se indicó la partición");
-      return false;
-    }
-    if (!selectedImage) {
-      setErrors("Se requiere adjuntar un comprobante de compra");
-      return false;
-    }
     return true;
   };
 
@@ -115,7 +91,6 @@ const RegistrarGastoScreen = () => {
         setCategoriaSeleccionada("");
         setParticion1Seleccionada(50);
         setParticion2Seleccionada(50);
-        setSelectedImage(null);
         router.back();
       }
     } catch (error) {
@@ -138,24 +113,6 @@ const RegistrarGastoScreen = () => {
     setParticion1Seleccionada(100 - num);
   };
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Se requiere permiso para acceder a la galería");
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-    }
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
@@ -167,29 +124,21 @@ const RegistrarGastoScreen = () => {
             setTitulo(titulo);
           }}
           keyboardType="default"
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulOscuro}
         />
 
-        <View style={{ paddingBottom: 15 }}>
-          {renderLabel()}
-          <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: "#6A5ACD" }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            data={categorias.map((categoria) => ({
-              label: categoria.nombre,
-              value: categoria.nombre,
-            }))}
-            maxHeight={300}
-            labelField="label"
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            valueField="value"
-            placeholder="Categoría del gasto"
-            value={categoriaSeleccionada}
-            onChange={(item) => setCategoriaSeleccionada(item.value)}
-          />
-        </View>
+        <CustomDropdown
+          label="Categoría del gasto"
+          data={categorias.map((categoria) => ({
+            label: categoria.nombre,
+            value: categoria.nombre,
+          }))}
+          value={categoriaSeleccionada}
+          onChange={setCategoriaSeleccionada}
+          isFocus={isFocus}
+          setIsFocus={setIsFocus}
+          primaryColor={Colors.azul.azulOscuro}
+        />
 
         <CustomTextInput
           label="Descripción del gasto"
@@ -199,7 +148,7 @@ const RegistrarGastoScreen = () => {
             setDescripcion(descripcion);
           }}
           keyboardType="default"
-          primaryColor={Colors.lila.lilaNormal}
+          primaryColor={Colors.azul.azulOscuro}
         />
 
         <CustomTextInput
@@ -210,9 +159,9 @@ const RegistrarGastoScreen = () => {
             setMonto(Number(monto));
           }}
           keyboardType="numeric"
-          primaryColor={Colors.lila.lilaNormal}
-          icon=""
+          primaryColor={Colors.azul.azulOscuro}
         />
+
         <View style={styles.particionesContenedor}>
           <Text style={styles.particionesLabel}>Particiones</Text>
           <Text style={styles.particionesLabelSubtitulo}>
@@ -259,20 +208,6 @@ const RegistrarGastoScreen = () => {
             </View>
           </View>
         </View>
-
-        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-          <MaterialIcons name="attach-file" size={24} color="white" />
-          <Text style={styles.uploadButtonText}>
-            Adjuntar comprobante de Compra
-          </Text>
-        </TouchableOpacity>
-
-        {selectedImage && (
-          <Text style={styles.uploadSuccessText}>
-            Comprobante adjuntado con éxito!
-          </Text>
-        )}
-
         <Text style={styles.error}>{errors}</Text>
 
         <View style={styles.buttonContainer}>
@@ -294,48 +229,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: Colors.gris.fondo,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-  },
   particionesLabel: {
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 2,
     textAlign: "center",
-    color: Colors.lila.lilaNormal,
+    color: Colors.azul.azulOscuro,
   },
   particionesLabelSubtitulo: {
     fontSize: 15,
     textAlign: "center",
     marginBottom: 10,
     paddingHorizontal: 10,
-  },
-  particiones: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
-  },
-  grupoParticionIndividual: {
-    paddingTop: 10,
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  labelParticion: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 5,
-    color: Colors.lila.lilaNormal,
   },
   error: {
     color: "red",
@@ -345,9 +251,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  spinner: {
-    width: 150,
   },
   uploadButton: {
     flexDirection: "row",
@@ -370,6 +273,34 @@ const styles = StyleSheet.create({
     fontWeight: "heavy",
     textAlign: "center",
   },
+  particionesContenedor: {
+    marginTop: 10,
+    borderWidth: 1.5,
+    borderColor: "gray",
+    borderRadius: 10,
+    backgroundColor: "white",
+  },
+  particiones: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+  },
+  grupoParticionIndividual: {
+    paddingTop: 10,
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  labelParticion: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: Colors.azul.azulOscuro,
+  },
+  spinner: {
+    width: 150,
+  },
   pagarLabel: {
     marginTop: 10,
   },
@@ -377,37 +308,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 22,
     color: "#555",
-  },
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 1.5,
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    backgroundColor: "white",
-    marginTop: 20,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  label: {
-    position: "absolute",
-    backgroundColor: "#f5f5f5",
-    left: 10,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 12,
-  },
-  particionesContenedor: {
-    marginTop: 10,
-    borderWidth: 1.5,
-    borderColor: "gray",
-    borderRadius: 10,
-    backgroundColor: "white",
   },
 });
 
