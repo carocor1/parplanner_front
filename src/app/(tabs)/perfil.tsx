@@ -2,18 +2,15 @@ import { Usuario } from "@/src/interfaces/UsuarioInterface";
 import { cerrarSesion } from "@/src/services/authService";
 import { actualizarUsuario, obtenerUsuario } from "@/src/services/userService";
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
-import { State, City } from "country-state-city";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 import BasicAvatar from "@/src/dataDisplay/avatarPicker";
 import Colors from "@/src/constants/Colors";
 import CustomTextInput from "@/src/components/TextInput";
+import CustomButton from "@/src/components/CustomButton";
+import CustomDropdown from "@/src/components/CustomDropdown";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
+import { City, State } from "country-state-city";
 
 const dataSexo = [
   { label: "Masculino", value: "Masculino" },
@@ -22,6 +19,7 @@ const dataSexo = [
 ];
 
 const PerfilScreen = () => {
+  const router = useRouter();
   const [usuarioLogueado, setUsuarioLogueado] = useState<Usuario | null>(null);
   const [sexo, setSexo] = useState<string | null>(null);
   const [provincia, setProvincia] = useState<string | null>(null);
@@ -39,6 +37,8 @@ const PerfilScreen = () => {
   const [ciudades, setCiudades] = useState<any[]>([]);
   const [image, setImage] = useState<string | null>(null);
   const [resetAvatar, setResetAvatar] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [errors, setErrors] = useState<string>("");
 
   const fetchProgenitor = async () => {
     try {
@@ -55,6 +55,8 @@ const PerfilScreen = () => {
       setNroTelefono(usuario.nro_telefono);
     } catch (error) {
       console.error("Error al obtener el usuario:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,20 +84,10 @@ const PerfilScreen = () => {
     }
   };
 
-  const renderLabel = (label: string, isFocus: boolean) => {
-    if (sexo || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: "purple" }]}>
-          {label}
-        </Text>
-      );
-    }
-    return null;
-  };
-
   const logout = async () => {
     try {
       await cerrarSesion();
+      router.replace("/inicioSesion");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -105,7 +97,37 @@ const PerfilScreen = () => {
     setImage(uri);
   };
 
+  const validateInput = () => {
+    const validationRules = [
+      { condition: !nombre, message: "El nombre es requerido" },
+      { condition: !apellido, message: "El apellido es requerido" },
+      { condition: !email, message: "El email es requerido" },
+      { condition: !documento, message: "El documento es requerido" },
+      { condition: !cbu, message: "El CBU es requerido" },
+      {
+        condition: !nro_telefono,
+        message: "El número de teléfono es requerido",
+      },
+      { condition: !sexo, message: "El sexo es requerido" },
+      { condition: !provincia, message: "La provincia es requerida" },
+      { condition: !ciudad, message: "La ciudad es requerida" },
+    ];
+
+    for (const rule of validationRules) {
+      if (rule.condition) {
+        setErrors(rule.message);
+        return false;
+      }
+    }
+
+    setErrors("");
+    return true;
+  };
+
   const actualizarDatos = async () => {
+    if (!validateInput()) {
+      return;
+    }
     try {
       if (provincia && ciudad && documento && sexo && cbu) {
         await actualizarUsuario(
@@ -135,6 +157,10 @@ const PerfilScreen = () => {
       fetchCiudades(provincia);
     }
   }, [provincia]);
+
+  if (loading) {
+    return <LoadingIndicator />;
+  }
 
   if (usuarioLogueado) {
     return (
@@ -219,93 +245,49 @@ const PerfilScreen = () => {
             primaryColor="purple"
             icon="pencil"
           />
-          <View style={styles.container}>
-            {renderLabel("Sexo", isFocusSexo)}
-            <Dropdown
-              style={[
-                styles.dropdown,
-                isFocusSexo && { borderColor: "purple" },
-              ]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={dataSexo}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!isFocusSexo ? "Selecciona el sexo" : "..."}
-              value={sexo}
-              onFocus={() => setIsFocusSexo(true)}
-              onBlur={() => setIsFocusSexo(false)}
-              onChange={(item) => {
-                setSexo(item.value);
-                setUsuarioLogueado({ ...usuarioLogueado, sexo: item.value });
-                setIsFocusSexo(false);
-              }}
-            />
-          </View>
-          <View style={styles.container}>
-            {renderLabel("Provincia", isFocusProvincia)}
-            <Dropdown
-              style={[
-                styles.dropdown,
-                isFocusProvincia && { borderColor: "purple" },
-              ]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={provincias}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={
-                !isFocusProvincia ? "Selecciona la provincia" : "..."
-              }
-              value={provincia}
-              onFocus={() => setIsFocusProvincia(true)}
-              onBlur={() => setIsFocusProvincia(false)}
-              onChange={(item) => {
-                setProvincia(item.value);
-                setUsuarioLogueado({
-                  ...usuarioLogueado,
-                  provincia: item.value,
-                });
-                setIsFocusProvincia(false);
-              }}
-            />
-          </View>
-          <View style={styles.container}>
-            {renderLabel("Ciudad", isFocusCiudad)}
-            <Dropdown
-              style={[
-                styles.dropdown,
-                isFocusCiudad && { borderColor: "purple" },
-              ]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              data={ciudades}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={!isFocusCiudad ? "Selecciona la ciudad" : "..."}
-              value={ciudad}
-              onFocus={() => setIsFocusCiudad(true)}
-              onBlur={() => setIsFocusCiudad(false)}
-              onChange={(item) => {
-                setCiudad(item.value);
-                setUsuarioLogueado({ ...usuarioLogueado, ciudad: item.value });
-                setIsFocusCiudad(false);
-              }}
-            />
+          <CustomDropdown
+            label="Sexo"
+            data={dataSexo}
+            value={sexo || ""}
+            onChange={setSexo}
+            isFocus={isFocusSexo}
+            setIsFocus={setIsFocusSexo}
+            primaryColor="purple"
+          />
+          <CustomDropdown
+            label="Provincia"
+            data={provincias}
+            value={provincia || ""}
+            onChange={setProvincia}
+            isFocus={isFocusProvincia}
+            setIsFocus={setIsFocusProvincia}
+            primaryColor="purple"
+          />
+          <CustomDropdown
+            label="Ciudad"
+            data={ciudades}
+            value={ciudad || ""}
+            onChange={setCiudad}
+            isFocus={isFocusCiudad}
+            setIsFocus={setIsFocusCiudad}
+            primaryColor="purple"
+          />
+          <View style={{ marginTop: -30 }}>
+            <Text style={styles.error}>{errors}</Text>
 
-            <TouchableOpacity
+            <CustomButton
               onPress={actualizarDatos}
-              style={styles.buttonActualizar}
-            >
-              <Text style={styles.buttonTextActualizar}>ACTUALIZAR DATOS</Text>
-            </TouchableOpacity>
+              title="ACTUALIZAR DATOS"
+              backgroundColor={Colors.amarillo.amarilloNormal}
+              textColor="white"
+            />
 
-            <TouchableOpacity onPress={logout} style={styles.buttonLogout}>
-              <Text style={styles.buttonTextLogout}>CERRAR SESION</Text>
-            </TouchableOpacity>
+            <CustomButton
+              onPress={logout}
+              title="CERRAR SESION"
+              backgroundColor={Colors.rojo.rojoBrillante}
+              textColor="white"
+            />
           </View>
         </View>
       </ScrollView>
@@ -329,66 +311,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
-  outlineStyle: {
-    borderWidth: 1.5,
-    borderRadius: 10,
-  },
-  textInput: {
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  container: {
-    paddingVertical: 16,
-    paddingHorizontal: 2,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 1.5,
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    backgroundColor: "white",
-  },
-  label: {
-    position: "absolute",
-    backgroundColor: "#f5f5f5",
-    left: 10,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 12,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  buttonLogout: {
-    padding: 10,
-    paddingVertical: 15,
-    backgroundColor: Colors.rojo.rojoBrillante,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 25,
-  },
-  buttonTextLogout: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  buttonActualizar: {
-    padding: 10,
-    paddingVertical: 15,
-    backgroundColor: "#cd8d0d",
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 25,
-  },
-  buttonTextActualizar: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: 5,
   },
 });
 
