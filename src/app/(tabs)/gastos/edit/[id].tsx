@@ -31,18 +31,6 @@ const EditarGastoScreen = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<number | null>(null);
-  const openModal = () => setModalVisible(true);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const closeModal = async () => {
-    setModalVisible(false);
-    try {
-      const fetchedGasto = await getGastoById(Number(id));
-      setGasto(fetchedGasto);
-    } catch (error) {
-      console.error("Error al obtener el gasto:", error);
-    }
-  };
 
   useEffect(() => {
     const fetchGasto = async () => {
@@ -190,20 +178,6 @@ const EditarGastoScreen = () => {
           particionUsuarioCreador={gasto.particion_usuario_creador}
           particionUsuarioParticipe={gasto.particion_usuario_participe}
         ></ParticionesCuadrados>
-
-        <CustomButton
-          onPress={openModal}
-          title="PROPONER NUEVA PARTICIÓN"
-          backgroundColor={Colors.azul.azulMuyOscuro}
-          textColor="white"
-        />
-
-        <ProponerParticionScreen
-          visible={modalVisible}
-          onClose={closeModal}
-          gasto={gasto}
-          idUsuarioLogueado={usuarioLogueado}
-        />
 
         <Text style={styles.error}>{errors}</Text>
 

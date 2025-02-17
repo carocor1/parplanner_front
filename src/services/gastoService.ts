@@ -22,22 +22,6 @@ export const getGastoById = async (gastoId: number): Promise<Gasto> => {
   }
 };
 
-export const proponerParticion = async (
-  gastoId: number,
-  particion_usuario_creador: number,
-  particion_usuario_participe: number
-) => {
-  try {
-    const response = await api.post(`/gastos/propuesta/${gastoId}`, {
-      particion_usuario_creador,
-      particion_usuario_participe,
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export const registrarGasto = async (
   titulo: string,
   monto: number,

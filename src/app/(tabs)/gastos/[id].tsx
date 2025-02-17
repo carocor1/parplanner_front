@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import ProponerParticionScreen from "./particionModal";
 import { useLocalSearchParams } from "expo-router";
 import { getGastoById } from "@/src/services/gastoService";
 import { Gasto } from "@/src/interfaces/GastoInterface";
 import Colors from "@/src/constants/Colors";
 import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
-import CustomButton from "@/src/components/CustomButton";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const DetalleGastoScreen: React.FC = () => {
@@ -14,13 +12,6 @@ const DetalleGastoScreen: React.FC = () => {
   const parsedGastoId = id ? Number(id) : null;
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const openModal = () => setModalVisible(true);
-  const closeModal = () => {
-    setModalVisible(false);
-    fetchGasto();
-  };
 
   const fetchGasto = async () => {
     try {
@@ -89,22 +80,6 @@ const DetalleGastoScreen: React.FC = () => {
         particionUsuarioCreador={gasto.particion_usuario_creador}
         particionUsuarioParticipe={gasto.particion_usuario_participe}
       ></ParticionesCuadrados>
-
-      {esPendiente && (
-        <CustomButton
-          onPress={openModal}
-          title="PROPONER NUEVA PARTICIÓN"
-          backgroundColor={Colors.naranja.naranjaNormal}
-          textColor="white"
-        />
-      )}
-
-      <ProponerParticionScreen
-        visible={modalVisible}
-        onClose={closeModal}
-        gasto={gasto}
-        idUsuarioLogueado={Number(usuarioId)}
-      />
     </View>
   );
 };

@@ -10,8 +10,9 @@ import {
 import SaveButton from "@/src/components/SaveButton";
 import CancelButton from "@/src/components/CancelButton";
 import { Gasto } from "@/src/interfaces/GastoInterface";
-import { proponerParticion } from "@/src/services/gastoService";
 import InputSpinner from "react-native-input-spinner";
+import { rechazarParticion } from "@/src/services/propuestaParticionService";
+import { PropuestaParticion } from "@/src/interfaces/PropuestasParticionInterface";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -20,6 +21,7 @@ type Props = {
   onClose: () => void;
   gasto: Gasto;
   idUsuarioLogueado: number;
+  propuestaParticion: PropuestaParticion;
 };
 
 const ProponerParticionScreen: React.FC<Props> = ({
@@ -27,12 +29,13 @@ const ProponerParticionScreen: React.FC<Props> = ({
   onClose,
   gasto,
   idUsuarioLogueado,
+  propuestaParticion,
 }) => {
   const esCreador = gasto.usuario_creador.id === idUsuarioLogueado;
   const [particionCreadorSeleccionada, setParticionCreadorSeleccionada] =
-    useState(gasto.particion_usuario_creador);
+    useState(propuestaParticion.particion_usuario_creador_gasto);
   const [particionParticipeSeleccionada, setParticionParticipeSeleccionada] =
-    useState(gasto.particion_usuario_participe);
+    useState(propuestaParticion.particion_usuario_participe_gasto);
 
   const handleParticionChange = (value: number) => {
     setParticionCreadorSeleccionada(value);
@@ -46,8 +49,8 @@ const ProponerParticionScreen: React.FC<Props> = ({
 
   const handleSubmit = async () => {
     try {
-      await proponerParticion(
-        gasto.id,
+      await rechazarParticion(
+        propuestaParticion.id,
         particionCreadorSeleccionada,
         particionParticipeSeleccionada
       );
