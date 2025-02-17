@@ -27,6 +27,8 @@ export default {
   },
   rojo: {
     rojoBrillante: "#e63946",
+    rojoClaro: "#f6cacc",
+    rojoOscuro: "#dd2c2f",
   },
   naranja: {
     naranjaClaro: "#FFE5B4",
