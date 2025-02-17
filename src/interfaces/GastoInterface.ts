@@ -1,5 +1,6 @@
 import { Categoria } from "./CategoriaInterface";
 import { Estado } from "./EstadoInterface";
+import { PropuestaParticion } from "./PropuestasParticionInterface";
 import { Usuario } from "./UsuarioInterface";
 
 export interface Gasto {
@@ -15,4 +16,5 @@ export interface Gasto {
   fechaEliminacion: Date;
   estado: Estado;
   categoria: Categoria;
+  propuestas_particion: PropuestaParticion[];
 }
