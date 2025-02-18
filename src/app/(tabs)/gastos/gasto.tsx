@@ -5,15 +5,23 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Image,
+  Alert,
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import GastoItem from "@/src/components/GastoItem";
 import { FontAwesome } from "@expo/vector-icons";
 import { Gasto } from "@/src/interfaces/GastoInterface";
-import { getGastosByProgenitor } from "@/src/services/gastoService";
+import {
+  getGastosByProgenitor,
+  pagarGastos,
+} from "@/src/services/gastoService";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import { obtenerPropuestasParticion } from "@/src/services/propuestaParticionService";
+import { openBrowserAsync } from "expo-web-browser";
+import Colors from "@/src/constants/Colors";
+import MercadoPagoButton from "@/src/components/MercadoPagoButton";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
@@ -44,6 +52,27 @@ const GastosScreen = () => {
       fetchGastos();
     }, [])
   );
+
+  const filtrarGastosPendientesAPagar = (gastos: Gasto[]) => {
+    const gastosFiltrados = listaGastos.filter(
+      (gasto) =>
+        gasto.estado.nombre === "Pendiente" &&
+        gasto.usuario_participe.id === progenitorLogueadoId
+    );
+    return gastosFiltrados;
+  };
+
+  const pagarConMercadoPago = async () => {
+    const gastos = filtrarGastosPendientesAPagar(listaGastos);
+    if (gastos.length !== 0) {
+      const response = await pagarGastos(gastos);
+      if (response.url) {
+        openBrowserAsync(response.url);
+      }
+    } else {
+      Alert.alert("No hay gastos pendientes");
+    }
+  };
 
   useEffect(() => {
     if (!progenitorLogueadoId) return;
@@ -79,9 +108,21 @@ const GastosScreen = () => {
       <ScrollView>
         {/* Rectángulo con información de deuda */}
         <View style={styles.deudaContainer}>
-          <Text style={styles.debeText}>Debés</Text>
-          <Text style={styles.cantidadText}>${deudaTotal.toFixed(2)}</Text>
-          <Text style={styles.pagoText}>Pagá con Mercado Pago</Text>
+          {deudaTotal !== 0 && (
+            <>
+              <Text style={styles.debeText}>Debés</Text>
+              <Text style={styles.cantidadText}>${deudaTotal.toFixed(2)}</Text>
+              <MercadoPagoButton
+                onPress={pagarConMercadoPago}
+              ></MercadoPagoButton>
+            </>
+          )}
+
+          {deudaTotal === 0 && (
+            <Text style={styles.noDebeText}>
+              ¡Por el momento no debes nada!
+            </Text>
+          )}
         </View>
 
         <View style={styles.gastosContainer}>
@@ -97,7 +138,6 @@ const GastosScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Botón flotante circular */}
       <TouchableOpacity
         style={styles.botonFlotante}
         onPress={() => router.push("/gastos/registrargasto")}
@@ -122,8 +162,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   debeText: {
-    color: "rgba(255, 255, 255, 0.7)",
+    color: Colors.lila.lilaMuyClaro,
     fontSize: 16,
+  },
+  noDebeText: {
+    color: Colors.lila.lilaMuyClaro,
+    fontSize: 24,
+    fontWeight: "bold",
+    paddingHorizontal: 60,
+    textAlign: "center",
+    lineHeight: 34,
+    paddingVertical: 18,
   },
   cantidadText: {
     color: "white",
@@ -134,7 +183,7 @@ const styles = StyleSheet.create({
   pagoText: {
     fontSize: 16,
     textAlign: "right",
-    color: "rgba(255, 255, 255, 0.7)",
+    color: Colors.lila.lilaMuyClaro,
   },
   gastosContainer: {
     marginTop: -65,

@@ -66,3 +66,15 @@ export const actualizarGasto = async (
     console.error("Error al actualizar el gasto", error);
   }
 };
+
+export const pagarGastos = async (gastos: Gasto[]) => {
+  try {
+    const gastosId = gastos.map((gasto) => gasto.id);
+    const response = await api.post("/mercado-pago/create-preference", {
+      gastosId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al pagar los gastos", error);
+  }
+};
