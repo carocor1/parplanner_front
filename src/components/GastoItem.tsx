@@ -6,7 +6,6 @@ import Colors from "../constants/Colors";
 import {
   aprobarParticion,
   obtenerPropuestasParticion,
-  rechazarParticion,
 } from "../services/propuestaParticionService";
 import { PropuestaParticion } from "../interfaces/PropuestasParticionInterface";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -63,10 +62,8 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
 
   const aprobarSolicitudParticion = async () => {
     try {
-      console.log("aceptando partición");
       if (ultimaPropuesta) {
         await aprobarParticion(ultimaPropuesta.id);
-        fetchUltimaPropuesta();
       }
     } catch (error) {
       console.error("Error al aceptar partición", error);
@@ -75,7 +72,6 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
 
   const rechazarSolicitudParticion = async () => {
     try {
-      console.log("rechazando partición");
       setModalVisible(true);
 
       if (ultimaPropuesta) {
@@ -159,6 +155,39 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
               </Text>
             )}
             <Text style={{ marginBottom: 2 }}>Total: ${gasto.monto}</Text>
+            <View style={styles.botones}>
+              <TouchableOpacity
+                style={styles.botonAbrir}
+                onPress={() =>
+                  router.push({
+                    pathname: `../gastos/${gasto.id}`,
+                    params: {
+                      usuarioId: usuarioLogueadoId,
+                    },
+                  })
+                }
+              >
+                <Text style={styles.textoBoton}>Abrir</Text>
+              </TouchableOpacity>
+
+              {/* Mostrar botón Editar solo si el usuario logueado es el creador */}
+              {esCreador && (esPendiente || esEnNegociacion) && (
+                <TouchableOpacity
+                  style={styles.botonAbrir}
+                  onPress={() =>
+                    router.push({
+                      pathname: `../gastos/edit/${gasto.id}`,
+                      params: {
+                        // Pasar gasto correctamente
+                        usuarioId: usuarioLogueadoId, // Pasar ID del usuario
+                      },
+                    })
+                  }
+                >
+                  <Text style={styles.textoBoton}>Editar</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           <View
@@ -216,7 +245,7 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
                 </Text>
                 {ultimaParticionEsLogueado ? (
                   <Text style={styles.subtituloEnNegociacionLadoDerecho}>
-                    Esperando aceptación de la propuesta
+                    Esperando aceptación de la propuesta...
                   </Text>
                 ) : (
                   <View style={styles.botonesNegociacion}>
@@ -236,41 +265,6 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
                 )}
               </>
             )}
-
-            {/* Botón personalizado Abrir */}
-            <View style={styles.botones}>
-              {/* Mostrar botón Editar solo si el usuario logueado es el creador */}
-              {esCreador && (esPendiente || esEnNegociacion) && (
-                <TouchableOpacity
-                  style={styles.botonAbrir}
-                  onPress={() =>
-                    router.push({
-                      pathname: `../gastos/edit/${gasto.id}`,
-                      params: {
-                        // Pasar gasto correctamente
-                        usuarioId: usuarioLogueadoId, // Pasar ID del usuario
-                      },
-                    })
-                  }
-                >
-                  <Text style={styles.textoBoton}>Editar</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                style={styles.botonAbrir}
-                onPress={() =>
-                  router.push({
-                    pathname: `../gastos/${gasto.id}`,
-                    params: {
-                      usuarioId: usuarioLogueadoId,
-                    },
-                  })
-                }
-              >
-                <Text style={styles.textoBoton}>Abrir</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 
@@ -349,11 +343,12 @@ const styles = StyleSheet.create({
   },
   textoEnNegociacionLadoDerecho: {
     textAlign: "center",
+    lineHeight: 19.5, // Ajusta el interlineado aquí
   },
   subtituloEnNegociacionLadoDerecho: {
     marginTop: 3,
     textAlign: "center",
-    fontSize: 11,
+    fontSize: 12,
     fontStyle: "italic",
     color: Colors.negro.negroNormal,
   },
@@ -398,8 +393,9 @@ const styles = StyleSheet.create({
   botones: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
-    alignSelf: "flex-end",
+    justifyContent: "flex-start",
+    alignSelf: "flex-start",
+    marginTop: -6,
   },
   botonesNegociacion: {
     marginTop: 5,

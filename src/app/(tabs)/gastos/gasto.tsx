@@ -13,6 +13,7 @@ import { Gasto } from "@/src/interfaces/GastoInterface";
 import { getGastosByProgenitor } from "@/src/services/gastoService";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
+import { obtenerPropuestasParticion } from "@/src/services/propuestaParticionService";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
@@ -47,18 +48,22 @@ const GastosScreen = () => {
   useEffect(() => {
     if (!progenitorLogueadoId) return;
 
-    const calcularDeuda = () => {
-      const deuda = listaGastos.reduce((total, gasto) => {
+    const calcularDeuda = async () => {
+      let deuda = 0;
+      for (const gasto of listaGastos) {
         if (
           gasto.estado.nombre === "Pendiente" &&
           gasto.usuario_participe.id === progenitorLogueadoId
         ) {
-          return (
-            total + (gasto.monto * gasto.particion_usuario_participe) / 100
-          );
+          const ultimaPropuesta = await obtenerPropuestasParticion(gasto.id);
+          if (ultimaPropuesta) {
+            deuda +=
+              (gasto.monto *
+                ultimaPropuesta.particion_usuario_participe_gasto) /
+              100;
+          }
         }
-        return total;
-      }, 0);
+      }
       setDeudaTotal(deuda);
     };
 
