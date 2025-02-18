@@ -6,12 +6,15 @@ import { Gasto } from "@/src/interfaces/GastoInterface";
 import Colors from "@/src/constants/Colors";
 import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
+import { PropuestaParticion } from "@/src/interfaces/PropuestasParticionInterface";
+import { obtenerPropuestasParticion } from "@/src/services/propuestaParticionService";
 
 const DetalleGastoScreen: React.FC = () => {
   const { id, usuarioId } = useLocalSearchParams();
   const parsedGastoId = id ? Number(id) : null;
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [ultimaPropuesta, setUltimaPropuesta] = useState<PropuestaParticion>();
 
   const fetchGasto = async () => {
     try {
@@ -22,6 +25,11 @@ const DetalleGastoScreen: React.FC = () => {
           throw new Error("Gasto no encontrado");
         } else {
           setGasto(gasto);
+          const ultimaPropuesta = await obtenerPropuestasParticion(gasto.id);
+          if (!ultimaPropuesta) {
+            throw new Error("Propuesta no encontrada");
+          }
+          setUltimaPropuesta(ultimaPropuesta);
         }
       }
     } catch (error) {
@@ -44,50 +52,86 @@ const DetalleGastoScreen: React.FC = () => {
   }
 
   const esPendiente = gasto.estado.nombre === "Pendiente";
+  const esPagado = gasto.estado.nombre === "Pagado";
+  const esEnNegociacion = gasto.estado.nombre === "Negociando";
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          esPendiente ? styles.rectanguloPendiente : styles.rectanguloPagada,
-          { marginBottom: 5 },
-        ]}
-      >
-        <Text style={esPendiente ? styles.textoPendiente : styles.textoPagada}>
-          {gasto.estado.nombre.toUpperCase()}
-        </Text>
+      <View style={styles.contenedorGasto}>
+        <View
+          style={[
+            esPendiente
+              ? styles.rectanguloPendiente
+              : esPagado
+              ? styles.rectanguloPagada
+              : styles.rectanguloEnNegociacion,
+            { marginBottom: 5 },
+          ]}
+        >
+          <Text
+            style={
+              esPendiente
+                ? styles.textoPendiente
+                : esPagado
+                ? styles.textoPagada
+                : styles.textoEnNegociacion
+            }
+          >
+            {gasto.estado.nombre.toUpperCase()}
+          </Text>
+        </View>
+
+        <Text style={styles.tituloLabel}>Título del gasto: </Text>
+        <Text style={styles.titulo}>{gasto.titulo}</Text>
+        <Text style={styles.descripcion}>{gasto.descripcion}</Text>
+
+        <View style={styles.categoriaConteiner}>
+          <Text style={styles.categoriaLabel}>Categoría: </Text>
+          <Text style={styles.categoria}>{gasto.categoria.nombre}</Text>
+        </View>
+
+        <View style={styles.contenedorMonto}>
+          <Text style={styles.monto}>Total:</Text>
+          <Text style={styles.montoImportado}>${gasto.monto}</Text>
+        </View>
       </View>
 
-      <Text style={styles.tituloLabel}>Título del gasto: </Text>
-      <Text style={styles.titulo}>{gasto.titulo}</Text>
-      <Text style={styles.descripcion}>{gasto.descripcion}</Text>
-
-      <View style={styles.categoriaConteiner}>
-        <Text style={styles.categoriaLabel}>Categoría: </Text>
-        <Text style={styles.categoria}>{gasto.categoria.nombre}</Text>
-      </View>
-
-      <View style={styles.contenedorMonto}>
-        <Text style={styles.monto}>Total:</Text>
-        <Text style={styles.montoImportado}>${gasto.monto}</Text>
-      </View>
-
-      <ParticionesCuadrados
-        usuarioCreador={gasto.usuario_creador}
-        usuarioParticipe={gasto.usuario_participe}
-        usuarioId={Number(usuarioId)}
-        monto={gasto.monto}
-        particionUsuarioCreador={gasto.particion_usuario_creador}
-        particionUsuarioParticipe={gasto.particion_usuario_participe}
-      ></ParticionesCuadrados>
+      {ultimaPropuesta && (
+        <View style={styles.contenedorParticiones}>
+          {esEnNegociacion && (
+            <Text style={styles.propuesta}>
+              La última propuesta de partición hecha propone:
+            </Text>
+          )}
+          {esPendiente && (
+            <Text style={styles.propuesta}>Las particiones aplicadas son:</Text>
+          )}
+          {esPagado && (
+            <Text style={styles.propuesta}>
+              Las particiones que se aplicaron fueron:
+            </Text>
+          )}
+          <ParticionesCuadrados
+            usuarioCreador={gasto.usuario_creador}
+            usuarioParticipe={gasto.usuario_participe}
+            usuarioId={Number(usuarioId)}
+            monto={gasto.monto}
+            particionUsuarioCreador={
+              ultimaPropuesta?.particion_usuario_creador_gasto
+            }
+            particionUsuarioParticipe={
+              ultimaPropuesta?.particion_usuario_creador_gasto
+            }
+          ></ParticionesCuadrados>
+        </View>
+      )}
     </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
-    padding: 20,
+    flex: 1,
     backgroundColor: Colors.gris.fondo,
   },
   tituloLabel: {
@@ -106,7 +150,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
     marginBottom: 8,
   },
   categoriaLabel: {
@@ -169,10 +212,47 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignSelf: "center",
   },
+  rectanguloEnNegociacion: {
+    backgroundColor: Colors.rojo.rojoClaro,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 15,
+    alignSelf: "center",
+  },
   textoPagada: {
     color: "#5f80ad",
     fontWeight: "bold",
     fontSize: 25,
+  },
+  textoEnNegociacion: {
+    color: Colors.rojo.rojoOscuro,
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  contenedorParticiones: {
+    backgroundColor: Colors.marron.marronClaro,
+    paddingTop: 80,
+    marginTop: 40,
+    borderTopLeftRadius: 70,
+    borderTopRightRadius: 70,
+    paddingHorizontal: 20,
+    flex: 1,
+  },
+  contenedorGasto: {
+    marginTop: 30,
+    flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    marginBottom: 60,
+  },
+  propuesta: {
+    marginTop: -46,
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    lineHeight: 25,
+    marginBottom: 20,
+    paddingHorizontal: 40,
   },
 });
 

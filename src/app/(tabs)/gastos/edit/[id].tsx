@@ -9,10 +9,7 @@ import CustomTextInput from "@/src/components/TextInput";
 import CustomDropdown from "@/src/components/CustomDropdown";
 import Colors from "@/src/constants/Colors";
 import { Gasto } from "@/src/interfaces/GastoInterface";
-import ParticionesCuadrados from "@/src/components/ParticionesCuadrados";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
-import ProponerParticionScreen from "../particionModal";
-import CustomButton from "@/src/components/CustomButton";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const EditarGastoScreen = () => {
@@ -31,6 +28,7 @@ const EditarGastoScreen = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<number | null>(null);
+  const [esPendiente, setEsPendiente] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGasto = async () => {
@@ -45,6 +43,9 @@ const EditarGastoScreen = () => {
           setMonto(fetchedGasto.monto);
           setDescripcion(fetchedGasto.descripcion);
           setCategoriaSeleccionada(fetchedGasto.categoria.nombre);
+          if (fetchedGasto.estado.nombre === "Pendiente") {
+            setEsPendiente(true);
+          }
         } else {
           console.error("Gasto no encontrado");
         }
@@ -158,33 +159,28 @@ const EditarGastoScreen = () => {
           icon="pencil"
         />
 
-        <CustomTextInput
-          label="Monto del gasto"
-          placeholder="Escriba el monto del gasto"
-          value={monto ? monto.toString() : ""}
-          onChangeText={(monto) => {
-            setMonto(Number(monto));
-          }}
-          keyboardType="numeric"
-          primaryColor={Colors.azul.azulMuyOscuro}
-          icon="pencil"
-        />
-
-        <ParticionesCuadrados
-          usuarioCreador={gasto.usuario_creador}
-          usuarioParticipe={gasto.usuario_participe}
-          usuarioId={usuarioLogueado}
-          monto={monto}
-          particionUsuarioCreador={gasto.particion_usuario_creador}
-          particionUsuarioParticipe={gasto.particion_usuario_participe}
-        ></ParticionesCuadrados>
-
-        <Text style={styles.error}>{errors}</Text>
+        {esPendiente && (
+          <>
+            <CustomTextInput
+              label="Monto del gasto ($)"
+              placeholder="Escriba el monto del gasto"
+              value={monto ? monto.toString() : ""}
+              onChangeText={(monto) => {
+                setMonto(Number(monto));
+              }}
+              keyboardType="numeric"
+              primaryColor={Colors.azul.azulMuyOscuro}
+              icon="pencil"
+            />
+          </>
+        )}
 
         <View style={styles.buttonContainer}>
           <CancelButton texto="Cancelar" onPress={noActualizarGasto} />
           <SaveButton texto="Actualizar" onPress={editarGasto} />
         </View>
+
+        <Text style={styles.error}>{errors}</Text>
       </View>
     </ScrollView>
   );
@@ -207,6 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   buttonContainer: {
+    marginTop: 30,
     flexDirection: "row",
     justifyContent: "space-around",
 

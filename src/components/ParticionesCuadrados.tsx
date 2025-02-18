@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   particionUsuarioLogueado: {
-    borderColor: "#014f86",
+    borderColor: Colors.marron.marronNormal,
     borderWidth: 5,
   },
   tituloParticion: {

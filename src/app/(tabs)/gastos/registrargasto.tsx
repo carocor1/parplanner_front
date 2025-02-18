@@ -153,7 +153,7 @@ const RegistrarGastoScreen = () => {
 
         <CustomTextInput
           label="Monto del gasto"
-          placeholder="Escriba el monto del gasto"
+          placeholder="Escriba el monto del gasto ($)"
           value={monto ? monto.toString() : ""}
           onChangeText={(monto) => {
             setMonto(Number(monto));
@@ -163,10 +163,10 @@ const RegistrarGastoScreen = () => {
         />
 
         <View style={styles.particionesContenedor}>
-          <Text style={styles.particionesLabel}>Particiones</Text>
+          <Text style={styles.particionesLabel}>Propuesta de partición</Text>
           <Text style={styles.particionesLabelSubtitulo}>
-            Ingresá el porcentaje del monto que pagará cada uno de los
-            progenitores
+            Ingresá el porcentaje del monto que quieres que pague cada uno de
+            los progenitores
           </Text>
 
           {/* Particiones individuales */}
@@ -207,6 +207,9 @@ const RegistrarGastoScreen = () => {
               </Text>
             </View>
           </View>
+          <Text style={styles.particionesLabelSubtitulo}>
+            El otro progenitor deberá aceptar la partición que introduces.
+          </Text>
         </View>
         <Text style={styles.error}>{errors}</Text>
 
