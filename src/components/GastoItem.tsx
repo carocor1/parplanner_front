@@ -10,6 +10,8 @@ import {
 import { PropuestaParticion } from "../interfaces/PropuestasParticionInterface";
 import { MaterialIcons } from "@expo/vector-icons";
 import ProponerParticionScreen from "../app/(tabs)/gastos/particionModal";
+import { pagarGastos } from "../services/gastoService";
+import { openBrowserAsync } from "expo-web-browser";
 
 interface GastoItemProps {
   gasto: Gasto;
@@ -42,6 +44,18 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
         "Error al obtener la última propuesta de partición:",
         error
       );
+    }
+  };
+
+  const pagar = async () => {
+    try {
+      const gastos: Gasto[] = [gasto];
+      const response = await pagarGastos(gastos);
+      if (response.url) {
+        openBrowserAsync(response.url);
+      }
+    } catch (error) {
+      console.error("Error al pagar el gasto:", error);
     }
   };
 
@@ -170,7 +184,6 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
                 <Text style={styles.textoBoton}>Abrir</Text>
               </TouchableOpacity>
 
-              {/* Mostrar botón Editar solo si el usuario logueado es el creador */}
               {esCreador && (esPendiente || esEnNegociacion) && (
                 <TouchableOpacity
                   style={styles.botonAbrir}
@@ -178,13 +191,18 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
                     router.push({
                       pathname: `../gastos/edit/${gasto.id}`,
                       params: {
-                        // Pasar gasto correctamente
-                        usuarioId: usuarioLogueadoId, // Pasar ID del usuario
+                        usuarioId: usuarioLogueadoId,
                       },
                     })
                   }
                 >
                   <Text style={styles.textoBoton}>Editar</Text>
+                </TouchableOpacity>
+              )}
+
+              {!esCreador && esPendiente && (
+                <TouchableOpacity style={styles.botonPagar} onPress={pagar}>
+                  <Text style={styles.textoPagar}>Pagar</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -343,7 +361,7 @@ const styles = StyleSheet.create({
   },
   textoEnNegociacionLadoDerecho: {
     textAlign: "center",
-    lineHeight: 19.5, // Ajusta el interlineado aquí
+    lineHeight: 19.5,
   },
   subtituloEnNegociacionLadoDerecho: {
     marginTop: 3,
@@ -384,8 +402,25 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 8,
   },
+  botonPagar: {
+    backgroundColor: Colors.azul.mercadolibre,
+    borderWidth: 2,
+    borderColor: Colors.azul.mercadolibre,
+    borderRadius: 15,
+    padding: 3,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    marginRight: 8,
+  },
   textoBoton: {
     color: Colors.azul.celeste,
+    fontSize: 12,
+    marginRight: 8,
+    marginLeft: 8,
+  },
+  textoPagar: {
+    color: "white",
     fontSize: 12,
     marginRight: 8,
     marginLeft: 8,
