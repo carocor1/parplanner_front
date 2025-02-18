@@ -40,17 +40,23 @@ export default {
     azulOscuro: "#5f80ad",
     celeste: "#0077b6",
     azulMuyOscuro: "#0353a4",
+    mercadolibre: "#088ce4",
   },
   gris: {
     fondo: "#f5f5f5",
   },
   lila: {
     lilaNormal: "#6A5ACD",
+    lilaMuyClaro: "rgba(255, 255, 255, 0.7)",
   },
   rosa: {
     rosaNormal: "#666",
   },
   amarillo: {
     amarilloNormal: "#cd8d0d",
+  },
+  marron: {
+    marronNormal: "#bc6c25",
+    marronClaro: "#eece9f",
   },
 };
