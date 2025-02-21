@@ -28,9 +28,10 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="calendarios"
           options={{
             title: "Calendario",
+            headerShown: false,
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="calendar" color={color} />
             ),
