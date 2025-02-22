@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import SaveButton from '@/src/components/SaveButton';
-import CancelButton from '@/src/components/CancelButton';
+import React, { useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useRouter } from "expo-router";
+import SaveButton from "@/src/components/SaveButton";
+import CancelButton from "@/src/components/CancelButton";
 
 const RegistrarCompromiso = () => {
   const [nombre, setNombre] = useState("");
@@ -12,7 +12,7 @@ const RegistrarCompromiso = () => {
   const router = useRouter();
 
   const validarInput = () => {
-    setErrors(""); 
+    setErrors("");
     if (!nombre) {
       setErrors("El campo 'Nombre' es obligatorio.");
       return false;
@@ -33,16 +33,14 @@ const RegistrarCompromiso = () => {
 
   const registrarCompromiso = () => {
     if (!validarInput()) {
-      return; 
+      return;
     }
 
-  
     setNombre("");
     setFecha("");
     setTipoCompromiso("");
 
- 
-    router.push("/calendarios/calendario");
+    router.back();
   };
 
   return (
@@ -71,8 +69,8 @@ const RegistrarCompromiso = () => {
       {errors ? <Text style={styles.errorText}>{errors}</Text> : null}
 
       {/* Botones */}
-      <SaveButton onPress={registrarCompromiso} texto={'Guardar'} />
-      <CancelButton onPress={() => router.push("/(tabs)/calendarios/calendario")} texto={'Cancelar'} />
+      <SaveButton onPress={registrarCompromiso} texto={"Guardar"} />
+      <CancelButton onPress={() => router.back()} texto={"Cancelar"} />
     </View>
   );
 };
@@ -80,21 +78,21 @@ const RegistrarCompromiso = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     padding: 20,
   },
   input: {
-    width: '100%',
+    width: "100%",
     padding: 10,
     marginBottom: 25,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 10,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
 });

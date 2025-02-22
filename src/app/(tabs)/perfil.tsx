@@ -87,7 +87,6 @@ const PerfilScreen = () => {
   const logout = async () => {
     try {
       await cerrarSesion();
-      router.replace("/inicioSesion");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

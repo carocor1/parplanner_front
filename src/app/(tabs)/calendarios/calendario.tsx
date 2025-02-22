@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import ComponenteCalendario from '@/src/components/ComponenteCalendario';
-import { TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { router } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import ComponenteCalendario from "@/src/components/ComponenteCalendario";
 
 export default function CalendarioScreen() {
   const [fechasSeleccionadas, setFechasSeleccionadas] = useState<string[]>([]);
@@ -20,7 +20,9 @@ export default function CalendarioScreen() {
 
       <TouchableOpacity
         style={styles.botonFlotante}
-        onPress={() => router.push("/(tabs)/calendarios/registrarCompromiso")}
+        onPress={() =>
+          router.push("/(tabs)/calendarios/compromiso/registrarCompromiso")
+        }
       >
         <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>
@@ -32,13 +34,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   calendarioContainer: {
-    flex: 1, // Esto hace que ocupe el espacio restante disponible
-    width: "100%", // Asegura que ocupe todo el ancho posible
-    alignItems: 'center',
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
   },
   botonFlotante: {
     position: "absolute",

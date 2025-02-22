@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Alert,
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";

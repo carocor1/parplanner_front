@@ -1,5 +1,4 @@
-import React, { useEffect, useState, ReactNode } from "react";
-import { View, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { obtenerToken } from "../utils/storage";
 import {
@@ -7,12 +6,9 @@ import {
   verificarRegistroUsuario,
 } from "../services/userService";
 import { verificarSegundoProgenitorAsociado } from "../services/hijoService";
+import LoadingIndicator from "../components/LoadingIndicator";
 
-interface AuthCheckProps {
-  children: ReactNode;
-}
-
-const AuthCheck: React.FC<AuthCheckProps> = ({ children }) => {
+export default function index() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -35,7 +31,7 @@ const AuthCheck: React.FC<AuthCheckProps> = ({ children }) => {
             const segundoProgenitorAsociado =
               await verificarSegundoProgenitorAsociado();
             if (segundoProgenitorAsociado) {
-              router.push("/(tabs)/gastos/");
+              router.push("/(tabs)/gastos/gasto");
             } else {
               router.push("/vinculacionHijoOIngresoCodigo");
             }
@@ -43,23 +39,13 @@ const AuthCheck: React.FC<AuthCheckProps> = ({ children }) => {
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error al verificar el token:", error);
         router.replace("/inicioSesion");
       }
     };
-
     checkAuth();
   }, []);
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#6A5ACD" />
-      </View>
-    );
+    return <LoadingIndicator></LoadingIndicator>;
   }
-
-  return <>{children}</>;
-};
-
-export default AuthCheck;
+}

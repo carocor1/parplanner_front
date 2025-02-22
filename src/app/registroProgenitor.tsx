@@ -110,7 +110,7 @@ const registrarProgenitorScreen = () => {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
-          router.replace("/(tabs)/gastos/");
+          router.replace("/(tabs)/gastos/gasto");
         } else {
           router.replace("/vinculacionHijoOIngresoCodigo");
         }

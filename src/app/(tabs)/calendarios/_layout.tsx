@@ -5,25 +5,25 @@ import Colors from "@/src/constants/Colors";
 export default function CalendarioLayout() {
   return (
     <Stack>
-      <Stack.Screen 
-        name="calendario" 
+      <Stack.Screen
+        name="calendario"
         options={{
           title: "Calendario",
           headerStyle: {
             backgroundColor: Colors.verde.verdeOscuro,
           },
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
-        }} 
+        }}
       />
-      <Stack.Screen 
-        name="registrarCompromiso" 
+      <Stack.Screen
+        name="compromiso"
         options={{
-          title: "Registrar compromiso",
+          title: "Registrar Compromiso",
           headerStyle: {
             backgroundColor: Colors.verde.verdeOscuro,
           },
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
-        }} 
+        }}
       />
     </Stack>
   );

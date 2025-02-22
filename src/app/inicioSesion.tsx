@@ -1,11 +1,12 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/src/components/Themed";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
 import SaveButton from "@/src/components/SaveButton";
 import { login } from "@/src/services/authService";
+import { Image } from "react-native-elements";
 import {
   verificarHijoAsociado,
   verificarRegistroUsuario,
@@ -58,7 +59,7 @@ const IniciarSesion = () => {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
-          router.push("/(tabs)/gastos/");
+          router.push("/(tabs)/gastos/gasto");
         } else {
           router.push("/vinculacionHijoOIngresoCodigo");
         }

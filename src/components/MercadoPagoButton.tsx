@@ -8,7 +8,7 @@ const MercadoPagoButton: React.FC<MercadoPagoButtonProps> = ({ onPress }) => {
   return (
     <TouchableOpacity style={styles.botonMercadoPago} onPress={onPress}>
       <Image
-        source={require("../../assets/images/mercadopagoimage.png")}
+        source={require("./../assets/images/mercadopagoimage.png")}
         style={styles.logoMercadoPago}
       />
       <Text style={styles.textoBoton}>Pagar con Mercado Pago</Text>

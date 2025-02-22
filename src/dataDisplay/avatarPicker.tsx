@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Avatar } from 'react-native-elements';
-import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome } from '@expo/vector-icons'; // Importar FontAwesome
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Avatar } from "react-native-elements";
+import * as ImagePicker from "expo-image-picker";
 
 // Define la interfaz para las props
 interface BasicAvatarProps {
@@ -10,7 +9,10 @@ interface BasicAvatarProps {
   reset: boolean;
 }
 
-const BasicAvatar: React.FC<BasicAvatarProps> = ({ onImageSelected, reset }) => {
+const BasicAvatar: React.FC<BasicAvatarProps> = ({
+  onImageSelected,
+  reset,
+}) => {
   const [image, setImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,8 +43,8 @@ const BasicAvatar: React.FC<BasicAvatarProps> = ({ onImageSelected, reset }) => 
           rounded
           source={image ? { uri: image } : undefined}
           size="xlarge"
-          overlayContainerStyle={{ backgroundColor: '#f8f8f8' }} // Cambiar el color de fondo
-          icon={{ name: 'user', type: 'font-awesome', color: 'gray' }} // Usar el ícono de usuario
+          overlayContainerStyle={{ backgroundColor: "#f8f8f8" }}
+          icon={{ name: "user", type: "font-awesome", color: "gray" }}
         />
       </View>
     </TouchableOpacity>
@@ -52,9 +54,8 @@ const BasicAvatar: React.FC<BasicAvatarProps> = ({ onImageSelected, reset }) => 
 const styles = StyleSheet.create({
   container: {
     flex: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

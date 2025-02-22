@@ -32,7 +32,8 @@ const registroHijoOIngresoCodigoScreen = () => {
     }
     try {
       await verificarCodigoVinculacion(value);
-      router.push("/(tabs)/gastos/");
+      //MODIFICADO
+      router.push("/(tabs)/gastos/gasto");
     } catch (error) {
       alert(
         "Error al verificar el código de vinculación. Por favor, inténtalo de nuevo."
