@@ -1,3 +1,5 @@
+import { Hijo } from "./HijoInterface";
+
 export interface Usuario {
   id: number;
   nombre: string;
@@ -13,4 +15,5 @@ export interface Usuario {
   provincia: string;
   nro_telefono: string;
   googleId: string;
+  hijo: Hijo;
 }

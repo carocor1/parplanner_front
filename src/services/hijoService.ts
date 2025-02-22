@@ -1,3 +1,5 @@
+import { Hijo } from "../interfaces/HijoInterface";
+import { getProgenitorIdFromToken } from "../utils/storage";
 import api from "./api";
 
 export const registrarHijo = async (
@@ -59,5 +61,39 @@ export const enviarCodigoDeVinculacion = async (email_progenitor: string) => {
   } catch (error) {
     console.error("Error al enviar el código de vinculación:", error);
     throw error;
+  }
+};
+
+export const obtenerHijo = async (id: number) => {
+  try {
+    const response = await api.get(`/hijos/${id}`);
+    const hijo: Hijo = response.data;
+    return hijo;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const actualizarHijo = async (
+  id: number,
+  nombre?: string,
+  apellido?: string,
+  provincia?: string,
+  ciudad?: string,
+  documento?: number,
+  sexo?: string
+) => {
+  try {
+    const response = await api.patch(`/hijos/${id}`, {
+      nombre,
+      apellido,
+      provincia,
+      ciudad,
+      documento,
+      sexo,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el usuario:", error);
   }
 };

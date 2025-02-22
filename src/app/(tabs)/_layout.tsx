@@ -61,6 +61,7 @@ export default function TabLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerShown: false,
           headerStyle: {
             backgroundColor: "#96ac60",
           },
