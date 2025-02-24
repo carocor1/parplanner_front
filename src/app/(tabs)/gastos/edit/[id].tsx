@@ -28,7 +28,7 @@ const EditarGastoScreen = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [gasto, setGasto] = useState<Gasto | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<number | null>(null);
-  const [esPendiente, setEsPendiente] = useState<boolean>(false);
+  const [esNegociando, setEsNegociando] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGasto = async () => {
@@ -43,8 +43,8 @@ const EditarGastoScreen = () => {
           setMonto(fetchedGasto.monto);
           setDescripcion(fetchedGasto.descripcion);
           setCategoriaSeleccionada(fetchedGasto.categoria.nombre);
-          if (fetchedGasto.estado.nombre === "Pendiente") {
-            setEsPendiente(true);
+          if (fetchedGasto.estado.nombre === "Negociando") {
+            setEsNegociando(true);
           }
         } else {
           console.error("Gasto no encontrado");
@@ -159,7 +159,7 @@ const EditarGastoScreen = () => {
           icon="pencil"
         />
 
-        {esPendiente && (
+        {esNegociando && (
           <>
             <CustomTextInput
               label="Monto del gasto ($)"

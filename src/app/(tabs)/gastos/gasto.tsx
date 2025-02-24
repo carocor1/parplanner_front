@@ -132,6 +132,7 @@ const GastosScreen = () => {
                 key={gasto.id}
                 gasto={gasto}
                 usuarioLogueadoId={progenitorLogueadoId}
+                onRecargar={fetchGastos}
               />
             ))}
         </View>

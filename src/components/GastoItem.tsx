@@ -16,12 +16,16 @@ import { openBrowserAsync } from "expo-web-browser";
 interface GastoItemProps {
   gasto: Gasto;
   usuarioLogueadoId: number;
+  onRecargar: () => void;
 }
 
-const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
+const GastoItem: React.FC<GastoItemProps> = ({
+  gasto,
+  usuarioLogueadoId,
+  onRecargar,
+}) => {
   const [ultimaPropuesta, setUltimaPropuesta] =
     useState<PropuestaParticion | null>(null);
-
   const [ultimaParticionEsLogueado, setUltimaParticionEsLogueado] =
     useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -78,6 +82,7 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
     try {
       if (ultimaPropuesta) {
         await aprobarParticion(ultimaPropuesta.id);
+        onRecargar();
       }
     } catch (error) {
       console.error("Error al aceptar partición", error);
@@ -87,10 +92,6 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
   const rechazarSolicitudParticion = async () => {
     try {
       setModalVisible(true);
-
-      if (ultimaPropuesta) {
-        setModalVisible(true);
-      }
     } catch (error) {
       console.error("Error al rechazar partición", error);
     }
@@ -98,7 +99,7 @@ const GastoItem: React.FC<GastoItemProps> = ({ gasto, usuarioLogueadoId }) => {
 
   const handleCloseModal = () => {
     setModalVisible(false);
-    fetchUltimaPropuesta();
+    onRecargar();
   };
 
   const calcularMensajeDeuda = (): string => {
