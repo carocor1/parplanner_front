@@ -37,6 +37,7 @@ const PerfilHijoScreen = () => {
 
   const fetchHijo = async () => {
     try {
+      setLoading(true);
       const usuario = await obtenerUsuario();
       const hijo = await obtenerHijo(usuario.hijo.id);
       setHijo(hijo);
@@ -116,6 +117,7 @@ const PerfilHijoScreen = () => {
           documento,
           sexo
         );
+        fetchHijo();
       }
     } catch (error) {
       console.error("Error al actualizar datos:", error);

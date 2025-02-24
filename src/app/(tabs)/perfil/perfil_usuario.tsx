@@ -1,7 +1,7 @@
 import { Usuario } from "@/src/interfaces/UsuarioInterface";
 import { cerrarSesion } from "@/src/services/authService";
 import { actualizarUsuario, obtenerUsuario } from "@/src/services/userService";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import BasicAvatar from "@/src/dataDisplay/avatarPicker";
 import Colors from "@/src/constants/Colors";
 import CustomTextInput from "@/src/components/TextInput";
@@ -49,6 +49,7 @@ const PerfilScreen = () => {
 
   const fetchProgenitor = async () => {
     try {
+      setLoading(true);
       const usuario = await obtenerUsuario();
       setUsuarioLogueado(usuario);
       setNombre(usuario.nombre);
@@ -147,14 +148,20 @@ const PerfilScreen = () => {
           sexo,
           cbu
         );
+        await fetchProgenitor();
       }
     } catch (error) {
       console.error("Error al actualizar datos:", error);
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchProgenitor();
+    }, [])
+  );
+
   useEffect(() => {
-    fetchProgenitor();
     fetchProvincias();
   }, []);
 
@@ -282,7 +289,7 @@ const PerfilScreen = () => {
             style={styles.irAHijo}
             onPress={() => router.push("/(tabs)/perfil/hijo/perfil_hijo")}
           >
-            <Text>IR A HIJO</Text>S
+            <Text>IR A HIJO</Text>
             <Ionicons name="chevron-forward" size={20} color="black" />
           </TouchableOpacity>
           <View style={{ marginTop: -30 }}>
