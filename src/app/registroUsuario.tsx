@@ -7,35 +7,37 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
 import SaveButton from "@/src/components/SaveButton";
 import { register } from "../services/authService";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const registrarUsuarioPantalla = () => {
   const [nombre, SetNombre] = useState("");
   const [password, SetPassword] = useState("");
-  const [errors, setErrors] = useState("");
   const [email, setEmail] = useState("");
   const [apellido, SetApellido] = useState("");
   const router = useRouter();
 
   const validarInput = () => {
-    setErrors("");
+    let errors = "";
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!nombre) {
-      setErrors("No se ha ingresado el usuario");
-      return false;
+      errors = "No se ha ingresado el usuario";
+    } else if (!password) {
+      errors = "No se ha ingresado la contraseña";
+    } else if (!apellido) {
+      errors = "No se ha ingresado el apellido";
+    } else if (!email) {
+      errors = "No se ha ingresado el email";
+    } else if (!emailRegex.test(email)) {
+      errors = "El email ingresado no es válido";
     }
-    if (!password) {
-      setErrors("No se ha ingresado la contraseña");
-      return false;
-    }
-    if (!apellido) {
-      setErrors("No se ha ingresado el apellido");
-    }
-    if (!email) {
-      setErrors("No se ha ingresado el email");
-    }
-    if (!emailRegex.test(email)) {
-      setErrors("El email ingresado no es válido");
+
+    if (errors) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: errors,
+      });
       return false;
     }
 
@@ -54,7 +56,11 @@ const registrarUsuarioPantalla = () => {
       SetApellido("");
       router.replace("/registroProgenitor");
     } catch (error) {
-      setErrors("Error al registrar usuario.");
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al registrar usuario. Por favor, inténtalo de nuevo.",
+      });
       console.error("Error al registrar usuario:", error);
     }
   };
@@ -92,8 +98,6 @@ const registrarUsuarioPantalla = () => {
         iconType="font-awesome"
         secureTextEntry
       />
-
-      <Text style={styles.error}>{errors}</Text>
 
       <View style={styles.buttonContainer}>
         <SaveButton texto="Crear Cuenta" onPress={registrarse} />
@@ -134,11 +138,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
   },
-  error: {
-    color: "red",
-    textAlign: "center",
-  },
   buttonContainer: {
+    marginTop: 30,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

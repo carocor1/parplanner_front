@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
-import { StyleSheet, TextInput } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import {
   CodeField,
   Cursor,
@@ -12,6 +12,9 @@ import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
 import { enviarCodigoDeVinculacion } from "../services/hijoService";
+import CustomTextInput from "../components/TextInput";
+import Colors from "../constants/Colors";
+import { Toast, ALERT_TYPE } from "react-native-alert-notification";
 
 const vinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
@@ -24,35 +27,54 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
     setValue,
   });
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const verificarCodigo = async () => {
     if (value.length !== CELL_COUNT) {
-      //Mejorar alerta
-      alert("El código ingresado no es válido");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: "El código ingresado no es válido.",
+      });
       return;
     }
     try {
       await verificarCodigoVinculacion(value);
       router.push("/(tabs)/gastos/");
     } catch (error) {
-      alert(
-        "Error al verificar el código de vinculación. Por favor, inténtalo de nuevo."
-      );
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al verificar código. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
   const enviarCodigo = async () => {
     if (!email) {
-      alert("Ingresá un email válido");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Email inválido",
+        textBody: "Por favor, reingresá el email del otro progenitor.",
+      });
       return;
     }
     try {
+      setLoading(true);
       await enviarCodigoDeVinculacion(email);
-      alert("Se ha enviado el código de vinculación al email ingresado");
+      setLoading(false);
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: "Éxito",
+        textBody: "El código de vinculación ha sido enviado correctamente.",
+      });
     } catch (error) {
-      alert(
-        "Error al enviar el código de vinculación. Por favor, inténtalo de nuevo."
-      );
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "No pudimos enviar el código de vinculación correctamente. Por favor, intentá nuevamente.",
+      });
     }
   };
 
@@ -65,14 +87,36 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           código de vinculación que deberá introducir para finalizar la
           asociación.
         </Text>
-        <TextInput
-          placeholder="otroprogenitor@gmail.com"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-        />
+        <View style={styles.input}>
+          <CustomTextInput
+            label="Email"
+            placeholder="Escribe el email del progenitor a invitar"
+            value={email}
+            onChangeText={(email) => {
+              setEmail(email);
+            }}
+            primaryColor={Colors.verde.verdeMuyOscuro}
+            keyboardType="email-address"
+          />
+        </View>
         <SaveButton texto="ENVIAR" onPress={() => enviarCodigo()} />
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="small"
+              color={Colors.verde.verdeMuyOscuro}
+            />
+            <Text
+              style={{
+                color: Colors.verde.verdeMuyOscuro,
+                fontWeight: "bold",
+                marginTop: 5,
+              }}
+            >
+              Enviando código...
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.container}>
         <Text style={styles.o_text}>
@@ -112,14 +156,14 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
 const styles = StyleSheet.create({
   container_mayor: {
     flex: 1,
-    justifyContent: "center", // Centra los contenedores internos verticalmente
-    alignItems: "center", // Centra los contenedores internos horizontalmente
-    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.gris.fondo,
   },
   container: {
-    justifyContent: "center", // Centra el contenido verticalmente
-    alignItems: "center", // Centra el contenido horizontalmente
-    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.gris.fondo,
     padding: 20,
   },
   titulo: {
@@ -129,7 +173,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 25,
     marginHorizontal: 20,
-    lineHeight: 40, // Aumenta el interlineado
+    lineHeight: 40,
+  },
+  input: {
+    width: "100%",
+    backgroundColor: Colors.gris.fondo,
+    marginBottom: 13,
   },
   text: {
     color: "grey",
@@ -137,17 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "normal",
     marginBottom: 20,
-    lineHeight: 28, // Aumenta el interlineado
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ced4da",
-    borderRadius: 15,
-    marginBottom: 20,
-    width: "100%",
-    padding: 10,
-    fontSize: 16,
-    backgroundColor: "#e9ecef",
+    lineHeight: 28,
   },
   o_text: {
     color: "grey",
@@ -157,7 +196,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     lineHeight: 30,
   },
-  root: { flex: 1, padding: 20 },
   title: { textAlign: "center", fontSize: 30, color: "black" },
   codeFieldRoot: { marginBottom: 20 },
   cell: {
@@ -168,15 +206,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     borderWidth: 3,
-    borderColor: "#ced4da",
+    borderColor: Colors.gris.claro,
     textAlign: "center",
     margin: 3,
-    backgroundColor: "#e9ecef",
+    backgroundColor: Colors.gris.muyClaro,
     borderRadius: 6,
   },
   focusCell: {
-    borderColor: "#778c43",
-    color: "#778c43",
+    borderColor: Colors.verde.verdeMuyOscuro,
+    color: Colors.verde.verdeMuyOscuro,
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    backgroundColor: Colors.gris.fondo,
   },
 });
 

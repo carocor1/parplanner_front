@@ -12,10 +12,13 @@ import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
 import Colors from "../constants/Colors";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const registroHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
   const CELL_COUNT = 6;
+  const [loading, setLoading] = useState(false);
 
   const [value, setValue] = useState("");
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
@@ -26,20 +29,31 @@ const registroHijoOIngresoCodigoScreen = () => {
 
   const verificarCodigo = async () => {
     if (value.length !== CELL_COUNT) {
-      //Mejorar alerta
-      alert("El código ingresado no es válido");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: "El código ingresado no es válido.",
+      });
       return;
     }
     try {
+      setLoading(true);
       await verificarCodigoVinculacion(value);
-      //MODIFICADO
+      setLoading(false);
       router.push("/(tabs)/gastos/gasto");
     } catch (error) {
-      alert(
-        "Error al verificar el código de vinculación. Por favor, inténtalo de nuevo."
-      );
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "Error al verificar el código de vinculación. Por favor, inténtalo de nuevo.",
+      });
     }
   };
+
+  if (loading) {
+    return <LoadingIndicator></LoadingIndicator>;
+  }
 
   return (
     <View style={styles.container_mayor}>

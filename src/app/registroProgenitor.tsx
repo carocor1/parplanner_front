@@ -22,6 +22,8 @@ import {
 } from "../services/userService";
 import { verificarSegundoProgenitorAsociado } from "../services/hijoService";
 import Colors from "../constants/Colors";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const registrarProgenitorScreen = () => {
   const [nroTelefono, setNroTelefono] = useState("");
@@ -30,49 +32,53 @@ const registrarProgenitorScreen = () => {
   const [ciudades, setCiudades] = useState<string[]>([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState("");
   const [ciudadSeleccionada, setCiudadSeleccionada] = useState("");
-  const [errors, setErrors] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState(new Date());
   const [documento, setDocumento] = useState<number>(0);
   const [sexoSeleccionado, setSexo] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const router = useRouter();
   const [resetAvatar, setResetAvatar] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const sexo = ["Masculino", "Femenino", "Otro"];
 
   const handleImageSelected = (uri: string) => {
     setImage(uri);
+    console.log(image);
   };
-  const handleImageSelect = (imageUrl: string | null) => {
-    setImage(imageUrl);
-  };
+
   const ValidateInput = () => {
-    setErrors("");
+    let errors = "";
     if (!nroTelefono) {
-      setErrors("El celular es requerido");
-      return false;
+      errors = "El celular es requerido";
     }
     if (!fechaNacimiento) {
-      setErrors("No se ha seleccionado la fecha de Nacimiento");
-      return false;
+      errors = "No se ha seleccionado la fecha de Nacimiento";
+    }
+    if (fechaNacimiento > new Date()) {
+      errors = "La fecha de nacimiento no puede ser mayor a la actual";
     }
     if (!provinciaSeleccionada) {
-      setErrors("No se ha seleccionado la provincia ");
-      return false;
+      errors = "No se ha seleccionado la provincia ";
     }
     if (!ciudadSeleccionada) {
-      return false;
+      errors = "No se ha seleccionado la ciudad";
     }
     if (!documento) {
-      setErrors("No se ha ingresado el documento");
-      return false;
+      errors = "No se ha ingresado el documento";
     }
     if (!sexoSeleccionado) {
-      setErrors("No se ha seleccionado el sexo");
-      return false;
+      errors = "No se ha seleccionado el sexo";
     }
     if (!Cbu) {
-      setErrors("No se ha ingresado el CBU");
+      errors = "No se ha ingresado el Cbu";
+    }
+    if (errors) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: errors,
+      });
       return false;
     }
     return true;
@@ -83,6 +89,7 @@ const registrarProgenitorScreen = () => {
       return;
     }
     try {
+      setLoading(true);
       await registroProgenitor(
         nroTelefono,
         fechaNacimiento,
@@ -105,23 +112,30 @@ const registrarProgenitorScreen = () => {
 
       const tieneHijoAsociado = await verificarHijoAsociado();
       if (!tieneHijoAsociado) {
+        setLoading(false);
         router.replace("/registroHijoOIngresoCodigo");
       } else {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
+          setLoading(false);
           router.replace("/(tabs)/gastos/gasto");
         } else {
+          setLoading(false);
           router.replace("/vinculacionHijoOIngresoCodigo");
         }
       }
     } catch (error) {
-      alert("Error al registrar progenitor. Por favor, inténtalo de nuevo.");
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al registrar usuario. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
   const noGuardarRegistro = () => {
-    router.back();
+    router.push("/inicioSesion");
   };
 
   useEffect(() => {
@@ -144,6 +158,10 @@ const registrarProgenitorScreen = () => {
       setCiudades(ciudadesFiltradas);
     }
   };
+
+  if (loading) {
+    return <LoadingIndicator></LoadingIndicator>;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -219,7 +237,6 @@ const registrarProgenitorScreen = () => {
               </View>
             </View>
 
-            <Text style={styles.error}>{errors}</Text>
             <View style={styles.buttonContainer}>
               <CancelButton texto="Cancelar" onPress={noGuardarRegistro} />
               <SaveButton texto="Guardar" onPress={registrarProgenitor} />
@@ -272,16 +289,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginLeft: "20%",
   },
-  error: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: 20,
-  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -30,
+    marginTop: 10,
   },
   label: {
     color: "#000",
@@ -311,7 +323,7 @@ const styles = StyleSheet.create({
   },
   container_mayor: {
     marginTop: 20,
-    paddingBottom: 100,
+    paddingBottom: 40,
     backgroundColor: "white",
   },
 });
