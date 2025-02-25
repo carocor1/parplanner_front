@@ -10,6 +10,7 @@ import LoadingIndicator from "@/src/components/LoadingIndicator";
 import { City, State } from "country-state-city";
 import { actualizarHijo, obtenerHijo } from "@/src/services/hijoService";
 import { Hijo } from "@/src/interfaces/HijoInterface";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const dataSexo = [
   { label: "Masculino", value: "Masculino" },
@@ -33,7 +34,6 @@ const PerfilHijoScreen = () => {
   const [image, setImage] = useState<string | null>(null);
   const [resetAvatar, setResetAvatar] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errors, setErrors] = useState<string>("");
 
   const fetchHijo = async () => {
     try {
@@ -93,12 +93,14 @@ const PerfilHijoScreen = () => {
 
     for (const rule of validationRules) {
       if (rule.condition) {
-        setErrors(rule.message);
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          title: "Error",
+          textBody: rule.message,
+        });
         return false;
       }
     }
-
-    setErrors("");
     return true;
   };
 
@@ -214,16 +216,12 @@ const PerfilHijoScreen = () => {
             primaryColor="purple"
           />
 
-          <View style={{ marginTop: -30 }}>
-            <Text style={styles.error}>{errors}</Text>
-
-            <CustomButton
-              onPress={actualizarDatos}
-              title="ACTUALIZAR DATOS"
-              backgroundColor={Colors.amarillo.amarilloNormal}
-              textColor="white"
-            />
-          </View>
+          <CustomButton
+            onPress={actualizarDatos}
+            title="ACTUALIZAR DATOS"
+            backgroundColor={Colors.amarillo.amarilloNormal}
+            textColor="white"
+          />
         </View>
       </ScrollView>
     );
@@ -244,11 +242,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
-  },
-  error: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: 5,
   },
   irAHijo: {
     marginTop: 10,

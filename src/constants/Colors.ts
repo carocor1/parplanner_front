@@ -21,14 +21,17 @@ export default {
     verdeIntermedio: "#a9bb7c",
     verdeMuyOscuro: "#809155",
     verdeMuyMuyOscuro: "#fff",
+    verdeOscuro2: "#7cb518",
   },
   negro: {
     negroNormal: "#343a40",
+    negroOscuro: "#434444",
   },
   rojo: {
     rojoBrillante: "#e63946",
     rojoClaro: "#f6cacc",
     rojoOscuro: "#dd2c2f",
+    rojoNegociando: "#d62828",
   },
   naranja: {
     naranjaClaro: "#FFE5B4",
@@ -44,6 +47,8 @@ export default {
   },
   gris: {
     fondo: "#f5f5f5",
+    muyClaro: "#e9ecef",
+    claro: "#ced4da",
   },
   lila: {
     lilaNormal: "#6A5ACD",

@@ -7,8 +7,9 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import "react-native-reanimated";
+import { AlertNotificationRoot } from "react-native-alert-notification";
 
 import { useColorScheme } from "@/src/components/useColorScheme";
 
@@ -47,33 +48,34 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        <Stack.Screen
-          name="registroUsuario"
-          options={{ title: "Registro Usuario", headerShown: false }}
-        />
-        <Stack.Screen
-          name="registroProgenitor"
-          options={{ title: "Registro Progenitor", headerShown: false }}
-        />
-        <Stack.Screen
-          name="registrohijo"
-          options={{ title: "Registro Hijo", headerShown: false }}
-        />
-        <Stack.Screen
-          name="vinculacionHijoOIngresoCodigo"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="inicioSesion" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="registroHijoOIngresoCodigo"
-          options={{ headerShown: false }}
-        />
-      </Stack>
-    </ThemeProvider>
+    <AlertNotificationRoot>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="registroUsuario"
+            options={{ title: "Registro Usuario", headerShown: false }}
+          />
+          <Stack.Screen
+            name="registroProgenitor"
+            options={{ title: "Registro Progenitor", headerShown: false }}
+          />
+          <Stack.Screen
+            name="registrohijo"
+            options={{ title: "Registro Hijo", headerShown: false }}
+          />
+          <Stack.Screen
+            name="vinculacionHijoOIngresoCodigo"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="inicioSesion" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="registroHijoOIngresoCodigo"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </AlertNotificationRoot>
   );
 }

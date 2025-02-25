@@ -12,6 +12,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import ProponerParticionScreen from "../app/(tabs)/gastos/particionModal";
 import { pagarGastos } from "../services/gastoService";
 import { openBrowserAsync } from "expo-web-browser";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 interface GastoItemProps {
   gasto: Gasto;
@@ -44,10 +45,7 @@ const GastoItem: React.FC<GastoItemProps> = ({
         );
       }
     } catch (error) {
-      console.error(
-        "Error al obtener la última propuesta de partición:",
-        error
-      );
+      console.log(error);
     }
   };
 
@@ -59,7 +57,11 @@ const GastoItem: React.FC<GastoItemProps> = ({
         openBrowserAsync(response.url);
       }
     } catch (error) {
-      console.error("Error al pagar el gasto:", error);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al pagar el gasto. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
@@ -85,7 +87,11 @@ const GastoItem: React.FC<GastoItemProps> = ({
         onRecargar();
       }
     } catch (error) {
-      console.error("Error al aceptar partición", error);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al aceptar partición. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
@@ -93,7 +99,11 @@ const GastoItem: React.FC<GastoItemProps> = ({
     try {
       setModalVisible(true);
     } catch (error) {
-      console.error("Error al rechazar partición", error);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al rechazar partición. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
@@ -154,7 +164,6 @@ const GastoItem: React.FC<GastoItemProps> = ({
     return (
       <View style={styles.gastoContainer}>
         <View style={styles.estiloAlineacion}>
-          {/* Sección de 60% del contenedor */}
           <View style={esEnNegociacion ? { flex: 0.5 } : { flex: 0.6 }}>
             <Text style={styles.titulo}>{gasto.titulo}</Text>
             <Text style={{ marginBottom: 2 }}>{fechaFormateada}</Text>
@@ -256,7 +265,6 @@ const GastoItem: React.FC<GastoItemProps> = ({
               </>
             )}
 
-            {/* Mensaje de negociación */}
             {esEnNegociacion && (
               <>
                 <Text style={styles.textoEnNegociacionLadoDerecho}>
@@ -287,7 +295,6 @@ const GastoItem: React.FC<GastoItemProps> = ({
           </View>
         </View>
 
-        {/* Modal para proponer partición */}
         <ProponerParticionScreen
           visible={modalVisible}
           onClose={handleCloseModal}
@@ -325,12 +332,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textoNegro: {
-    color: "#434444",
+    color: Colors.negro.negroOscuro,
     fontWeight: "bold",
     marginBottom: 2,
   },
   textoNaranja: {
-    color: "#cd8d0d",
+    color: Colors.naranja.naranjaOscuro,
     fontWeight: "bold",
     marginBottom: 2,
   },
@@ -340,13 +347,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   textoVerde: {
-    color: "#7cb518",
+    color: Colors.verde.verdeOscuro,
     fontSize: 23,
     fontWeight: "bold",
     marginBottom: 10,
   },
   textoRojo: {
-    color: "#d62828",
+    color: Colors.rojo.rojoNegociando,
     fontSize: 23,
     fontWeight: "bold",
     marginBottom: 10,

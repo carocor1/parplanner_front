@@ -1,5 +1,4 @@
 import { Hijo } from "../interfaces/HijoInterface";
-import { getProgenitorIdFromToken } from "../utils/storage";
 import api from "./api";
 
 export const registrarHijo = async (
@@ -23,8 +22,7 @@ export const registrarHijo = async (
     });
     return response.data;
   } catch (error) {
-    console.error("Error al registrar el hijo:", error);
-    throw error;
+    console.log(error);
   }
 };
 
@@ -33,10 +31,7 @@ export const verificarSegundoProgenitorAsociado = async () => {
     const response = await api.get("/hijos/verificar-vinculacion");
     return response.data;
   } catch (error) {
-    console.error(
-      "Error al verificar si el segundo progenitor tiene hijo asociado:",
-      error
-    );
+    console.log(error);
   }
 };
 
@@ -47,8 +42,7 @@ export const verificarCodigoVinculacion = async (codigo: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error al verificar el código de vinculación:", error);
-    throw error;
+    console.log(error);
   }
 };
 
@@ -59,8 +53,7 @@ export const enviarCodigoDeVinculacion = async (email_progenitor: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error al enviar el código de vinculación:", error);
-    throw error;
+    console.log(error);
   }
 };
 
@@ -94,6 +87,6 @@ export const actualizarHijo = async (
     });
     return response.data;
   } catch (error) {
-    console.error("Error al actualizar el usuario:", error);
+    console.log("Error al actualizar el usuario:", error);
   }
 };

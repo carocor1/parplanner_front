@@ -21,6 +21,7 @@ import { obtenerPropuestasParticion } from "@/src/services/propuestaParticionSer
 import { openBrowserAsync } from "expo-web-browser";
 import Colors from "@/src/constants/Colors";
 import MercadoPagoButton from "@/src/components/MercadoPagoButton";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
@@ -40,7 +41,12 @@ const GastosScreen = () => {
       const gastos = await getGastosByProgenitor();
       setListaGastos(gastos);
     } catch (error) {
-      console.error("Error al recuperar los gastos:", error);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "Error al recuperar los gastos. Por favor, inténtalo de nuevo.",
+      });
     } finally {
       setLoading(false);
     }
@@ -69,7 +75,11 @@ const GastosScreen = () => {
         openBrowserAsync(response.url);
       }
     } else {
-      Alert.alert("No hay gastos pendientes");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: "No hay gastos pendientes",
+      });
     }
   };
 
@@ -105,7 +115,6 @@ const GastosScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {/* Rectángulo con información de deuda */}
         <View style={styles.deudaContainer}>
           {deudaTotal !== 0 && (
             <>
@@ -119,23 +128,31 @@ const GastosScreen = () => {
 
           {deudaTotal === 0 && (
             <Text style={styles.noDebeText}>
-              ¡Por el momento no debes nada!
+              ¡Por el momento no debés nada!
             </Text>
           )}
         </View>
 
-        <View style={styles.gastosContainer}>
-          <Text style={styles.gastosTitle}>Gastos</Text>
-          {progenitorLogueadoId &&
-            listaGastos.map((gasto) => (
-              <GastoItem
-                key={gasto.id}
-                gasto={gasto}
-                usuarioLogueadoId={progenitorLogueadoId}
-                onRecargar={fetchGastos}
-              />
-            ))}
-        </View>
+        {listaGastos.length > 0 ? (
+          <>
+            <View style={styles.gastosContainer}>
+              <Text style={styles.gastosTitle}>Gastos</Text>
+              {progenitorLogueadoId &&
+                listaGastos.map((gasto) => (
+                  <GastoItem
+                    key={gasto.id}
+                    gasto={gasto}
+                    usuarioLogueadoId={progenitorLogueadoId}
+                    onRecargar={fetchGastos}
+                  />
+                ))}
+            </View>
+          </>
+        ) : (
+          <Text style={styles.textoSinGasto}>
+            ¡Registrá un nuevo gasto para comenzar a particionar!
+          </Text>
+        )}
       </ScrollView>
 
       <TouchableOpacity
@@ -174,6 +191,7 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     paddingVertical: 18,
   },
+
   cantidadText: {
     color: "white",
     fontSize: 35,
@@ -206,6 +224,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+
   botonFlotante: {
     position: "absolute",
     width: 60,
@@ -222,6 +241,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+  },
+  textoSinGasto: {
+    fontWeight: "bold",
+    fontSize: 25,
+    textAlign: "center",
+    color: "gray",
+    lineHeight: 30,
+    paddingHorizontal: 50,
+    paddingVertical: 200,
   },
 });
 

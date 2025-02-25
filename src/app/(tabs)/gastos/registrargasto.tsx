@@ -9,6 +9,7 @@ import CustomTextInput from "@/src/components/TextInput";
 import Colors from "@/src/constants/Colors";
 import CustomDropdown from "@/src/components/CustomDropdown";
 import InputSpinner from "react-native-input-spinner";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const RegistrarGastoScreen = () => {
   const [titulo, setTitulo] = useState<string>("");
@@ -18,7 +19,6 @@ const RegistrarGastoScreen = () => {
     useState<number>(50);
   const [particion2Seleccionada, setParticion2Seleccionada] =
     useState<number>(50);
-  const [errors, setErrors] = useState<string>("");
   const router = useRouter();
   const [isFocus, setIsFocus] = useState(false);
 
@@ -34,20 +34,27 @@ const RegistrarGastoScreen = () => {
         const categorias = await getCategorias();
         setCategorias(categorias);
       } catch (error) {
-        console.error("Error al obtener categorías:", error);
+        Toast.show({
+          type: ALERT_TYPE.DANGER,
+          title: "Error",
+          textBody:
+            "Error al recuperar las categorías. Por favor, inténtalo de nuevo.",
+        });
       }
     };
     fetchCategorias();
   }, []);
 
   const validateInput = () => {
+    let errors = "";
     const validationRules = [
       { condition: !titulo, message: "El titulo es requerido" },
-      { condition: !monto, message: "El monto es requerido" },
       {
         condition: !categoriaSeleccionada,
         message: "No se seleccionó una categoría",
       },
+      { condition: !descripcion, message: "La descripción es requerida" },
+      { condition: !monto, message: "El monto es requerido" },
       {
         condition: !particion1Seleccionada,
         message: "No se indicó la partición",
@@ -60,12 +67,15 @@ const RegistrarGastoScreen = () => {
 
     for (const rule of validationRules) {
       if (rule.condition) {
-        setErrors(rule.message);
+        errors = rule.message;
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          title: "Error",
+          textBody: errors,
+        });
         return false;
       }
     }
-
-    setErrors("");
     return true;
   };
 
@@ -94,8 +104,11 @@ const RegistrarGastoScreen = () => {
         router.back();
       }
     } catch (error) {
-      console.error("Error al crear gasto:", error);
-      setErrors("Ocurrió un error al guardar el gasto.");
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al crear gasto. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
@@ -211,7 +224,6 @@ const RegistrarGastoScreen = () => {
             El otro progenitor deberá aceptar la partición que introduces.
           </Text>
         </View>
-        <Text style={styles.error}>{errors}</Text>
 
         <View style={styles.buttonContainer}>
           <CancelButton texto="Cancelar" onPress={noGuardarGasto} />
@@ -245,10 +257,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
     paddingHorizontal: 10,
-  },
-  error: {
-    color: "red",
-    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",

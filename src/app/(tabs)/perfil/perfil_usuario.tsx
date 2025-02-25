@@ -18,6 +18,7 @@ import CustomDropdown from "@/src/components/CustomDropdown";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import { City, State } from "country-state-city";
 import { Ionicons } from "@expo/vector-icons";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const dataSexo = [
   { label: "Masculino", value: "Masculino" },
@@ -45,7 +46,6 @@ const PerfilScreen = () => {
   const [image, setImage] = useState<string | null>(null);
   const [resetAvatar, setResetAvatar] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errors, setErrors] = useState<string>("");
 
   const fetchProgenitor = async () => {
     try {
@@ -105,6 +105,7 @@ const PerfilScreen = () => {
   };
 
   const validateInput = () => {
+    let error = "";
     const validationRules = [
       { condition: !nombre, message: "El nombre es requerido" },
       { condition: !apellido, message: "El apellido es requerido" },
@@ -122,12 +123,14 @@ const PerfilScreen = () => {
 
     for (const rule of validationRules) {
       if (rule.condition) {
-        setErrors(rule.message);
+        Toast.show({
+          type: ALERT_TYPE.WARNING,
+          title: "Error",
+          textBody: rule.message,
+        });
         return false;
       }
     }
-
-    setErrors("");
     return true;
   };
 
@@ -292,23 +295,19 @@ const PerfilScreen = () => {
             <Text>IR A HIJO</Text>
             <Ionicons name="chevron-forward" size={20} color="black" />
           </TouchableOpacity>
-          <View style={{ marginTop: -30 }}>
-            <Text style={styles.error}>{errors}</Text>
+          <CustomButton
+            onPress={actualizarDatos}
+            title="ACTUALIZAR DATOS"
+            backgroundColor={Colors.amarillo.amarilloNormal}
+            textColor="white"
+          />
 
-            <CustomButton
-              onPress={actualizarDatos}
-              title="ACTUALIZAR DATOS"
-              backgroundColor={Colors.amarillo.amarilloNormal}
-              textColor="white"
-            />
-
-            <CustomButton
-              onPress={logout}
-              title="CERRAR SESION"
-              backgroundColor={Colors.rojo.rojoBrillante}
-              textColor="white"
-            />
-          </View>
+          <CustomButton
+            onPress={logout}
+            title="CERRAR SESION"
+            backgroundColor={Colors.rojo.rojoBrillante}
+            textColor="white"
+          />
         </View>
       </ScrollView>
     );
@@ -322,18 +321,13 @@ const styles = StyleSheet.create({
   },
   container_principal: {
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: Colors.gris.fondo,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
-  },
-  error: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: 5,
   },
   irAHijo: {
     marginTop: 10,
