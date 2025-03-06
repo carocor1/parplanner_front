@@ -1,23 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import React from "react";
 import Colors from "../constants/Colors";
-import * as WebBrowser from "expo-web-browser";
-
-const iniciarSesionWithGoogle = async () => {
-  try {
-    const result = await WebBrowser.openBrowserAsync(
-      "http://rested-present-trout.ngrok-free.app/parplanner/auth/google"
-    );
-    console.log(result);
-  } catch (error) {
-    console.error("Error al abrir el navegador:", error);
-  }
-};
+import { iniciarSesionConGoogle } from "../services/authService";
 
 const GoogleLogInButton = () => {
   return (
     <View>
-      <TouchableOpacity onPress={iniciarSesionWithGoogle} style={styles.button}>
+      <TouchableOpacity onPress={iniciarSesionConGoogle} style={styles.button}>
         <Image
           source={require("../assets/images/googleIcon.png")}
           style={styles.logo}

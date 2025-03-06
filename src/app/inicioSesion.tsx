@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
@@ -12,29 +12,30 @@ import {
 import { verificarSegundoProgenitorAsociado } from "@/src/services/hijoService";
 import GoogleLogInButton from "../components/GoogleLogInButton";
 import CustomButton from "../components/CustomButton";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const IniciarSesion = () => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
-  const [errors, setErrors] = useState("");
-
   const router = useRouter();
 
   const validarInput = () => {
-    setErrors("");
+    let errors = "";
     if (!email) {
-      setErrors("No se ha ingresado el email");
-      return false;
+      errors = "No se ha ingresado el email";
     }
     if (!password) {
-      setErrors("No se ha ingresado la contraseña");
+      errors = "No se ha ingresado la contraseña";
+    }
+    if (errors) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: errors,
+      });
       return false;
     }
     return true;
-  };
-
-  const olvidarContraseña = () => {
-    console.log("Enviando a la pantalla de recuperar contraseña");
   };
 
   const onLogin = async () => {
@@ -64,22 +65,20 @@ const IniciarSesion = () => {
         }
       }
     } catch (error) {
-      setErrors(
-        "Error al iniciar sesión. Por favor, verifica tus credenciales e intenta nuevamente."
-      );
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "Error al iniciar sesión. Por favor, verifica tus credenciales e intenta nuevamente.",
+      });
     }
-  };
-
-  const RegistrarUsuario = () => {
-    router.push("/registroUsuario");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Iniciar Sesión</Text>
       <Text style={styles.subtitulo}>
-        {" "}
-        Ingresá tus credenciales para acceder a tu cuenta
+        Ingresá tus credenciales para acceder a tu cuenta.
       </Text>
 
       <InputComponentInicioSesion
@@ -97,11 +96,9 @@ const IniciarSesion = () => {
         iconType="font-awesome"
         secureTextEntry
       />
-      <TouchableOpacity onPress={olvidarContraseña}>
+      <TouchableOpacity onPress={() => router.push("/cambiarContrasenia")}>
         <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
       </TouchableOpacity>
-
-      <Text style={styles.error}>{errors}</Text>
 
       <CustomButton
         title="INICIAR SESIÓN"
@@ -111,7 +108,7 @@ const IniciarSesion = () => {
       />
       <GoogleLogInButton />
       <Text style={styles.SignUp}>¿No tienes una cuenta? </Text>
-      <TouchableOpacity onPress={RegistrarUsuario}>
+      <TouchableOpacity onPress={() => router.push("/registroUsuario")}>
         <Text style={styles.SignUp2}>Registrate</Text>
       </TouchableOpacity>
     </View>
@@ -141,10 +138,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 100,
   },
-  error: {
-    color: "red",
-    textAlign: "center",
-  },
   forgotPasswordText: {
     color: "#FFFFFF",
     textAlign: "left",
@@ -152,6 +145,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontWeight: "bold",
     marginLeft: 10,
+    marginBottom: 30,
   },
   SignUp: {
     marginTop: 100,
