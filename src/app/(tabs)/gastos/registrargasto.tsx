@@ -259,30 +259,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   buttonContainer: {
+    marginTop: 10,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  uploadButton: {
-    flexDirection: "row",
-    verticalAlign: "middle",
-    alignItems: "center",
-    backgroundColor: "#3a87e7",
-    padding: 10,
-    borderRadius: 15,
-    marginTop: 13,
-    paddingHorizontal: 30,
-  },
-  uploadButtonText: {
-    color: "white",
-    marginLeft: 10,
-    alignItems: "center",
-  },
-  uploadSuccessText: {
-    color: "#586e26",
-    fontSize: 15,
-    fontWeight: "heavy",
-    textAlign: "center",
   },
   particionesContenedor: {
     marginTop: 10,

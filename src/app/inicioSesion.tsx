@@ -1,17 +1,17 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import Colors from "@/src/constants/Colors";
 import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
-import SaveButton from "@/src/components/SaveButton";
 import { login } from "@/src/services/authService";
-import { Image } from "react-native-elements";
 import {
   verificarHijoAsociado,
   verificarRegistroUsuario,
 } from "@/src/services/userService";
 import { verificarSegundoProgenitorAsociado } from "@/src/services/hijoService";
+import GoogleLogInButton from "../components/GoogleLogInButton";
+import CustomButton from "../components/CustomButton";
 
 const IniciarSesion = () => {
   const [email, SetEmail] = useState("");
@@ -43,9 +43,8 @@ const IniciarSesion = () => {
     }
     try {
       await login(email, password);
-      //SetEmail("");
-      //SetPassword("");
-
+      SetEmail("");
+      SetPassword("");
       const tieneHijoAsociado = await verificarHijoAsociado();
       const estaRegistrado = await verificarRegistroUsuario();
 
@@ -77,6 +76,12 @@ const IniciarSesion = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.titulo}>Iniciar Sesión</Text>
+      <Text style={styles.subtitulo}>
+        {" "}
+        Ingresá tus credenciales para acceder a tu cuenta
+      </Text>
+
       <InputComponentInicioSesion
         label="Email"
         value={email}
@@ -93,17 +98,21 @@ const IniciarSesion = () => {
         secureTextEntry
       />
       <TouchableOpacity onPress={olvidarContraseña}>
-        <Text style={styles.forgotPasswordText}> Olvidé mi contraseña</Text>
+        <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
       </TouchableOpacity>
 
       <Text style={styles.error}>{errors}</Text>
 
-      <View style={styles.buttonContainer}>
-        <SaveButton texto="Iniciar Sesión" onPress={onLogin} />
-      </View>
+      <CustomButton
+        title="INICIAR SESIÓN"
+        onPress={onLogin}
+        backgroundColor={Colors.naranja.naranjaNormal}
+        textColor="white"
+      />
+      <GoogleLogInButton />
       <Text style={styles.SignUp}>¿No tienes una cuenta? </Text>
       <TouchableOpacity onPress={RegistrarUsuario}>
-        <Text style={styles.SignUp2}> Registrate</Text>
+        <Text style={styles.SignUp2}>Registrate</Text>
       </TouchableOpacity>
     </View>
   );
@@ -112,65 +121,50 @@ const IniciarSesion = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "#a9bb7c",
+    backgroundColor: Colors.verde.verdeIntermedio,
     flex: 1,
     justifyContent: "center",
     alignContent: "center",
     paddingTop: 50,
   },
-  image: {
-    width: "50%",
-    aspectRatio: 1,
-    alignSelf: "center",
-  },
-  textButton: {
-    alignSelf: "center",
+  titulo: {
+    fontSize: 45,
     fontWeight: "bold",
-    color: Colors.light.tint,
-    marginVertical: 10,
+    textAlign: "center",
+    color: "white",
   },
-  label: {
-    color: "gray",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "transparent",
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 20,
-    backgroundColor: "white",
-    borderRadius: 5,
+  subtitulo: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "normal",
+    paddingHorizontal: 15,
+    marginBottom: 100,
   },
   error: {
     color: "red",
     textAlign: "center",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#a9bb7c",
-    marginBottom: 20,
-    marginTop: 30,
-  },
   forgotPasswordText: {
-    color: "#FFFFFF", // Color azul para el texto clickeable
+    color: "#FFFFFF",
     textAlign: "left",
-    marginTop: 10,
+    marginTop: 7,
     textDecorationLine: "underline",
-    fontWeight: "bold", // Subrayar el texto para indicar que es clickeable
+    fontWeight: "bold",
+    marginLeft: 10,
   },
   SignUp: {
-    marginVertical: 1, // Espaciado vertical
+    marginTop: 100,
+    marginVertical: 1,
     fontSize: 14,
-    color: "black",
+    color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
   SignUp2: {
-    marginVertical: 1, // Espaciado vertical
+    marginVertical: 1,
     fontSize: 14,
-    color: "black",
+    color: Colors.verde.verdeOscuro3,
     fontWeight: "bold",
     textAlign: "center",
     textDecorationLine: "underline",

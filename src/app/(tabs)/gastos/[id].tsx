@@ -120,7 +120,7 @@ const DetalleGastoScreen: React.FC = () => {
               ultimaPropuesta?.particion_usuario_creador_gasto
             }
             particionUsuarioParticipe={
-              ultimaPropuesta?.particion_usuario_creador_gasto
+              ultimaPropuesta?.particion_usuario_participe_gasto
             }
           ></ParticionesCuadrados>
         </View>
