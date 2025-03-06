@@ -23,6 +23,7 @@ export default {
     verdeMuyMuyOscuro: "#fff",
     verdeOscuro2: "#7cb518",
     verdeOscuro3: "#445821",
+    verdeMuyClaro: "#d9ef9f",
   },
   negro: {
     negroNormal: "#343a40",

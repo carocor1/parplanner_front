@@ -9,12 +9,13 @@ import SaveButton from "@/src/components/SaveButton";
 import { register } from "../services/authService";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
-const registrarUsuarioPantalla = () => {
+const registrarUsuarioScreen = () => {
   const [nombre, SetNombre] = useState("");
   const [password, SetPassword] = useState("");
   const [email, setEmail] = useState("");
   const [apellido, SetApellido] = useState("");
   const router = useRouter();
+  const [passwordConfirmation, SetPasswordConfirmation] = useState("");
 
   const validarInput = () => {
     let errors = "";
@@ -30,6 +31,10 @@ const registrarUsuarioPantalla = () => {
       errors = "No se ha ingresado el email";
     } else if (!emailRegex.test(email)) {
       errors = "El email ingresado no es válido";
+    } else if (!passwordConfirmation) {
+      errors = "No se ha ingresado la confirmación de la contraseña";
+    } else if (password !== passwordConfirmation) {
+      errors = "Las contraseñas no coinciden";
     }
 
     if (errors) {
@@ -94,6 +99,14 @@ const registrarUsuarioPantalla = () => {
         label="Contraseña"
         value={password}
         setFunction={SetPassword}
+        iconName="eye"
+        iconType="font-awesome"
+        secureTextEntry
+      />
+      <InputComponentInicioSesion
+        label="Contraseña"
+        value={passwordConfirmation}
+        setFunction={SetPasswordConfirmation}
         iconName="eye"
         iconType="font-awesome"
         secureTextEntry
@@ -163,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default registrarUsuarioPantalla;
+export default registrarUsuarioScreen;

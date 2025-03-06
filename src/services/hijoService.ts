@@ -42,7 +42,8 @@ export const verificarCodigoVinculacion = async (codigo: string) => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.error("Error al verificar código de vinculación:", error);
+    throw error;
   }
 };
 
@@ -53,7 +54,8 @@ export const enviarCodigoDeVinculacion = async (email_progenitor: string) => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.error("Error al enviar código de vinculación:", error);
+    throw error;
   }
 };
 
@@ -63,7 +65,7 @@ export const obtenerHijo = async (id: number) => {
     const hijo: Hijo = response.data;
     return hijo;
   } catch (error) {
-    throw error;
+    console.error(error);
   }
 };
 
@@ -87,6 +89,6 @@ export const actualizarHijo = async (
     });
     return response.data;
   } catch (error) {
-    console.log("Error al actualizar el usuario:", error);
+    console.error(error);
   }
 };

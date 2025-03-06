@@ -1,5 +1,12 @@
-import { Text } from "react-native";
+import React from "react";
+import { View, Text } from "react-native";
 
-export default function AlergiasScreen() {
-  return <Text>"Estoy en alergias</Text>;
-}
+const AlergiasScreen = () => {
+  return (
+    <View>
+      <Text>Hello, World!</Text>
+    </View>
+  );
+};
+
+export default AlergiasScreen;

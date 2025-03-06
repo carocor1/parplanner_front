@@ -58,6 +58,18 @@ function RootLayoutNav() {
             options={{ title: "Registro Usuario", headerShown: false }}
           />
           <Stack.Screen
+            name="cambiarContrasenia"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ingresoCodigoCambioContrasenia"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="crearNuevaContrasenia"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="registroProgenitor"
             options={{ title: "Registro Progenitor", headerShown: false }}
           />

@@ -1,8 +1,12 @@
-import { StyleSheet, View, Text } from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
+const HistorialClinicoScreen = () => {
+  return (
+    <View>
+      <Text>Hello, World!</Text>
+    </View>
+  );
+};
 
-export default function HistorialClinicoScreen() {
-    return (
-        <Text>"Estoy en historial clínico</Text>
-    );
-}
+export default HistorialClinicoScreen;

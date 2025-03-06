@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { obtenerToken } from "../utils/storage";
+import { eliminarTokens, obtenerToken } from "../utils/storage";
 import {
   verificarHijoAsociado,
   verificarRegistroUsuario,
