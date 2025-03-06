@@ -1,13 +1,7 @@
 import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
-import { ActivityIndicator, StyleSheet } from "react-native";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
+import { StyleSheet } from "react-native";
 import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
@@ -15,22 +9,20 @@ import { enviarCodigoDeVinculacion } from "../services/hijoService";
 import CustomTextInput from "../components/TextInput";
 import Colors from "../constants/Colors";
 import { Toast, ALERT_TYPE } from "react-native-alert-notification";
+import SmallLoadingIndicator from "../components/SmallLoadingIndicator";
+import CustomCodeInput from "../components/CustomCodeInput";
+import CustomButton from "../components/CustomButton";
+import { cerrarSesion } from "../services/authService";
 
 const vinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
-  const CELL_COUNT = 6;
-
   const [value, setValue] = useState("");
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
-  });
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingEnvioCodigo, setLoadingEnvioCodigo] = useState(false);
+  const [loadingVerificarCodigo, setLoadingVerificarCodigo] = useState(false);
 
   const verificarCodigo = async () => {
-    if (value.length !== CELL_COUNT) {
+    if (value.length !== 6) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
         title: "Error",
@@ -39,13 +31,16 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
       return;
     }
     try {
+      setLoadingVerificarCodigo(true);
       await verificarCodigoVinculacion(value);
+      setLoadingVerificarCodigo(false);
       router.push("/(tabs)/gastos/");
     } catch (error) {
+      setLoadingVerificarCodigo(false);
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: "Error al verificar código. Por favor, inténtalo de nuevo.",
+        textBody: "El código de vinculación ingresado no es válido.",
       });
     }
   };
@@ -60,15 +55,16 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
       return;
     }
     try {
-      setLoading(true);
+      setLoadingEnvioCodigo(true);
       await enviarCodigoDeVinculacion(email);
-      setLoading(false);
+      setLoadingEnvioCodigo(false);
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         title: "Éxito",
         textBody: "El código de vinculación ha sido enviado correctamente.",
       });
     } catch (error) {
+      setLoadingEnvioCodigo(false);
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
@@ -100,22 +96,13 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           />
         </View>
         <SaveButton texto="ENVIAR" onPress={() => enviarCodigo()} />
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator
-              size="small"
-              color={Colors.verde.verdeMuyOscuro}
-            />
-            <Text
-              style={{
-                color: Colors.verde.verdeMuyOscuro,
-                fontWeight: "bold",
-                marginTop: 5,
-              }}
-            >
-              Enviando código...
-            </Text>
-          </View>
+        {loadingEnvioCodigo && (
+          <SmallLoadingIndicator
+            text="Enviando código..."
+            color={Colors.verde.verdeMuyOscuro}
+            textColor={Colors.verde.verdeMuyOscuro}
+            backColor={Colors.gris.fondo}
+          />
         )}
       </View>
       <View style={styles.container}>
@@ -127,26 +114,21 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
           progenitor, entonces ingresalo a continuación:
         </Text>
 
-        <CodeField
-          ref={ref}
-          {...props}
+        <CustomCodeInput
           value={value}
-          onChangeText={setValue}
-          cellCount={CELL_COUNT}
-          rootStyle={styles.codeFieldRoot}
-          keyboardType="name-phone-pad"
-          textContentType="oneTimeCode"
-          autoComplete="sms-otp"
-          renderCell={({ index, symbol, isFocused }) => (
-            <Text
-              key={index}
-              style={[styles.cell, isFocused && styles.focusCell]}
-              onLayout={getCellOnLayoutHandler(index)}
-            >
-              {symbol || (isFocused ? <Cursor /> : null)}
-            </Text>
-          )}
+          setValue={setValue}
+          cellCount={6}
+          loading={loadingVerificarCodigo}
+          loadingText="Verificando código..."
+          loadingColor={Colors.verde.verdeMuyOscuro}
+          loadingTextColor={Colors.verde.verdeMuyOscuro}
+          borderColor={Colors.gris.claro}
+          focusBorderColor={Colors.verde.verdeMuyOscuro}
+          focusTextColor={Colors.verde.verdeMuyOscuro}
+          backColor={Colors.gris.muyClaro}
+          backColorIndicator={Colors.gris.fondo}
         />
+
         <CancelButton texto="VERIFICAR" onPress={verificarCodigo} />
       </View>
     </View>
@@ -195,32 +177,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 30,
     lineHeight: 30,
-  },
-  title: { textAlign: "center", fontSize: 30, color: "black" },
-  codeFieldRoot: { marginBottom: 20 },
-  cell: {
-    width: 50,
-    height: 58,
-    lineHeight: 43,
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "black",
-    borderWidth: 3,
-    borderColor: Colors.gris.claro,
-    textAlign: "center",
-    margin: 3,
-    backgroundColor: Colors.gris.muyClaro,
-    borderRadius: 6,
-  },
-  focusCell: {
-    borderColor: Colors.verde.verdeMuyOscuro,
-    color: Colors.verde.verdeMuyOscuro,
-  },
-  loadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    backgroundColor: Colors.gris.fondo,
   },
 });
 

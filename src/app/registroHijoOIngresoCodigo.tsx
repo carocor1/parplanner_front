@@ -2,33 +2,20 @@ import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
 import { StyleSheet } from "react-native";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from "react-native-confirmation-code-field";
 import { useState } from "react";
 import { verificarCodigoVinculacion } from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
 import Colors from "../constants/Colors";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
-import LoadingIndicator from "../components/LoadingIndicator";
+import CustomCodeInput from "../components/CustomCodeInput";
 
 const registroHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
-  const CELL_COUNT = 6;
   const [loading, setLoading] = useState(false);
-
   const [value, setValue] = useState("");
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
-  });
 
   const verificarCodigo = async () => {
-    if (value.length !== CELL_COUNT) {
+    if (value.length !== 6) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
         title: "Error",
@@ -38,22 +25,20 @@ const registroHijoOIngresoCodigoScreen = () => {
     }
     try {
       setLoading(true);
+      console.log("verificando código de vinculación");
+      console.log(value);
       await verificarCodigoVinculacion(value);
       setLoading(false);
       router.push("/(tabs)/gastos/gasto");
     } catch (error) {
+      setLoading(false);
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody:
-          "Error al verificar el código de vinculación. Por favor, inténtalo de nuevo.",
+        textBody: "El código de vinculación ingresado no es válido.",
       });
     }
   };
-
-  if (loading) {
-    return <LoadingIndicator></LoadingIndicator>;
-  }
 
   return (
     <View style={styles.container_mayor}>
@@ -80,26 +65,21 @@ const registroHijoOIngresoCodigoScreen = () => {
           continuación:
         </Text>
 
-        <CodeField
-          ref={ref}
-          {...props}
+        <CustomCodeInput
           value={value}
-          onChangeText={setValue}
-          cellCount={CELL_COUNT}
-          rootStyle={styles.codeFieldRoot}
-          keyboardType="name-phone-pad"
-          textContentType="oneTimeCode"
-          autoComplete="sms-otp"
-          renderCell={({ index, symbol, isFocused }) => (
-            <Text
-              key={index}
-              style={[styles.cell, isFocused && styles.focusCell]}
-              onLayout={getCellOnLayoutHandler(index)}
-            >
-              {symbol || (isFocused ? <Cursor /> : null)}
-            </Text>
-          )}
+          setValue={setValue}
+          cellCount={6}
+          loading={loading}
+          loadingText="Verificando código..."
+          loadingColor={Colors.verde.verdeMuyOscuro}
+          loadingTextColor={Colors.verde.verdeMuyOscuro}
+          borderColor={Colors.gris.claro}
+          focusBorderColor={Colors.verde.verdeMuyOscuro}
+          focusTextColor={Colors.verde.verdeMuyOscuro}
+          backColor={Colors.gris.muyClaro}
+          backColorIndicator={Colors.gris.fondo}
         />
+
         <CancelButton texto="VERIFICAR" onPress={verificarCodigo} />
       </View>
     </View>
@@ -145,27 +125,6 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "bold",
     color: Colors.negro.negroNormal,
-  },
-  root: { flex: 1, padding: 20 },
-  title: { textAlign: "center", fontSize: 30, color: "black" },
-  codeFieldRoot: { marginBottom: 20 },
-  cell: {
-    width: 50,
-    height: 58,
-    lineHeight: 43,
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "black",
-    borderWidth: 3,
-    borderColor: "#ced4da",
-    textAlign: "center",
-    margin: 3,
-    backgroundColor: "#e9ecef",
-    borderRadius: 6,
-  },
-  focusCell: {
-    borderColor: "#778c43",
-    color: "#778c43",
   },
 });
 
