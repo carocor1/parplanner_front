@@ -157,7 +157,7 @@ const GastosScreen = () => {
 
       <TouchableOpacity
         style={styles.botonFlotante}
-        onPress={() => router.push("/gastos/registrargasto")}
+        onPress={() => router.push("/gastos/RegistrarGastoScreen")}
       >
         <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>

@@ -24,7 +24,7 @@ export default function IngresoCodigoCambioContraseniaScreen() {
       setLoading(true);
       await verificarCodigoCambioContraseña(value);
       setLoading(false);
-      router.push("/crearNuevaContrasenia");
+      router.push("/CrearNuevaContraseniaScreen");
     } catch (error) {
       setLoading(false);
       Toast.show({

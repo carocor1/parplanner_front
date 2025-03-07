@@ -34,7 +34,7 @@ export default function cambiarContraseñaScreen() {
         setLoading(true);
         await enviarCodigoCambiarContraseña(email);
         setLoading(false);
-        router.push("/ingresoCodigoCambioContrasenia");
+        router.push("/IngresoCodigoCambioContraseniaScreen");
       } catch (error) {
         Toast.show({
           type: ALERT_TYPE.WARNING,

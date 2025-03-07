@@ -6,7 +6,7 @@ export default function CalendarioLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="calendario"
+        name="CalendarioScreen"
         options={{
           title: "Calendario",
           headerStyle: {

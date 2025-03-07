@@ -53,21 +53,21 @@ const IniciarSesionScreen = () => {
       const estaRegistrado = await verificarRegistroUsuario();
       if (!estaRegistrado) {
         setLoading(false);
-        router.push("/registroProgenitor");
+        router.push("/RegistroProgenitorScreen");
       }
       if (estaRegistrado && !tieneHijoAsociado) {
         setLoading(false);
-        router.push("/registroHijoOIngresoCodigo");
+        router.push("/RegistroHijoOIngresoCodigoScreen");
       }
       if (estaRegistrado && tieneHijoAsociado) {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
           setLoading(false);
-          router.push("/(tabs)/gastos/gasto");
+          router.push("/(tabs)/gastos/GastosScreen");
         } else {
           setLoading(false);
-          router.push("/vinculacionHijoOIngresoCodigo");
+          router.push("/VinculacionHijoOIngresoCodigoScreen");
         }
       }
     } catch (error) {
@@ -107,7 +107,9 @@ const IniciarSesionScreen = () => {
         iconType="font-awesome"
         secureTextEntry
       />
-      <TouchableOpacity onPress={() => router.push("/cambiarContrasenia")}>
+      <TouchableOpacity
+        onPress={() => router.push("/CambiarContraseniaScreen")}
+      >
         <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
       </TouchableOpacity>
 
@@ -119,7 +121,7 @@ const IniciarSesionScreen = () => {
       />
       <GoogleLogInButton />
       <Text style={styles.SignUp}>¿No tienes una cuenta? </Text>
-      <TouchableOpacity onPress={() => router.push("/registroUsuario")}>
+      <TouchableOpacity onPress={() => router.push("/RegistroUsuarioScreen")}>
         <Text style={styles.SignUp2}>Registrate</Text>
       </TouchableOpacity>
     </View>

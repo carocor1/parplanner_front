@@ -24,6 +24,7 @@ export default {
     verdeOscuro2: "#7cb518",
     verdeOscuro3: "#445821",
     verdeMuyClaro: "#d9ef9f",
+    verdeNormal: "#586e26",
   },
   negro: {
     negroNormal: "#343a40",
@@ -51,6 +52,8 @@ export default {
     fondo: "#f5f5f5",
     muyClaro: "#e9ecef",
     claro: "#ced4da",
+    oscuro: "#555",
+    normal: "#cccccc",
   },
   lila: {
     lilaNormal: "#6A5ACD",

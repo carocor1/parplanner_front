@@ -9,10 +9,10 @@ import {
 } from "../services/propuestaParticionService";
 import { PropuestaParticion } from "../interfaces/PropuestasParticionInterface";
 import { MaterialIcons } from "@expo/vector-icons";
-import ProponerParticionScreen from "../app/(tabs)/gastos/particionModal";
 import { pagarGastos } from "../services/gastoService";
 import { openBrowserAsync } from "expo-web-browser";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import ProponerParticionScreen from "../app/(tabs)/gastos/ParticionModal";
 
 interface GastoItemProps {
   gasto: Gasto;

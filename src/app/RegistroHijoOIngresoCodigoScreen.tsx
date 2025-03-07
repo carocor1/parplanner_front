@@ -51,7 +51,7 @@ const registroHijoOIngresoCodigoScreen = () => {
         </Text>
         <SaveButton
           texto="REGISTRAR HIJO"
-          onPress={() => router.push("/registrohijo")}
+          onPress={() => router.push("/RegistroHijoScreen")}
         />
       </View>
       <View style={styles.container}>

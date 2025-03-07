@@ -4,7 +4,7 @@ export default function HijoLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="perfil_hijo"
+        name="PerfilHijoScreen"
         options={{
           title: "Hijo",
           headerStyle: {

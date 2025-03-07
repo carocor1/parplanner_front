@@ -21,7 +21,6 @@ const RegistrarGastoScreen = () => {
     useState<number>(50);
   const router = useRouter();
   const [isFocus, setIsFocus] = useState(false);
-
   const [categorias, setCategorias] = useState<
     Array<{ id: number; nombre: string }>
   >([]);
@@ -165,7 +164,7 @@ const RegistrarGastoScreen = () => {
         />
 
         <CustomTextInput
-          label="Monto del gasto"
+          label="Monto del gasto ($)"
           placeholder="Escriba el monto del gasto ($)"
           value={monto ? monto.toString() : ""}
           onChangeText={(monto) => {
@@ -194,7 +193,7 @@ const RegistrarGastoScreen = () => {
                 style={styles.spinner}
                 value={particion1Seleccionada}
                 onChange={(num: number) => handleParticionChange(num)}
-                color="#cccccc"
+                color={Colors.gris.normal}
               />
               <Text style={styles.pagarLabel}>Pagarás: </Text>
               <Text style={styles.pagarValue}>
@@ -211,7 +210,7 @@ const RegistrarGastoScreen = () => {
                 skin="round"
                 value={particion2Seleccionada}
                 onChange={(num: number) => handleParticion2Change(num)}
-                color="#cccccc"
+                color={Colors.gris.normal}
                 style={styles.spinner}
               />
               <Text style={styles.pagarLabel}>Pagará: </Text>
@@ -298,7 +297,7 @@ const styles = StyleSheet.create({
   pagarValue: {
     fontWeight: "bold",
     fontSize: 22,
-    color: "#555",
+    color: Colors.gris.oscuro,
   },
 });
 

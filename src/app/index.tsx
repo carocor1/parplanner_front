@@ -17,29 +17,29 @@ export default function index() {
       try {
         const token = await obtenerToken();
         if (!token) {
-          router.replace("/inicioSesion");
+          router.replace("/InicioSesionScreen");
         } else {
           const tieneHijoAsociado = await verificarHijoAsociado();
           const estaRegistrado = await verificarRegistroUsuario();
           if (!estaRegistrado) {
-            router.push("/registroProgenitor");
+            router.push("/RegistroProgenitorScreen");
           }
           if (estaRegistrado && !tieneHijoAsociado) {
-            router.push("/registroHijoOIngresoCodigo");
+            router.push("/RegistroHijoOIngresoCodigoScreen");
           }
           if (estaRegistrado && tieneHijoAsociado) {
             const segundoProgenitorAsociado =
               await verificarSegundoProgenitorAsociado();
             if (segundoProgenitorAsociado) {
-              router.push("/(tabs)/gastos/gasto");
+              router.push("/(tabs)/gastos/GastosScreen");
             } else {
-              router.push("/vinculacionHijoOIngresoCodigo");
+              router.push("/VinculacionHijoOIngresoCodigoScreen");
             }
           }
           setLoading(false);
         }
       } catch (error) {
-        router.replace("/inicioSesion");
+        router.replace("/InicioSesionScreen");
       }
     };
     checkAuth();

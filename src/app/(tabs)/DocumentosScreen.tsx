@@ -5,7 +5,7 @@ import { StyleSheet, View, Pressable, Dimensions } from "react-native";
 export default function DocumentosScreen() {
   return (
     <View style={styles.screenContainer}>
-      <Link href="../vacunas" asChild>
+      <Link href="../VacunasScreen" asChild>
         <Pressable>
           <DocumentoRectangulo
             titulo="Vacunas"
@@ -15,7 +15,7 @@ export default function DocumentosScreen() {
         </Pressable>
       </Link>
 
-      <Link href="../alergias" asChild>
+      <Link href="../AlergiasScreen" asChild>
         <Pressable>
           <DocumentoRectangulo
             titulo="Alergias"
@@ -25,7 +25,7 @@ export default function DocumentosScreen() {
         </Pressable>
       </Link>
 
-      <Link href="../historialclinico" asChild>
+      <Link href="../HistorialClinicoScreen" asChild>
         <Pressable>
           <DocumentoRectangulo
             titulo="Historial Clínico"
@@ -35,7 +35,7 @@ export default function DocumentosScreen() {
         </Pressable>
       </Link>
 
-      <Link href="../documento" asChild>
+      <Link href="../DocumentoScreen" asChild>
         <Pressable>
           <DocumentoRectangulo
             titulo="Documentos"

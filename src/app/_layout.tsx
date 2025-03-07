@@ -53,37 +53,50 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="AlergiasScreen" options={{ title: "Alergias" }} />
           <Stack.Screen
-            name="registroUsuario"
+            name="DocumentoScreen"
+            options={{ title: "Documentos" }}
+          />
+          <Stack.Screen
+            name="HistorialClinicoScreen"
+            options={{ title: "Historial Clínico" }}
+          />
+          <Stack.Screen name="VacunasScreen" options={{ title: "Vacunas" }} />
+          <Stack.Screen
+            name="RegistroUsuarioScreen"
             options={{ title: "Registro Usuario", headerShown: false }}
           />
           <Stack.Screen
-            name="cambiarContrasenia"
+            name="CambiarContraseniaScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ingresoCodigoCambioContrasenia"
+            name="IngresoCodigoCambioContraseniaScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="crearNuevaContrasenia"
+            name="CrearNuevaContraseniaScreen"
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="registroProgenitor"
+            name="RegistroProgenitorScreen"
             options={{ title: "Registro Progenitor", headerShown: false }}
           />
           <Stack.Screen
-            name="registrohijo"
+            name="RegistroHijoScreen"
             options={{ title: "Registro Hijo", headerShown: false }}
           />
           <Stack.Screen
-            name="vinculacionHijoOIngresoCodigo"
+            name="VinculacionHijoOIngresoCodigoScreen"
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="inicioSesion" options={{ headerShown: false }} />
           <Stack.Screen
-            name="registroHijoOIngresoCodigo"
+            name="InicioSesionScreen"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RegistroHijoOIngresoCodigoScreen"
             options={{ headerShown: false }}
           />
         </Stack>

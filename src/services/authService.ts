@@ -38,7 +38,7 @@ export const register = async (
 export const cerrarSesion = async () => {
   try {
     await eliminarTokens();
-    router.replace("/inicioSesion");
+    router.replace("/InicioSesionScreen");
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
   }

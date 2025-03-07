@@ -3,6 +3,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Colors from "@/src/constants/Colors";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -15,10 +16,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#586e26",
-        tabBarInactiveTintColor: "#ffff",
+        tabBarActiveTintColor: Colors.verde.verdeNormal,
+        tabBarInactiveTintColor: "white",
         tabBarStyle: {
-          backgroundColor: "#96ac60",
+          backgroundColor: Colors.verde.verdeOscuro,
           height: 53,
           paddingBottom: 5,
         },
@@ -46,7 +47,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="documentos"
+        name="DocumentosScreen"
         options={{
           title: "Documentos",
           tabBarIcon: ({ color }) => <TabBarIcon name="child" color={color} />,

@@ -5,7 +5,7 @@ export default function GastosLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="gasto"
+        name="GastosScreen"
         options={{
           title: "Gastos",
           headerStyle: {
@@ -15,7 +15,7 @@ export default function GastosLayout() {
         }}
       />
       <Stack.Screen
-        name="registrargasto"
+        name="RegistrarGastoScreen"
         options={{
           title: "Registrar gasto",
           headerStyle: {

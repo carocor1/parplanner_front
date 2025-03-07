@@ -39,7 +39,7 @@ const crearNuevaContraseniaScreen = () => {
     }
     try {
       await crearContraseña(password);
-      router.push("/inicioSesion");
+      router.push("/InicioSesionScreen");
     } catch (error) {
       Toast.show({
         type: ALERT_TYPE.DANGER,

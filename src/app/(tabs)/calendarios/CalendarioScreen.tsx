@@ -21,7 +21,9 @@ export default function CalendarioScreen() {
       <TouchableOpacity
         style={styles.botonFlotante}
         onPress={() =>
-          router.push("/(tabs)/calendarios/compromiso/registrarCompromiso")
+          router.push(
+            "/(tabs)/calendarios/compromiso/RegistrarCompromisoScreen"
+          )
         }
       >
         <FontAwesome name="plus" size={24} color="white" />

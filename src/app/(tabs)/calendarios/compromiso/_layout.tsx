@@ -4,7 +4,7 @@ export default function CompromisoLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="registrarCompromiso"
+        name="RegistrarCompromisoScreen"
         options={{
           title: "Registrar compromiso",
           headerStyle: {

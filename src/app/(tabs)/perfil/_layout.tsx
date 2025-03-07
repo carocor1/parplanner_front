@@ -5,7 +5,7 @@ export default function GastosLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="perfil_usuario"
+        name="PerfilUsuarioScreen"
         options={{
           title: "Perfil",
           headerStyle: {

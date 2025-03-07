@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import SaveButton from "@/src/components/SaveButton";
 import CancelButton from "@/src/components/CancelButton";
 
-const RegistrarCompromiso = () => {
+const RegistrarCompromisoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [fecha, setFecha] = useState("");
   const [tipoCompromiso, setTipoCompromiso] = useState("");
@@ -97,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistrarCompromiso;
+export default RegistrarCompromisoScreen;

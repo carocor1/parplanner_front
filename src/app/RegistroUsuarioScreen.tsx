@@ -58,7 +58,7 @@ const registrarUsuarioScreen = () => {
       SetNombre("");
       SetPassword("");
       SetApellido("");
-      router.replace("/registroProgenitor");
+      router.replace("/RegistroProgenitorScreen");
     } catch (error) {
       Toast.show({
         type: ALERT_TYPE.DANGER,
