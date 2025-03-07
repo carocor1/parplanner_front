@@ -12,6 +12,9 @@ type InputComponentProps = {
   value: string;
   setFunction: (text: string) => void;
   style?: ViewStyle | TextStyle;
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+  maxLength?: number;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 };
 
 const InputComponent: React.FC<InputComponentProps> = ({
@@ -19,15 +22,21 @@ const InputComponent: React.FC<InputComponentProps> = ({
   value,
   setFunction,
   style,
+  keyboardType = "default",
+  maxLength,
+  autoCapitalize = "none",
 }) => {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        value={value} // Se asigna el valor actual del input
-        onChangeText={setFunction} // Se pasa la función para actualizar el valor
-        placeholder={label} // Usa el label como placeholder
+        value={value}
+        onChangeText={setFunction}
+        placeholder={label}
+        keyboardType={keyboardType}
         style={[styles.input]}
+        maxLength={maxLength}
+        autoCapitalize={autoCapitalize}
       />
     </View>
   );
@@ -39,20 +48,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    color: "#000",
-    fontSize: 14,
+    color: "black",
+    fontSize: 15,
     fontWeight: "bold",
     alignSelf: "flex-start",
     marginBottom: 5,
-    marginLeft: "10%",
+    marginLeft: "7%",
   },
   input: {
-    width: "80%",
+    width: "90%",
     borderWidth: 1,
     borderColor: "gray",
     padding: 10,
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 10,
   },
 });
 

@@ -39,8 +39,8 @@ export default function IngresoCodigoCambioContraseniaScreen() {
     <View style={styles.pantalla}>
       <Text style={styles.titulo}>Te enviamos un mail.</Text>
       <Text style={styles.subtitulo}>
-        Te acabamos de enviar un mail con el código al mail que ingresaste. Por
-        favor, introducelo a continuación:
+        Te acabamos de enviar un correo con el código al mail que ingresaste.
+        Por favor, introducelo a continuación:
       </Text>
 
       <CustomCodeInput

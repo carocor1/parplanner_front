@@ -6,9 +6,11 @@ type InputComponentProps = {
   label: string;
   value: string;
   setFunction: (text: string) => void;
-  iconName: string; // Nombre del icono inicial
-  iconType: string; // Tipo de icono
-  secureTextEntry?: boolean; // Indica si es un campo de contraseña
+  iconName: string;
+  iconType: string;
+  secureTextEntry?: boolean;
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 };
 
 const InputComponentInicioSesion: React.FC<InputComponentProps> = ({
@@ -18,6 +20,8 @@ const InputComponentInicioSesion: React.FC<InputComponentProps> = ({
   iconName,
   iconType,
   secureTextEntry = false,
+  keyboardType = "default",
+  autoCapitalize = "none",
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry); //
 
@@ -33,6 +37,8 @@ const InputComponentInicioSesion: React.FC<InputComponentProps> = ({
         placeholder={label}
         style={styles.input}
         secureTextEntry={!isPasswordVisible}
+        autoCapitalize={autoCapitalize}
+        keyboardType={keyboardType}
       />
 
       {secureTextEntry ? (
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    marginTop: 40,
+    marginTop: 30,
     borderWidth: 1,
     borderColor: "transparent",
     borderRadius: 10,

@@ -50,17 +50,18 @@ export const AndroidDateTimePicker = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 15,
-    paddingHorizontal: 35,
+    paddingHorizontal: 20,
   },
 
   dropdown: {
-    height: 50,
+    height: 43,
     borderColor: "gray",
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 10,
     paddingHorizontal: 8,
     backgroundColor: "#ffffff",
     justifyContent: "center",
+    marginBottom: 3,
   },
   label: {
     color: "#000",
@@ -68,10 +69,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "flex-start",
     marginBottom: 5,
-    marginLeft: 0,
+    marginLeft: 8,
   },
   selectedTextStyle: {
-    color: "gray",
-    fontSize: 16,
+    color: "black",
+    fontSize: 14,
   },
 });

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Colors from "../constants/Colors";
-import InputComponentInicioSesion from "../components/InputIniciosesion";
+import InputComponentInicioSesion from "../components/InputInicioSesion";
 import CustomButton from "../components/CustomButton";
 import { enviarCodigoCambiarContraseña } from "../services/authService";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
@@ -11,11 +11,14 @@ import SmallLoadingIndicator from "../components/SmallLoadingIndicator";
 export default function cambiarContraseñaScreen() {
   const [email, SetEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const validateEmail = () => {
     let errors = "";
     if (!email) {
       errors = "No se ha ingresado el email";
+    } else if (!emailRegex.test(email)) {
+      errors = "El email ingresado no es válido";
     }
     if (errors) {
       Toast.show({
@@ -36,6 +39,7 @@ export default function cambiarContraseñaScreen() {
         setLoading(false);
         router.push("/IngresoCodigoCambioContraseniaScreen");
       } catch (error) {
+        setLoading(false);
         Toast.show({
           type: ALERT_TYPE.WARNING,
           title: "Error",
@@ -58,6 +62,7 @@ export default function cambiarContraseñaScreen() {
         setFunction={SetEmail}
         iconName="envelope"
         iconType="font-awesome"
+        keyboardType="email-address"
       />
       <CustomButton
         title="ENVIAR CÓDIGO"

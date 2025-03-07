@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Colors from "../constants/Colors";
-import InputComponentInicioSesion from "../components/InputIniciosesion";
+import InputComponentInicioSesion from "../components/InputInicioSesion";
 import CustomButton from "../components/CustomButton";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { router } from "expo-router";

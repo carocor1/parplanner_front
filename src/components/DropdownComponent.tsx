@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
 interface DropdownComponentProps {
@@ -54,17 +54,15 @@ export default DropdownComponent;
 
 const styles = StyleSheet.create({
   container: {
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    paddingBottom: 15,
-    paddingHorizontal: 33,
+    shadowColor: "black",
+    marginBottom: 8,
+    paddingHorizontal: 20,
   },
   dropdown: {
-    height: 50,
+    height: 43,
     borderColor: "gray",
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     backgroundColor: "#ffffff",
     padding: 10,
   },
@@ -73,12 +71,12 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   selectedTextStyle: {
-    width: "40%",
-    color: "gray",
+    fontSize: 14,
+    color: "black",
   },
   inputSearchStyle: {
-    height: 30,
-    fontSize: 15,
-    borderRadius: 5,
+    height: 40,
+    fontSize: 14,
+    borderRadius: 10,
   },
 });

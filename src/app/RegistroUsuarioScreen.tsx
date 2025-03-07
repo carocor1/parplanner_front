@@ -3,7 +3,7 @@ import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import Colors from "../constants/Colors";
-import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
+import InputComponentInicioSesion from "@/src/components/InputInicioSesion";
 import SaveButton from "@/src/components/SaveButton";
 import { register } from "../services/authService";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
@@ -21,11 +21,11 @@ const registrarUsuarioScreen = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!nombre) {
-      errors = "No se ha ingresado el usuario";
-    } else if (!password) {
-      errors = "No se ha ingresado la contraseña";
+      errors = "No se ha ingresado el nombre";
     } else if (!apellido) {
       errors = "No se ha ingresado el apellido";
+    } else if (!password) {
+      errors = "No se ha ingresado la contraseña";
     } else if (!email) {
       errors = "No se ha ingresado el email";
     } else if (!emailRegex.test(email)) {
@@ -82,6 +82,7 @@ const registrarUsuarioScreen = () => {
         setFunction={SetNombre}
         iconName="user"
         iconType="font-awesome"
+        autoCapitalize="words"
       />
       <InputComponentInicioSesion
         label="Apellido"
@@ -89,6 +90,7 @@ const registrarUsuarioScreen = () => {
         setFunction={SetApellido}
         iconName="user"
         iconType="font-awesome"
+        autoCapitalize="words"
       />
       <InputComponentInicioSesion
         label="Email"
@@ -96,6 +98,7 @@ const registrarUsuarioScreen = () => {
         setFunction={setEmail}
         iconName="envelope"
         iconType="font-awesome"
+        keyboardType="email-address"
       />
       <InputComponentInicioSesion
         label="Contraseña"

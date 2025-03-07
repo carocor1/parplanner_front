@@ -18,6 +18,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
   const [email, setEmail] = useState("");
   const [loadingEnvioCodigo, setLoadingEnvioCodigo] = useState(false);
   const [loadingVerificarCodigo, setLoadingVerificarCodigo] = useState(false);
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const verificarCodigo = async () => {
     if (value.length !== 6) {
@@ -43,13 +44,26 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
     }
   };
 
-  const enviarCodigo = async () => {
+  const validateEmail = () => {
+    let errors = "";
     if (!email) {
+      errors = "No se ha ingresado el email";
+    } else if (!emailRegex.test(email)) {
+      errors = "El email ingresado no es válido";
+    }
+    if (errors) {
       Toast.show({
         type: ALERT_TYPE.WARNING,
-        title: "Email inválido",
-        textBody: "Por favor, reingresá el email del otro progenitor.",
+        title: "Error",
+        textBody: errors,
       });
+      return false;
+    }
+    return true;
+  };
+
+  const enviarCodigo = async () => {
+    if (!validateEmail()) {
       return;
     }
     try {

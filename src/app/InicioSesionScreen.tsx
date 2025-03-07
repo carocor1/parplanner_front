@@ -3,7 +3,7 @@ import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import Colors from "@/src/constants/Colors";
-import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
+import InputComponentInicioSesion from "@/src/components/InputInicioSesion";
 import { login } from "@/src/services/authService";
 import {
   verificarHijoAsociado,
@@ -98,6 +98,7 @@ const IniciarSesionScreen = () => {
         setFunction={SetEmail}
         iconName="user"
         iconType="font-awesome"
+        keyboardType="email-address"
       />
       <InputComponentInicioSesion
         label="Contraseña"
