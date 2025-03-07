@@ -2,8 +2,7 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import { Colors } from "react-native/Libraries/NewAppScreen";
-
+import Colors from "../constants/Colors";
 import InputComponentInicioSesion from "@/src/components/InputIniciosesion";
 import SaveButton from "@/src/components/SaveButton";
 import { register } from "../services/authService";
@@ -73,6 +72,9 @@ const registrarUsuarioScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Registrate</Text>
+      <Text style={styles.subtitulo}>
+        Completá con tus datos personales para finalizar el registro.
+      </Text>
 
       <InputComponentInicioSesion
         label="Nombre"
@@ -104,7 +106,7 @@ const registrarUsuarioScreen = () => {
         secureTextEntry
       />
       <InputComponentInicioSesion
-        label="Contraseña"
+        label="Repetir contraseña"
         value={passwordConfirmation}
         setFunction={SetPasswordConfirmation}
         iconName="eye"
@@ -122,7 +124,7 @@ const registrarUsuarioScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "#a9bb7c",
+    backgroundColor: Colors.verde.verdeIntermedio,
     flex: 1,
     justifyContent: "center",
     alignContent: "center",
@@ -152,14 +154,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonContainer: {
-    marginTop: 30,
+    marginTop: 50,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#a9bb7c",
+    backgroundColor: Colors.verde.verdeIntermedio,
   },
   forgotPasswordText: {
-    color: "#FFFFFF",
+    color: "white",
     textAlign: "left",
     marginTop: 10,
     textDecorationLine: "underline",
@@ -167,12 +169,19 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "sans-serif",
-    fontSize: 36,
-    color: "white",
+    marginTop: -30,
+    fontSize: 45,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 90,
-    marginTop: -30,
+    color: Colors.verde.verdeOscuro3,
+  },
+  subtitulo: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "normal",
+    paddingHorizontal: 15,
+    marginBottom: 10,
   },
 });
 

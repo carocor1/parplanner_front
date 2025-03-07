@@ -8,7 +8,7 @@ import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { router } from "expo-router";
 import SmallLoadingIndicator from "../components/SmallLoadingIndicator";
 
-export default function cambiarContraseña() {
+export default function cambiarContraseñaScreen() {
   const [email, SetEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titulo: {
-    color: "white",
+    color: Colors.verde.verdeOscuro3,
     fontSize: 35,
     fontWeight: "bold",
   },

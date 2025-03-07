@@ -1,4 +1,4 @@
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   StyleSheet,
   View,
@@ -250,7 +250,7 @@ const registrarProgenitorScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     justifyContent: "center",
     alignContent: "center",
   },

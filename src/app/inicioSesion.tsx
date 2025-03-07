@@ -13,10 +13,12 @@ import { verificarSegundoProgenitorAsociado } from "@/src/services/hijoService";
 import GoogleLogInButton from "../components/GoogleLogInButton";
 import CustomButton from "../components/CustomButton";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import LoadingIndicator from "../components/LoadingIndicator";
 
-const IniciarSesion = () => {
+const IniciarSesionScreen = () => {
   const [email, SetEmail] = useState("");
   const [password, SetPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const validarInput = () => {
@@ -43,28 +45,33 @@ const IniciarSesion = () => {
       return;
     }
     try {
+      setLoading(true);
       await login(email, password);
       SetEmail("");
       SetPassword("");
       const tieneHijoAsociado = await verificarHijoAsociado();
       const estaRegistrado = await verificarRegistroUsuario();
-
       if (!estaRegistrado) {
+        setLoading(false);
         router.push("/registroProgenitor");
       }
       if (estaRegistrado && !tieneHijoAsociado) {
+        setLoading(false);
         router.push("/registroHijoOIngresoCodigo");
       }
       if (estaRegistrado && tieneHijoAsociado) {
         const segundoProgenitorAsociado =
           await verificarSegundoProgenitorAsociado();
         if (segundoProgenitorAsociado) {
+          setLoading(false);
           router.push("/(tabs)/gastos/gasto");
         } else {
+          setLoading(false);
           router.push("/vinculacionHijoOIngresoCodigo");
         }
       }
     } catch (error) {
+      setLoading(false);
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
@@ -73,6 +80,10 @@ const IniciarSesion = () => {
       });
     }
   };
+
+  if (loading) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <View style={styles.container}>
@@ -128,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 45,
     fontWeight: "bold",
     textAlign: "center",
-    color: "white",
+    color: Colors.verde.verdeOscuro3,
   },
   subtitulo: {
     fontSize: 18,
@@ -139,7 +150,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   forgotPasswordText: {
-    color: "#FFFFFF",
+    color: "white",
     textAlign: "left",
     marginTop: 7,
     textDecorationLine: "underline",
@@ -150,14 +161,14 @@ const styles = StyleSheet.create({
   SignUp: {
     marginTop: 100,
     marginVertical: 1,
-    fontSize: 14,
+    fontSize: 16,
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
   SignUp2: {
     marginVertical: 1,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.verde.verdeOscuro3,
     fontWeight: "bold",
     textAlign: "center",
@@ -165,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IniciarSesion;
+export default IniciarSesionScreen;

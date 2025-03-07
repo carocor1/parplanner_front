@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titulo: {
-    color: "white",
+    color: Colors.verde.verdeOscuro3,
     fontSize: 35,
     fontWeight: "bold",
   },

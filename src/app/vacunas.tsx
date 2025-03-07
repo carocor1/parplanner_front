@@ -1,6 +1,12 @@
-import { Link } from "expo-router";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
 export default function VacunasScreen() {
-  return <Text>"Estoy en vacunas"</Text>;
+  return (
+    <View>
+      <Text>VacunasScreen</Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({});

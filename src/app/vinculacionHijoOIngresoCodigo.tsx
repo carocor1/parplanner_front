@@ -11,8 +11,6 @@ import Colors from "../constants/Colors";
 import { Toast, ALERT_TYPE } from "react-native-alert-notification";
 import SmallLoadingIndicator from "../components/SmallLoadingIndicator";
 import CustomCodeInput from "../components/CustomCodeInput";
-import CustomButton from "../components/CustomButton";
-import { cerrarSesion } from "../services/authService";
 
 const vinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();

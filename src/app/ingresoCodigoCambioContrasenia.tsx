@@ -7,7 +7,7 @@ import { verificarCodigoCambioContraseña } from "../services/authService";
 import { router } from "expo-router";
 import CustomCodeInput from "../components/CustomCodeInput";
 
-export default function historialclinico() {
+export default function IngresoCodigoCambioContraseniaScreen() {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titulo: {
-    color: "white",
+    color: Colors.verde.verdeOscuro3,
     fontSize: 35,
     fontWeight: "bold",
   },
