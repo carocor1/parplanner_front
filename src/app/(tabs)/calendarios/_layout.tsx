@@ -25,6 +25,26 @@ export default function CalendarioLayout() {
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
         }}
       />
+      <Stack.Screen
+        name="SeleccionTipoPlanningScreen"
+        options={{
+          title: "Selección Tipo Planning",
+          headerStyle: {
+            backgroundColor: Colors.verde.verdeOscuro,
+          },
+          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
+        }}
+      />
+      <Stack.Screen
+        name="CreacionTipoPlanningPersonalizadoScreen"
+        options={{
+          title: "Tipo Planning Personalizado",
+          headerStyle: {
+            backgroundColor: Colors.verde.verdeOscuro,
+          },
+          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
+        }}
+      />
     </Stack>
   );
 }

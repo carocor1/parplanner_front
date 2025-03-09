@@ -4,6 +4,8 @@ import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import ComponenteCalendario from "@/src/components/ComponenteCalendario";
+import CustomButton from "@/src/components/CustomButton";
+import Colors from "@/src/constants/Colors";
 
 export default function CalendarioScreen() {
   const [fechasSeleccionadas, setFechasSeleccionadas] = useState<string[]>([]);
@@ -28,6 +30,15 @@ export default function CalendarioScreen() {
       >
         <FontAwesome name="plus" size={24} color="white" />
       </TouchableOpacity>
+
+      <CustomButton
+        title="ELEGIR PLANNING"
+        onPress={() =>
+          router.push("/(tabs)/calendarios/SeleccionTipoPlanningScreen")
+        }
+        backgroundColor={Colors.naranja.naranjaNormal}
+        textColor="white"
+      />
     </View>
   );
 }
