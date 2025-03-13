@@ -31,8 +31,6 @@ const PerfilHijoScreen = () => {
   const [isFocusCiudad, setIsFocusCiudad] = useState(false);
   const [provincias, setProvincias] = useState<any[]>([]);
   const [ciudades, setCiudades] = useState<any[]>([]);
-  const [image, setImage] = useState<string | null>(null);
-  const [resetAvatar, setResetAvatar] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchHijo = async () => {
@@ -78,9 +76,6 @@ const PerfilHijoScreen = () => {
       }));
       setCiudades(ciudadesFiltradas);
     }
-  };
-  const handleImageSelected = (uri: string) => {
-    setImage(uri);
   };
 
   const validateInput = () => {
@@ -147,10 +142,6 @@ const PerfilHijoScreen = () => {
     return (
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container_principal}>
-          <BasicAvatar
-            onImageSelected={handleImageSelected}
-            reset={resetAvatar}
-          />
           <Text style={styles.title}>
             {hijo.nombre} {hijo.apellido}
           </Text>
@@ -233,28 +224,19 @@ const PerfilHijoScreen = () => {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flexGrow: 1,
+    flex: 1,
   },
   container_principal: {
     padding: 20,
     backgroundColor: Colors.gris.fondo,
+    flex: 1,
+    justifyContent: "center",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
-  },
-  irAHijo: {
-    marginTop: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: "gray",
   },
 });
 

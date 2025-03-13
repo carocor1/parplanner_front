@@ -81,7 +81,6 @@ export const verificarCodigoCambioContraseña = async (codigo: string) => {
 
 export const crearContraseña = async (contraseñaNueva: string) => {
   try {
-    console.log("actualizando contraseña");
     const response = await api.post("/auth/cambiar-contrasenia", {
       contraseñaNueva,
     });

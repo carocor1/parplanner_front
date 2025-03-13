@@ -43,8 +43,6 @@ const PerfilScreen = () => {
   const [isFocusCiudad, setIsFocusCiudad] = useState(false);
   const [provincias, setProvincias] = useState<any[]>([]);
   const [ciudades, setCiudades] = useState<any[]>([]);
-  const [image, setImage] = useState<string | null>(null);
-  const [resetAvatar, setResetAvatar] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchProgenitor = async () => {
@@ -100,12 +98,7 @@ const PerfilScreen = () => {
     }
   };
 
-  const handleImageSelected = (uri: string) => {
-    setImage(uri);
-  };
-
   const validateInput = () => {
-    let error = "";
     const validationRules = [
       { condition: !nombre, message: "El nombre es requerido" },
       { condition: !apellido, message: "El apellido es requerido" },
@@ -182,10 +175,6 @@ const PerfilScreen = () => {
     return (
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container_principal}>
-          <BasicAvatar
-            onImageSelected={handleImageSelected}
-            reset={resetAvatar}
-          />
           <Text style={styles.title}>
             {usuarioLogueado.nombre} {usuarioLogueado.apellido}
           </Text>
