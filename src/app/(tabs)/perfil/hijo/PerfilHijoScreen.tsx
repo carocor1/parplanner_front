@@ -1,7 +1,6 @@
 import { obtenerUsuario } from "@/src/services/userService";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import BasicAvatar from "@/src/dataDisplay/avatarPicker";
 import Colors from "@/src/constants/Colors";
 import CustomTextInput from "@/src/components/TextInput";
 import CustomButton from "@/src/components/CustomButton";

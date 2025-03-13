@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
-import BasicAvatar from "@/src/dataDisplay/avatarPicker";
 import Colors from "@/src/constants/Colors";
 import CustomTextInput from "@/src/components/TextInput";
 import CustomButton from "@/src/components/CustomButton";
