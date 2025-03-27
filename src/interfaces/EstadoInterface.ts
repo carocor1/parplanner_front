@@ -1,5 +1,5 @@
 export interface Estado {
   id: number;
   nombre: string;
-  fechaEliminacion: Date;
+  fechaEliminacion: Date | null;
 }

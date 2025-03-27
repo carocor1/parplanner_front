@@ -58,9 +58,14 @@ export default {
   lila: {
     lilaNormal: "#6A5ACD",
     lilaMuyClaro: "rgba(255, 255, 255, 0.7)",
+    lilaClaro:"rgb(201, 189, 224)"
+   
   },
   rosa: {
     rosaNormal: "#666",
+    rosaPetitte: "rgb(238, 183, 195)", 
+    rosaOscuro:"rgb(179, 114, 128)"
+    
   },
   amarillo: {
     amarilloNormal: "#cd8d0d",

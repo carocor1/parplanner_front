@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
+    backgroundColor: "#f5f5f5",
   },
   calendarioContainer: {
     flex: 1,
