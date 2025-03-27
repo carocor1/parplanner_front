@@ -8,7 +8,7 @@ import {
 import { router } from "expo-router";
 
 const api = axios.create({
-  baseURL: "https://thorough-ghost-visually.ngrok-free.app/parplanner",
+  baseURL: "https://rested-present-trout.ngrok-free.app/parplanner",
   headers: {
     "ngrok-skip-browser-warning": "true",
   },

@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View, ScrollView} from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import React, { useCallback, useState } from "react";
 import { StyleSheet } from "react-native";
@@ -12,9 +12,11 @@ import Colors from "../constants/Colors";
 import PlanningItem from "../components/PlanningItem";
 
 export default function DocumentoScreen() {
-  const [listaPlannings, setListaPlannings] = useState<Planning[]>([]);
+  const [planning, setPlanning] = useState<Planning>();
   const [loading, setLoading] = useState<boolean>(true);
-  const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<number | null>(null);
+  const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<
+    number | null
+  >(null);
 
   const fetchPlannings = async () => {
     setLoading(true);
@@ -23,13 +25,16 @@ export default function DocumentoScreen() {
       if (id) {
         setProgenitorLogueadoId(id);
       }
-      const plannings = await getPlanningsByProgenitor();
-      setListaPlannings(plannings);
+      const planning = await getPlanningsByProgenitor();
+      //DE ACA TRAIGO EL ULTIMO PLANNING, QUE PUEDE SER APROBADO, RECHAZADO O PENDIENTE.
+      console.log(planning);
+      setPlanning(planning);
     } catch (error) {
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: "Error al recuperar los plannings. Por favor, inténtalo de nuevo.",
+        textBody:
+          "Error al recuperar los plannings. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setLoading(false);
@@ -43,7 +48,9 @@ export default function DocumentoScreen() {
   );
 
   if (loading) {
-    return <Text style={{ textAlign: "center", marginTop: 20 }}>Cargando...</Text>;
+    return (
+      <Text style={{ textAlign: "center", marginTop: 20 }}>Cargando...</Text>
+    );
   }
 
   return (
@@ -73,8 +80,6 @@ export default function DocumentoScreen() {
           )}
         </View>
       </ScrollView>
-
- 
     </View>
   );
 }
