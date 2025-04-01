@@ -14,6 +14,8 @@ export default function CompromisoLayout() {
           headerShown: false,
         }}
       />
+
+      
     </Stack>
   );
 }
