@@ -54,17 +54,17 @@ export const aprobarPlanning = async (planningId: number) => {
 
 export const rechazarPlanning = async (
   planningId: number,
-  fechaInicio: Date,
-  selectedPlanning: number
+  fechaInicio: string,
+  tipoPlanning: string
 ) => {
   try {
     const response = await api.post(`/planning/rechazar/${planningId}`, {
-      fechaInicio,         
-      tipoPlanningId: selectedPlanning, 
+      fechaInicio,
+      tipoPlanning,
     });
-    return response.data; 
+    return response.data; // Retorna la respuesta del servidor
   } catch (error) {
     console.error("Error al rechazar el planning:", error);
-    throw error; 
+    throw error; // Lanza el error si necesitas manejarlo en otro lugar
   }
 };
