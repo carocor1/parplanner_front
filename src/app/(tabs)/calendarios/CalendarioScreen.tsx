@@ -32,9 +32,16 @@ export default function CalendarioScreen() {
       </TouchableOpacity>
 
       <CustomButton
+        title="PLANNING SCREEN"
+        onPress={() => router.push("/(tabs)/calendarios/PlanningScreen")}
+        backgroundColor={Colors.naranja.naranjaNormal}
+        textColor="white"
+      />
+
+      <CustomButton
         title="ELEGIR PLANNING"
         onPress={() =>
-          router.push("/(tabs)/calendarios/SeleccionTipoPlanningScreen")
+          router.push("/(tabs)/calendarios/CreacionPlanningScreen")
         }
         backgroundColor={Colors.naranja.naranjaNormal}
         textColor="white"

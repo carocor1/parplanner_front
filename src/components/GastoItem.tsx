@@ -13,6 +13,7 @@ import { pagarGastos } from "../services/gastoService";
 import { openBrowserAsync } from "expo-web-browser";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import ProponerParticionScreen from "../app/(tabs)/gastos/ParticionModal";
+import CustomEstadoRectangulo from "./CustomEstadoRectangulo";
 
 interface GastoItemProps {
   gasto: Gasto;
@@ -226,26 +227,29 @@ const GastoItem: React.FC<GastoItemProps> = ({
             }
           >
             <View
-              style={[
-                esPendiente
-                  ? styles.rectanguloPendiente
-                  : esPagado
-                  ? styles.rectanguloPagada
-                  : styles.rectanguloEnNegociacion,
-                { marginBottom: 5 },
-              ]}
+              style={
+                esEnNegociacion
+                  ? styles.seccionDerechaEnNegociacion
+                  : styles.seccionDerecha
+              }
             >
-              <Text
-                style={
+              <CustomEstadoRectangulo
+                estado={gasto.estado.nombre}
+                backgroundColor={
                   esPendiente
-                    ? styles.textoPendiente
+                    ? Colors.naranja.naranjaClaro
                     : esPagado
-                    ? styles.textoPagada
-                    : styles.textoEnNegociacion
+                    ? Colors.azul.azulClaro
+                    : Colors.rojo.rojoClaro
                 }
-              >
-                {gasto.estado.nombre.toUpperCase()}
-              </Text>
+                textColor={
+                  esPendiente
+                    ? Colors.naranja.naranjaOscuro
+                    : esPagado
+                    ? Colors.azul.azulOscuro
+                    : Colors.rojo.rojoOscuro
+                }
+              />
             </View>
 
             {!esEnNegociacion && (
@@ -277,13 +281,19 @@ const GastoItem: React.FC<GastoItemProps> = ({
                 ) : (
                   <View style={styles.botonesNegociacion}>
                     <TouchableOpacity
-                      style={[styles.botonNegociacion, styles.botonAceptar]}
+                      style={[
+                        styles.botonNegociacion,
+                        { backgroundColor: "green" },
+                      ]}
                       onPress={() => aprobarSolicitudParticion()}
                     >
                       <MaterialIcons name="check" size={24} color="white" />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={[styles.botonNegociacion, styles.botonRechazar]}
+                      style={[
+                        styles.botonNegociacion,
+                        { backgroundColor: "red" },
+                      ]}
                       onPress={() => rechazarSolicitudParticion()}
                     >
                       <MaterialIcons name="close" size={24} color="white" />
@@ -378,27 +388,6 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     color: Colors.negro.negroNormal,
   },
-  textoEnNegociacion: {
-    color: Colors.rojo.rojoOscuro,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  rectanguloPagada: {
-    backgroundColor: Colors.azul.azulClaro,
-    paddingHorizontal: 14,
-    padding: 5,
-    borderRadius: 10,
-  },
-  rectanguloEnNegociacion: {
-    backgroundColor: Colors.rojo.rojoClaro,
-    paddingHorizontal: 14,
-    padding: 5,
-    borderRadius: 10,
-  },
-  textoPagada: {
-    color: Colors.azul.azulOscuro,
-    fontWeight: "bold",
-  },
   botonAbrir: {
     backgroundColor: "white",
     borderColor: Colors.azul.celeste,
@@ -452,12 +441,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-  },
-  botonAceptar: {
-    backgroundColor: "green",
-  },
-  botonRechazar: {
-    backgroundColor: "red",
   },
 });
 

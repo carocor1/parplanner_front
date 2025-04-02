@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import Calendario from "@/src/components/ComponenteCalendario";
@@ -9,16 +16,22 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [fechasCreador, setFechasCreador] = useState<string[]>([]);
   const [fechasParticipante, setFechasParticipante] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null); 
-  const [resultado, setResultado] = useState<string | number[]>(""); 
+  const [error, setError] = useState<string | null>(null);
+  const [resultado, setResultado] = useState<string | number[]>("");
 
   const router = useRouter();
 
   const validateInput = () => {
     const validationRules = [
       { condition: !nombre, message: "El título es requerido" },
-      { condition: fechasCreador.length === 0, message: "El creador no ha seleccionado ninguna fecha." },
-      { condition: fechasParticipante.length === 0, message: "El participante no ha seleccionado ninguna fecha." },
+      {
+        condition: fechasCreador.length === 0,
+        message: "El creador no ha seleccionado ninguna fecha.",
+      },
+      {
+        condition: fechasParticipante.length === 0,
+        message: "El participante no ha seleccionado ninguna fecha.",
+      },
     ];
 
     for (const rule of validationRules) {
@@ -54,7 +67,8 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
         const fechaActual = new Date(fechasOrdenadas[i]);
         const fechaAnterior = new Date(fechasOrdenadas[i - 1]);
         const diferenciaDias =
-          (fechaActual.getTime() - fechaAnterior.getTime()) / (1000 * 60 * 60 * 24);
+          (fechaActual.getTime() - fechaAnterior.getTime()) /
+          (1000 * 60 * 60 * 24);
 
         if (diferenciaDias === 1) {
           contador++;
@@ -80,7 +94,6 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
     return resultado;
   };
 
- 
   const evaluarVector = (vector: number[]): number[] => {
     const contador = vector.length;
 
@@ -127,48 +140,43 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
     }
   };
 
- 
   const registrarCompromiso = async () => {
     if (!validateInput()) {
       return;
     }
 
-    try{
-      const vectorIntercalado = calcularVectorIntercalado(fechasCreador, fechasParticipante);
+    try {
+      const vectorIntercalado = calcularVectorIntercalado(
+        fechasCreador,
+        fechasParticipante
+      );
       const evaluacion = evaluarVector(vectorIntercalado);
 
       setResultado(evaluacion);
 
-      const response= await registrarTipoPlanning(
-        nombre, 
-        evaluacion
-      ); 
-  
+      const response = await registrarTipoPlanning(nombre, evaluacion);
+
       router.push({
-        pathname: "/(tabs)/calendarios/SeleccionTipoPlanningScreen",
+        pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
         params: { planningId: response.id },
       });
-      
+
       setNombre("");
       setFechasCreador([]);
       setFechasParticipante([]);
       setResultado([]);
-
-    } catch(error){
+    } catch (error) {
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Érror",
         textBody: "Error al crear un tipo de planning.",
       });
-  
     }
-    
- 
   };
 
   return (
     <ScrollView style={styles.container}>
-      <View >
+      <View>
         <View style={styles.inputContainer}>
           <TextInput
             style={[styles.input, error && styles.inputError]}
@@ -210,7 +218,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 20,
   },
-  
+
   input: {
     padding: 10,
     borderWidth: 1,
@@ -231,6 +239,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: Colors.marron.marronNormal,
     fontWeight: "bold",
-    fontSize:20
+    fontSize: 20,
   },
 });

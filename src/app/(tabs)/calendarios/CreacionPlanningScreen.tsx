@@ -12,14 +12,15 @@ import {
   registrarPlanning,
 } from "@/src/services/planningService";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
+import CustomButton from "@/src/components/CustomButton";
 
-const SeleccionTipoPlanningScreen = () => {
+const CreacionPlanningScreen = () => {
   const [tipoPlannings, setTipoPlannings] = useState<TipoPlanning[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlanning, setSelectedPlanning] = useState<number | null>(null);
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
   const router = useRouter();
-  const searchParams = useLocalSearchParams(); // Capturar parámetros de la URL
+  const searchParams = useLocalSearchParams();
   const planningId = searchParams.planningId;
   const { planningRechazandoId } = useLocalSearchParams();
 
@@ -38,7 +39,6 @@ const SeleccionTipoPlanningScreen = () => {
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -46,7 +46,6 @@ const SeleccionTipoPlanningScreen = () => {
     if (planningId !== undefined && planningId !== null) {
       setSelectedPlanning(parseInt(planningId as string, 10));
       setFechaInicio(null);
-
       router.push("/(tabs)/calendarios/CalendarioScreen");
     }
   }, [planningId]);
@@ -84,8 +83,6 @@ const SeleccionTipoPlanningScreen = () => {
 
     try {
       if (planningRechazandoId) {
-        console.log(planningRechazandoId);
-        console.log(parseInt(planningRechazandoId as string, 10));
         const planningIdParseado = parseInt(planningRechazandoId as string, 10);
         await rechazarPlanning(
           planningIdParseado,
@@ -121,7 +118,7 @@ const SeleccionTipoPlanningScreen = () => {
         </Text>
       </View>
 
-      <View style={styles.inputContainer}>
+      <View>
         <DatePickerEvento
           onDateChange={(date) => setFechaInicio(date)}
           minimumDate={new Date()}
@@ -146,12 +143,12 @@ const SeleccionTipoPlanningScreen = () => {
           }}
         />
       )}
-      <TouchableOpacity
-        style={styles.button}
+      <CustomButton
+        title="GUARDAR PLANNING"
         onPress={registrarPlanningHandler}
-      >
-        <Text style={styles.buttonText}>GUARDAR PLANNING</Text>
-      </TouchableOpacity>
+        backgroundColor={Colors.rosa.rosaPetitte}
+        textColor={Colors.rosa.rosaOscuro}
+      ></CustomButton>
     </View>
   );
 };
@@ -162,37 +159,12 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
   },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#333",
-  },
-  loading: {
-    fontSize: 16,
-    color: "gray",
-    textAlign: "center",
-  },
-  selected: {
-    marginTop: 20,
-    fontSize: 16,
-    color: "#4a90e2",
-    textAlign: "center",
-  },
-  inputContainer: {
-    marginTop: 0,
-    marginBottom: 0,
-    width: "100%",
-    justifyContent: "center",
-  },
   containerTexto: {
     backgroundColor: Colors.marron.marronClaro,
     padding: 10,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 0,
     marginBottom: 10,
     width: "100%",
   },
@@ -202,19 +174,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
-  button: {
-    backgroundColor: Colors.rosa.rosaPetitte,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: Colors.rosa.rosaOscuro,
-    fontWeight: "bold",
-    fontSize: 20,
-  },
 });
 
-export default SeleccionTipoPlanningScreen;
+export default CreacionPlanningScreen;

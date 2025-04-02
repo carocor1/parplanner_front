@@ -16,9 +16,19 @@ export default function CalendarioLayout() {
         }}
       />
       <Stack.Screen
-        name="SeleccionTipoPlanningScreen"
+        name="CreacionPlanningScreen"
         options={{
-          title: "Selección Tipo Planning",
+          title: "Crear Planning",
+          headerStyle: {
+            backgroundColor: Colors.verde.verdeOscuro,
+          },
+          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
+        }}
+      />
+      <Stack.Screen
+        name="PlanningScreen"
+        options={{
+          title: "Planning",
           headerStyle: {
             backgroundColor: Colors.verde.verdeOscuro,
           },
@@ -35,7 +45,7 @@ export default function CalendarioLayout() {
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
         }}
       />
-     
+
       <Stack.Screen
         name="CreacionTipoPlanningPersonalizadoScreen"
         options={{
@@ -46,18 +56,6 @@ export default function CalendarioLayout() {
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
         }}
       />
-      <Stack.Screen
-        name="[id]"
-        options={{
-          title: "Detalle del Planning Propuesto",
-          headerStyle: {
-            backgroundColor: Colors.verde.verdeOscuro,
-          },
-          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
-        }}
-      />
-    
-
     </Stack>
   );
 }
