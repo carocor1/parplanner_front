@@ -101,16 +101,19 @@ export default function DocumentoScreen() {
         <View>
           {planning ? (
             <>
+              {(esPendiente)&& <View style={styles.containerTitulo}>
+                <Text style={styles.titulo}>PLANNING PROPUESTO</Text>
+              </View>}
+              {(esAprobado)&& <View style={styles.containerTitulo}>
+                <Text style={styles.titulo}>PLANNING ACTIVO</Text>
+              </View>}
+              {(!esAprobado &&!esPendiente)&& <View style={styles.containerTitulo}>
+                <Text style={styles.titulo}>PLANNING</Text>
+              </View>}
               <View style={styles.PlanningsContainer}>
                 <View style={styles.estiloAlineacion}>
                   <View style={esPendiente ? { flex: 0.5 } : { flex: 0.6 }}>
-                    <Text style={styles.titulo}>
-                      {esPendiente
-                        ? "Planning Propuesto"
-                        : esAprobado
-                        ? "Planning Activo"
-                        : "Planning"}
-                    </Text>
+                    
 
                     {esPendiente && (
                       <Text
@@ -186,10 +189,11 @@ export default function DocumentoScreen() {
                   </View>
                 )}
                 {esPendiente && esCreador && (
-                  <Text style={styles.textoEnPendienteLadoDerecho}>
-                    {planning.usuario_participe.nombre} deberá aprobar el
-                    planning que propusiste...
+                  <View style={styles.containerPlanning}>
+                    <Text style={styles.textoPlanning}>
+                    {planning.usuario_participe.nombre.toUpperCase()} DEBERÁ APROBAR EL PLANNING QUE PROPUSISTE
                   </Text>
+                  </View>
                 )}
               </View>
             </>
@@ -217,12 +221,12 @@ export default function DocumentoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.lila.lilaNormal,
+    backgroundColor: "white",
     justifyContent: "center",
-    paddingHorizontal: 15,
+
   },
   PlanningsContainer: {
-    marginTop: 70,
+    marginTop: 20,
     backgroundColor: "white",
     borderRadius: 15,
     alignSelf: "center",
@@ -237,9 +241,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titulo: {
-    fontSize: 18,
+    fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 2,
+    alignSelf: "center",
+    marginBottom: 10,
+    textAlign: "center",
+    color: Colors.rosa.rosaOscuro,
   },
   textoNegro: {
     color: Colors.negro.negroOscuro,
@@ -299,5 +306,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 0.4,
+  },
+  containerTitulo: {
+    backgroundColor: Colors.rosa.rosaPetitte,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+    alignItems: "center",
+    height: "16%",
+    width: "100%",
+    padding: 10,
+    justifyContent: "center",
+  },
+  textoPlanning: {
+    color: Colors.marron.marronNormal,
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  containerPlanning: {
+    backgroundColor: Colors.marron.marronClaro,
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 10,
+    width: "100%",
   },
 });
