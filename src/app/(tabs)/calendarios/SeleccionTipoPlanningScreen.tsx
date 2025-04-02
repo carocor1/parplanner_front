@@ -7,10 +7,11 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import DatePickerEvento from "@/src/components/DatePickerEvento";
 import Colors from "@/src/constants/Colors";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
-import { registrarPlanning } from "@/src/services/planningService";
-
-
-
+import {
+  rechazarPlanning,
+  registrarPlanning,
+} from "@/src/services/planningService";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
 
 const SeleccionTipoPlanningScreen = () => {
   const [tipoPlannings, setTipoPlannings] = useState<TipoPlanning[]>([]);
@@ -19,7 +20,8 @@ const SeleccionTipoPlanningScreen = () => {
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
   const router = useRouter();
   const searchParams = useLocalSearchParams(); // Capturar parámetros de la URL
-  const planningId = searchParams.planningId; 
+  const planningId = searchParams.planningId;
+  const { planningRechazandoId } = useLocalSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,16 +43,12 @@ const SeleccionTipoPlanningScreen = () => {
   }, []);
 
   useEffect(() => {
-
     if (planningId !== undefined && planningId !== null) {
-
-      setSelectedPlanning(parseInt(planningId as string, 10)); 
+      setSelectedPlanning(parseInt(planningId as string, 10));
       setFechaInicio(null);
 
       router.push("/(tabs)/calendarios/CalendarioScreen");
-    };
-    
-    
+    }
   }, [planningId]);
 
   const registrarPlanPersonalizado = () => {
@@ -60,7 +58,10 @@ const SeleccionTipoPlanningScreen = () => {
   const validateInput = () => {
     const validationRules = [
       { condition: !fechaInicio, message: "La fecha de inicio es requerida" },
-      { condition: !selectedPlanning, message: "El tipo de Planning es requerido" },
+      {
+        condition: !selectedPlanning,
+        message: "El tipo de Planning es requerido",
+      },
     ];
 
     for (const rule of validationRules) {
@@ -82,23 +83,31 @@ const SeleccionTipoPlanningScreen = () => {
     }
 
     try {
-    
-
-      await registrarPlanning(fechaInicio!, selectedPlanning!);
-     
+      if (planningRechazandoId) {
+        console.log(planningRechazandoId);
+        console.log(parseInt(planningRechazandoId as string, 10));
+        const planningIdParseado = parseInt(planningRechazandoId as string, 10);
+        await rechazarPlanning(
+          planningIdParseado,
+          fechaInicio!,
+          selectedPlanning!
+        );
+      } else {
+        await registrarPlanning(fechaInicio!, selectedPlanning!);
+      }
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         title: "Éxito",
         textBody: "Tu planificación se guardó correctamente.",
       });
-
-      router.back();
+      router.push("/(tabs)/calendarios/CalendarioScreen");
     } catch (error) {
       console.error("Error al registrar el Planning:", error);
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: "Hubo un problema al guardar la planificación. Por favor, inténtalo de nuevo.",
+        textBody:
+          "Hubo un problema al guardar la planificación. Por favor, inténtalo de nuevo.",
       });
     }
   };
@@ -106,11 +115,17 @@ const SeleccionTipoPlanningScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.containerTexto}>
-        <Text style={styles.texto}> INGRESÁ LA FECHA DE INICIO DE TU PLANNING</Text>
+        <Text style={styles.texto}>
+          {" "}
+          INGRESÁ LA FECHA DE INICIO DE TU PLANNING
+        </Text>
       </View>
 
       <View style={styles.inputContainer}>
-        <DatePickerEvento onDateChange={(date) => setFechaInicio(date)} minimumDate={new Date()} />
+        <DatePickerEvento
+          onDateChange={(date) => setFechaInicio(date)}
+          minimumDate={new Date()}
+        />
       </View>
 
       <View style={styles.containerTexto}>
@@ -118,7 +133,7 @@ const SeleccionTipoPlanningScreen = () => {
       </View>
 
       {isLoading ? (
-        <Text style={styles.loading}>Cargando datos...</Text>
+        <LoadingIndicator></LoadingIndicator>
       ) : (
         <TipoPlanningSelector
           tipoPlannings={tipoPlannings}
@@ -127,12 +142,14 @@ const SeleccionTipoPlanningScreen = () => {
               registrarPlanPersonalizado();
             } else {
               setSelectedPlanning(planning.id);
-              console.log("Planning existente seleccionado:", planning.id);
             }
           }}
         />
       )}
-      <TouchableOpacity style={styles.button} onPress={registrarPlanningHandler}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={registrarPlanningHandler}
+      >
         <Text style={styles.buttonText}>GUARDAR PLANNING</Text>
       </TouchableOpacity>
     </View>
@@ -165,9 +182,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginTop: 0,
-    marginBottom:0, 
+    marginBottom: 0,
     width: "100%",
-    justifyContent: "center", 
+    justifyContent: "center",
   },
   containerTexto: {
     backgroundColor: Colors.marron.marronClaro,
@@ -176,29 +193,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 0,
-    marginBottom:10, 
-    width: "100%", 
+    marginBottom: 10,
+    width: "100%",
   },
   texto: {
     color: Colors.marron.marronNormal,
     fontWeight: "bold",
-    fontSize:16, 
-    textAlign:"center"
+    fontSize: 16,
+    textAlign: "center",
   },
   button: {
-      backgroundColor: Colors.rosa.rosaPetitte,
-      padding: 10,
-      borderRadius: 10,
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 10,
-    },
-    buttonText: {
-      color: Colors.rosa.rosaOscuro,
-      fontWeight: "bold",
-      fontSize:20
-    },
-  
+    backgroundColor: Colors.rosa.rosaPetitte,
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: Colors.rosa.rosaOscuro,
+    fontWeight: "bold",
+    fontSize: 20,
+  },
 });
 
 export default SeleccionTipoPlanningScreen;

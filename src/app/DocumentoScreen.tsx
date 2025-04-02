@@ -1,80 +1,220 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View, ScrollView} from "react-native";
-import { Button } from "react-native-elements/dist/buttons/Button";
+import {
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import React, { useCallback, useState } from "react";
-import { StyleSheet } from "react-native";
 import { Planning } from "../interfaces/PlanningInterface";
 import { getProgenitorIdFromToken } from "../utils/storage";
-import { getPlanningsByProgenitor } from "../services/planningService";
+import {
+  aprobarPlanning,
+  getPlanningsByProgenitor,
+} from "../services/planningService";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import Colors from "../constants/Colors";
-
-import PlanningItem from "../components/PlanningItem";
+import { MaterialIcons } from "@expo/vector-icons";
+import CalendarioPlanning from "../components/CalendarioPlanningDef";
+import LoadingIndicator from "../components/LoadingIndicator";
+import CustomButton from "../components/CustomButton";
 
 export default function DocumentoScreen() {
-  const [listaPlannings, setListaPlannings] = useState<Planning[]>([]);
+  const [planning, setPlanning] = useState<Planning | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<number | null>(null);
+  const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<
+    number | null
+  >(null);
 
-  const fetchPlannings = async () => {
+  const fetchUltimoPlanning = async () => {
     setLoading(true);
     try {
       const id = await getProgenitorIdFromToken();
       if (id) {
         setProgenitorLogueadoId(id);
       }
-      const plannings = await getPlanningsByProgenitor();
-      setListaPlannings(plannings);
+      const planning = await getPlanningsByProgenitor();
+      if (planning) {
+        setPlanning(planning);
+      }
     } catch (error) {
       Toast.show({
         type: ALERT_TYPE.DANGER,
         title: "Error",
-        textBody: "Error al recuperar los plannings. Por favor, inténtalo de nuevo.",
+        textBody:
+          "Error al recuperar los plannings. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setLoading(false);
     }
   };
 
+  const aprobarSolicitudPlanning = async () => {
+    try {
+      if (planning) {
+        await aprobarPlanning(planning.id);
+        fetchUltimoPlanning();
+      }
+    } catch (error) {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "Error al aceptar la planificación. Por favor, inténtalo de nuevo.",
+      });
+    }
+  };
+
+  const rechazarSolicitudPlanning = () => {
+    if (planning) {
+      router.push({
+        pathname: "/(tabs)/calendarios/SeleccionTipoPlanningScreen",
+        params: { planningRechazandoId: planning.id },
+      });
+    } else {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "No se puede rechazar el planning porque falta información.",
+      });
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      fetchPlannings();
+      fetchUltimoPlanning();
     }, [])
   );
 
   if (loading) {
-    return <Text style={{ textAlign: "center", marginTop: 20 }}>Cargando...</Text>;
+    return <LoadingIndicator />;
   }
+
+  const esCreador = planning?.usuario_creador.id === progenitorLogueadoId;
+  const esPendiente = planning?.estado.id === 7;
+  const esAprobado = planning?.estado.id === 8;
+
+  const mensajeAmostrar = esPendiente
+    ? esCreador
+      ? "Propusiste la siguiente planificación:"
+      : `${planning?.usuario_creador.nombre} te propone la siguiente planificación:`
+    : "";
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={styles.ParteSuperiorContainer}>
-          {listaPlannings.length > 0 ? (
+        <View>
+          {planning ? (
             <>
-              <Text style={styles.noDebeText}>Tenés nuevos plannings</Text>
               <View style={styles.PlanningsContainer}>
-                <Text style={styles.planningsTitle}>Plannings</Text>
-                {progenitorLogueadoId &&
-                  listaPlannings.map((planning) => (
-                    <PlanningItem
-                      key={planning.id}
-                      planning={planning}
-                      usuarioLogueadoId={progenitorLogueadoId}
-                      onRecargar={fetchPlannings}
-                    />
-                  ))}
+                <View style={styles.estiloAlineacion}>
+                  <View style={esPendiente ? { flex: 0.5 } : { flex: 0.6 }}>
+                    <Text style={styles.titulo}>Planning</Text>
+
+                    {esPendiente && (
+                      <Text
+                        style={
+                          esCreador ? styles.textoNegro : styles.textoNaranja
+                        }
+                      >
+                        {planning.usuario_creador.nombre}{" "}
+                        {planning.usuario_creador.apellido}
+                        {esCreador && " (Vos)"}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.seccionDerecha}>
+                    <View
+                      style={[
+                        esAprobado
+                          ? styles.rectanguloAceptada
+                          : styles.rectanguloPendiente,
+                        { marginBottom: 5 },
+                      ]}
+                    >
+                      <Text
+                        style={
+                          esAprobado
+                            ? styles.textoAceptada
+                            : styles.textoPendiente
+                        }
+                      >
+                        {planning.estado.nombre.toUpperCase()}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {esPendiente && (
+                  <Text style={styles.textoEnPendienteLadoDerecho}>
+                    {mensajeAmostrar}
+                  </Text>
+                )}
+
+                <CalendarioPlanning
+                  fechasAsignadasCreador={planning.fechasAsignadasCreador}
+                  fechasAsignadasParticipe={planning.fechasAsignadasParticipe}
+                />
+
+                <View style={styles.fechasAsignadasContainer}>
+                  <View style={styles.rectanguloCreador}>
+                    <Text style={styles.textoCreador}>
+                      {esCreador
+                        ? `${planning.usuario_creador.nombre.toUpperCase()} (Vos)`
+                        : planning.usuario_creador.nombre.toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={styles.rectanguloParticipe}>
+                    <Text style={styles.textoParticipe}>
+                      {esCreador
+                        ? planning.usuario_participe.nombre.toUpperCase()
+                        : `${planning.usuario_participe.nombre.toUpperCase()} (Vos)`}
+                    </Text>
+                  </View>
+                </View>
+
+                {esPendiente && !esCreador && (
+                  <View style={styles.botonesNegociacion}>
+                    <TouchableOpacity
+                      style={[styles.botonPendiente, styles.botonAceptar]}
+                      onPress={aprobarSolicitudPlanning}
+                    >
+                      <MaterialIcons name="check" size={24} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.botonPendiente, styles.botonRechazar]}
+                      onPress={rechazarSolicitudPlanning}
+                    >
+                      <MaterialIcons name="close" size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {esPendiente && esCreador && (
+                  <Text style={styles.textoEnPendienteLadoDerecho}>
+                    {planning.usuario_participe.nombre} deberá aprobar el
+                    planning que propusiste...
+                  </Text>
+                )}
               </View>
             </>
           ) : (
-            <Text style={styles.textoSinGasto}>
-              ¡Registrá un nuevo Planning para comenzar!
-            </Text>
+            <View>
+              <Text style={styles.textoSinGasto}>
+                ¡Registrá un nuevo Planning para comenzar!
+              </Text>
+              <CustomButton
+                onPress={() =>
+                  router.push("/(tabs)/calendarios/SeleccionTipoPlanningScreen")
+                }
+                title="REGISTRAR PLANNING"
+                backgroundColor={Colors.naranja.naranjaOscuro}
+                textColor="white"
+              />
+            </View>
           )}
         </View>
       </ScrollView>
-
- 
     </View>
   );
 }
@@ -82,74 +222,122 @@ export default function DocumentoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  ParteSuperiorContainer: {
-    justifyContent: "space-between",
-    alignItems: "center",
     backgroundColor: "#6A5ACD",
-    paddingBottom: 90,
-    paddingTop: 60,
-    width: "100%",
+    justifyContent: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 100,
   },
-  debeText: {
-    color: Colors.lila.lilaMuyClaro,
-    fontSize: 16,
-  },
-  noDebeText: {
-    color: Colors.lila.lilaMuyClaro,
-    fontSize: 24,
-    fontWeight: "bold",
-    paddingHorizontal: 60,
-    textAlign: "center",
-    lineHeight: 34,
-    paddingVertical: 18,
-  },
+  ParteSuperiorContainer: {},
   PlanningsContainer: {
-    marginTop: -65,
     backgroundColor: "#fff",
     borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    elevation: 4,
-    zIndex: 1,
-    width: "92%",
     alignSelf: "center",
+    padding: 15,
+    justifyContent: "center",
+    width: "100%",
+    marginHorizontal: 200,
   },
-  planningsTitle: {
-    marginLeft: 10,
-    marginTop: 10,
+  estiloAlineacion: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  titulo: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 2,
+  },
+  textoNegro: {
+    color: Colors.negro.negroOscuro,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  textoNaranja: {
+    color: Colors.naranja.naranjaOscuro,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  rectanguloPendiente: {
+    backgroundColor: Colors.naranja.naranjaClaro,
+    padding: 5,
+    borderRadius: 10,
+  },
+  textoPendiente: {
+    color: Colors.naranja.naranjaOscuro,
+    fontWeight: "bold",
+  },
+  rectanguloAceptada: {
+    backgroundColor: Colors.azul.azulClaro,
+    padding: 5,
+    borderRadius: 10,
+  },
+  textoAceptada: {
+    color: Colors.azul.azulOscuro,
+    fontWeight: "bold",
+  },
+  textoEnPendienteLadoDerecho: {
+    marginTop: 5,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  fechasAsignadasContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  rectanguloCreador: {
+    backgroundColor: Colors.naranja.naranjaClaro,
+    padding: 5,
+    borderRadius: 10,
+  },
+  textoCreador: {
+    color: Colors.naranja.naranjaOscuro,
+    fontWeight: "bold",
+  },
+  rectanguloParticipe: {
+    backgroundColor: Colors.lila.lilaClaro,
+    padding: 5,
+    borderRadius: 10,
+    justifyContent: "center",
+  },
+  textoParticipe: {
+    color: Colors.lila.lilaNormal,
+    fontWeight: "bold",
+  },
+  botonesNegociacion: {
+    marginTop: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 100,
+    alignSelf: "center",
+  },
+  botonPendiente: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "green",
+  },
+  botonAceptar: {
+    backgroundColor: "green",
+  },
+  botonRechazar: {
+    backgroundColor: "red",
   },
   textoSinGasto: {
     fontWeight: "bold",
     fontSize: 25,
     textAlign: "center",
-    color: "gray",
+    color: "white",
     lineHeight: 30,
     paddingHorizontal: 50,
-    paddingVertical: 200,
+    paddingTop: 200,
   },
-  botonFlotante: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#778c43",
-    alignItems: "center",
+  seccionDerecha: {
     justifyContent: "center",
-    right: 20,
-    bottom: 20,
-    zIndex: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
+    alignItems: "center",
+    flex: 0.4,
   },
 });
