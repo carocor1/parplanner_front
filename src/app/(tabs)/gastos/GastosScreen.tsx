@@ -155,7 +155,6 @@ const GastosScreen = () => {
           </Text>
         )}
       </ScrollView>
-
       <FloatingActionButton
         onPress={() => router.push("/gastos/RegistrarGastoScreen")}
         backgroundColor={Colors.verde.verdeOscuro}

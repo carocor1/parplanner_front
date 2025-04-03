@@ -1,4 +1,10 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+} from "react-native";
 import { Text, View } from "@/src/components/Themed";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
@@ -86,50 +92,65 @@ const IniciarSesionScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Iniciar Sesión</Text>
-      <Text style={styles.subtitulo}>
-        Ingresá tus credenciales para acceder a tu cuenta.
-      </Text>
-
-      <InputComponentInicioSesion
-        label="Email"
-        value={email}
-        setFunction={SetEmail}
-        iconName="user"
-        iconType="font-awesome"
-        keyboardType="email-address"
-      />
-      <InputComponentInicioSesion
-        label="Contraseña"
-        value={password}
-        setFunction={SetPassword}
-        iconName="eye"
-        iconType="font-awesome"
-        secureTextEntry
-      />
-      <TouchableOpacity
-        onPress={() => router.push("/CambiarContraseniaScreen")}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
-      </TouchableOpacity>
+        <View style={styles.container}>
+          <Text style={styles.titulo}>Iniciar Sesión</Text>
+          <Text style={styles.subtitulo}>
+            Ingresá tus credenciales para acceder a tu cuenta.
+          </Text>
 
-      <CustomButton
-        title="INICIAR SESIÓN"
-        onPress={onLogin}
-        backgroundColor={Colors.naranja.naranjaNormal}
-        textColor="white"
-      />
-      <GoogleLogInButton />
-      <Text style={styles.SignUp}>¿No tienes una cuenta? </Text>
-      <TouchableOpacity onPress={() => router.push("/RegistroUsuarioScreen")}>
-        <Text style={styles.SignUp2}>Registrate</Text>
-      </TouchableOpacity>
-    </View>
+          <InputComponentInicioSesion
+            label="Email"
+            value={email}
+            setFunction={SetEmail}
+            iconName="user"
+            iconType="font-awesome"
+            keyboardType="email-address"
+          />
+          <InputComponentInicioSesion
+            label="Contraseña"
+            value={password}
+            setFunction={SetPassword}
+            iconName="eye"
+            iconType="font-awesome"
+            secureTextEntry
+          />
+          <TouchableOpacity
+            onPress={() => router.push("/CambiarContraseniaScreen")}
+          >
+            <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
+          </TouchableOpacity>
+
+          <CustomButton
+            title="INICIAR SESIÓN"
+            onPress={onLogin}
+            backgroundColor={Colors.naranja.naranjaNormal}
+            textColor="white"
+          />
+          <GoogleLogInButton />
+          <Text style={styles.SignUp}>¿No tienes una cuenta? </Text>
+          <TouchableOpacity
+            onPress={() => router.push("/RegistroUsuarioScreen")}
+          >
+            <Text style={styles.SignUp2}>Registrate</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     padding: 10,
     backgroundColor: Colors.verde.verdeIntermedio,

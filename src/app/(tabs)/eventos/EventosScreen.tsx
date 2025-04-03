@@ -82,11 +82,12 @@ const EventosScreen = () => {
           </View>
         )}
       </ScrollView>
-
-      <FloatingActionButton
-        onPress={() => router.push("/(tabs)/eventos/RegistrarEventoScreen")}
-        backgroundColor={Colors.verde.verdeOscuro}
-      />
+      {listaEventos.length > 0 && (
+        <FloatingActionButton
+          onPress={() => router.push("/(tabs)/eventos/RegistrarEventoScreen")}
+          backgroundColor={Colors.verde.verdeOscuro}
+        />
+      )}
     </View>
   );
 };
