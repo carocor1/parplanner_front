@@ -12,6 +12,7 @@ import "react-native-reanimated";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 
 import { useColorScheme } from "@/src/components/useColorScheme";
+import Colors from "../constants/Colors";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -56,7 +57,7 @@ function RootLayoutNav() {
           <Stack.Screen name="AlergiasScreen" options={{ title: "Alergias" }} />
           <Stack.Screen
             name="DocumentoScreen"
-            options={{ title: "Documentos" }}
+            options={{ title: "Tipo Planning Personalizado", headerStyle: {backgroundColor: Colors.verde.verdeOscuro,},headerTintColor: Colors.verde.verdeMuyMuyOscuro,}}
           />
           <Stack.Screen
             name="HistorialClinicoScreen"

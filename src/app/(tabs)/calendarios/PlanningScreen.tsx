@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View, ScrollView, StyleSheet } from "react-native";
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useCallback, useState } from "react";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
@@ -13,6 +13,7 @@ import CustomEstadoRectangulo from "@/src/components/CustomEstadoRectangulo";
 import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
 import CustomButton from "@/src/components/CustomButton";
 import Colors from "@/src/constants/Colors";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function DocumentoScreen() {
   const [planning, setPlanning] = useState<Planning | null>(null);
@@ -198,19 +199,24 @@ export default function DocumentoScreen() {
               </View>
             </>
           ) : (
-            <View>
-              <Text style={styles.textoSinPlanning}>
-                ¡Registrá un nuevo Planning para comenzar!
-              </Text>
-              <CustomButton
-                onPress={() =>
-                  router.push("/(tabs)/calendarios/CreacionPlanningScreen")
-                }
-                title="REGISTRAR PLANNING"
-                backgroundColor={Colors.naranja.naranjaOscuro}
-                textColor="white"
-              />
+            <View style={styles.container}>
+
+              <View style={styles.containerTituloNoPlanning}>
+                <Text style={styles.tituloNoPlanning}>PLANNING</Text>
+              </View>
+
+              <View style={styles.sinPlanningsContainer}>
+              <MaterialIcons name="calendar-month" size={200} color="lightgray" />
+              <Text style={styles.textoSinPlanning}>¡Registrá un nuevo Planning para comenzar!</Text>
+
+              <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/calendarios/CreacionPlanningScreen")}>
+                <Text style={styles.buttonText}>REGISTRAR PLANNING</Text>
+              </TouchableOpacity>
+              
+              </View>
             </View>
+            
+
           )}
         </View>
       </ScrollView>
@@ -293,15 +299,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 50,
   },
-  textoSinPlanning: {
-    fontWeight: "bold",
-    fontSize: 25,
-    textAlign: "center",
-    color: "white",
-    lineHeight: 30,
-    paddingHorizontal: 50,
-    paddingTop: 200,
-  },
+
   seccionDerecha: {
     justifyContent: "center",
     alignItems: "center",
@@ -332,5 +330,49 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     width: "100%",
+  },
+  containerTituloNoPlanning: {
+    backgroundColor: Colors.rosa.rosaPetitte,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+    alignItems: "center",
+    padding: 10,
+    justifyContent: "center",
+    width: "100%",
+  },
+  tituloNoPlanning: {
+    fontSize: 26,
+    fontWeight: "bold",
+    alignSelf: "center",
+    marginBottom: 10,
+    textAlign: "center",
+    color: Colors.rosa.rosaOscuro,
+  },
+  sinPlanningsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    marginTop:20, 
+    marginBottom:40
+  },
+  textoSinPlanning: {
+    color: Colors.lila.lilaNormal,
+    fontWeight: "bold",
+    fontSize: 25,
+    textAlign: "center",
+    marginTop:20
+  },
+  button: {
+    backgroundColor: Colors.marron.marronClaro,
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
+  },
+  buttonText: {
+    color: Colors.marron.marronNormal,
+    fontWeight: "bold",
+    fontSize: 24,
   },
 });

@@ -6,13 +6,18 @@ import {
   View,
   ScrollView,
   Switch,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
-import SaveButton from "@/src/components/SaveButton";
-import CancelButton from "@/src/components/CancelButton";
+
 import DatePickerEvento from "@/src/components/DatePickerEvento";
 import TimePickerEvento from "@/src/components/TimePickerEvento";
+import { registrarEvento } from "@/src/services/evento";
+import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
+import Colors from "@/src/constants/Colors";
+
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 const RegistrarCompromisoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [diaEvento, setDiaEvento] = useState("");
@@ -20,6 +25,8 @@ const RegistrarCompromisoScreen = () => {
   const [horaFin, setHoraFin] = useState("");
   const [alarmaCreador, setAlarmaCreador] = useState(false);
   const [errors, setErrors] = useState("");
+  const [loading, setLoading] = useState(false);
+  
 
   const router = useRouter();
 
@@ -43,26 +50,54 @@ const RegistrarCompromisoScreen = () => {
     return true;
   };
 
-  const registrarCompromiso = () => {
+  const registrarCompromiso = async () => {
     if (!validarInput()) {
       return;
     }
+    setLoading(true);
 
-    setNombre("");
-    setDiaEvento("");
-    setHoraInicio("");
-    setHoraFin("");
-    setAlarmaCreador(false);
+    try {
+      if (nombre && diaEvento && horaInicio) {
+        await registrarEvento(
+          nombre, 
+          diaEvento, 
+          horaInicio, 
+          horaFin, 
+          alarmaCreador
+        );
+        setNombre("");
+        setDiaEvento("");
+        setHoraInicio("");
+        setHoraFin("");
+        setAlarmaCreador(false);
+      
+        router.back();
+      }
+    } catch (error) {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "Error al crear el Evento. Por favor, inténtalo de nuevo.",
+      });
+    } finally {
+      setLoading(false);
+    }
 
-    router.back();
-  };
+  }
 
   const noGuardarCompromiso = () => {
     router.back();
   };
+  
 
   return (
+    
     <ScrollView contentContainerStyle={styles.container}>
+      
+      
+      <View style={styles.containerTitulo}>
+        <Text style={styles.titulo}>EVENTO</Text>
+      </View>
       <View style={styles.card}>
         <View style={styles.inputContainer}>
           <TextInput
@@ -75,9 +110,10 @@ const RegistrarCompromisoScreen = () => {
       </View>
       <View style={styles.card}>
         <View style={styles.inputContainer}>
-          <DatePickerEvento
-            onDateChange={(date) => setDiaEvento(date.toLocaleDateString())}
-            minimumDate={new Date()}
+          <DatePickerEvento onDateChange={(date) => { const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0"); 
+            const day = String(date.getDate()).padStart(2, "0"); 
+            const formattedDate = `${year}-${month}-${day}`; setDiaEvento(formattedDate); }}minimumDate={new Date()} 
           />
 
           <TimePickerEvento
@@ -92,27 +128,17 @@ const RegistrarCompromisoScreen = () => {
             ></TimePickerEvento>
           </View>
 
-          <View style={styles.input}>
-            <Text style={[styles.label, !alarmaCreador && { color: "#6666" }]}>
-              Recordatorio
-            </Text>
-            <Switch
-              value={alarmaCreador}
-              onValueChange={(value) => setAlarmaCreador(value)}
-            ></Switch>
-          </View>
         </View>
       </View>
-
+            
       <View style={styles.buttonContainer}>
-        <CancelButton
-          texto={"Cancelar"}
-          onPress={noGuardarCompromiso}
-        ></CancelButton>
-        <SaveButton
-          texto={"Guardar"}
-          onPress={registrarCompromiso}
-        ></SaveButton>
+        <TouchableOpacity style={styles.buttonCancelar} onPress={noGuardarCompromiso}> 
+          <Text style={styles.buttonTextCancelar}>CANCELAR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={registrarCompromiso}> 
+          <Text style={styles.buttonText}>GUARDAR</Text>
+        </TouchableOpacity>
+        
       </View>
     </ScrollView>
   );
@@ -172,8 +198,57 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
+    gap: 20,
+  },
+  button: {
+    backgroundColor: Colors.marron.marronClaro,
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: Colors.marron.marronNormal,
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+
+  buttonCancelar: {
+    backgroundColor: "#d86c5a",
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonTextCancelar: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  containerTitulo: {
+    position: "absolute", 
+    top: 0, 
+    left: 0, 
+    right: 0, 
+    backgroundColor: Colors.rosa.rosaPetitte,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+    alignItems: "center",
+    height: "16%", 
+    padding: 10,
+    justifyContent: "center",
+  },
+  titulo: {
+    fontSize: 26,
+    fontWeight: "bold",
+    alignSelf: "center",
+    marginBottom: 10,
+    textAlign: "center",
+    color: Colors.rosa.rosaOscuro,
   },
 });
 

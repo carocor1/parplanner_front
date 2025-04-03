@@ -2,6 +2,7 @@
 import { Usuario } from "./UsuarioInterface";
 import { Estado } from "./EstadoInterface";
 export interface Evento{
+    fecha: string | number | Date;
     id:number; 
     nombre:string; 
     diaEvento:string; 
