@@ -22,6 +22,7 @@ import { openBrowserAsync } from "expo-web-browser";
 import Colors from "@/src/constants/Colors";
 import MercadoPagoButton from "@/src/components/MercadoPagoButton";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import FloatingActionButton from "@/src/components/FloatingActionButton";
 
 const GastosScreen = () => {
   const [listaGastos, setListaGastos] = useState<Gasto[]>([]);
@@ -155,12 +156,10 @@ const GastosScreen = () => {
         )}
       </ScrollView>
 
-      <TouchableOpacity
-        style={styles.botonFlotante}
+      <FloatingActionButton
         onPress={() => router.push("/gastos/RegistrarGastoScreen")}
-      >
-        <FontAwesome name="plus" size={24} color="white" />
-      </TouchableOpacity>
+        backgroundColor={Colors.verde.verdeOscuro}
+      />
     </View>
   );
 };
@@ -191,7 +190,6 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     paddingVertical: 18,
   },
-
   cantidadText: {
     color: "white",
     fontSize: 35,
@@ -223,24 +221,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-
-  botonFlotante: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#778c43",
-    alignItems: "center",
-    justifyContent: "center",
-    right: 20,
-    bottom: 20,
-    zIndex: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
   },
   textoSinGasto: {
     fontWeight: "bold",
