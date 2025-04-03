@@ -46,11 +46,11 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
   return (
     <View style={styles.container}>
       <Calendar
-        markedDates={markedDates} // Fechas marcadas en el calendario
-        markingType={"multi-dot"} // Permitir múltiples marcas
-        locale={"es"} // Establecer el idioma a español
-        minDate={fechaActual} // Restringir para que no se puedan seleccionar fechas anteriores a hoy
-        disableMonthChange={true} // Deshabilitar la navegación hacia meses anteriores
+        markedDates={markedDates}
+        markingType={"multi-dot"}
+        locale={"es"}
+        minDate={fechaActual}
+        disableMonthChange={true}
       />
     </View>
   );
@@ -64,4 +64,3 @@ const styles = StyleSheet.create({
 });
 
 export default CalendarioPlanning;
-

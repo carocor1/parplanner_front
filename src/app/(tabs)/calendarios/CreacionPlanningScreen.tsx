@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import TipoPlanningSelector from "@/src/components/TipoPlanningCuadrado";
 import { getTipoPlanning } from "@/src/services/tipoPlanningService";
 import { TipoPlanning } from "@/src/interfaces/TipoPlanning";
@@ -10,15 +17,24 @@ import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import {
   rechazarPlanning,
   registrarPlanning,
+  obtenerPrevisualizacionPlanning,
 } from "@/src/services/planningService";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import CustomButton from "@/src/components/CustomButton";
+import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
 
 const CreacionPlanningScreen = () => {
   const [tipoPlannings, setTipoPlannings] = useState<TipoPlanning[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlanning, setSelectedPlanning] = useState<number | null>(null);
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
+  const [fechasAsignadasCreador, setFechasAsignadasCreador] = useState<
+    string[]
+  >([]);
+  const [fechasAsignadasParticipe, setFechasAsignadasParticipe] = useState<
+    string[]
+  >([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
   const searchParams = useLocalSearchParams();
   const planningId = searchParams.planningId;
@@ -76,6 +92,33 @@ const CreacionPlanningScreen = () => {
     return true;
   };
 
+  const obtenerFechas = async () => {
+    if (!validateInput()) {
+      return;
+    }
+    try {
+      setIsLoading(true);
+
+      const response = await obtenerPrevisualizacionPlanning(
+        fechaInicio!,
+        selectedPlanning!
+      );
+      setFechasAsignadasCreador(response.fechasAsignadasCreador);
+      setFechasAsignadasParticipe(response.fechasAsignadasParticipe);
+      setModalVisible(true);
+    } catch (error) {
+      console.error("Error al obtener las fechas asignadas:", error);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody:
+          "Hubo un problema al obtener las fechas asignadas. Por favor, inténtalo de nuevo.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const registrarPlanningHandler = async () => {
     if (!validateInput()) {
       return;
@@ -97,6 +140,7 @@ const CreacionPlanningScreen = () => {
         title: "Éxito",
         textBody: "Tu planificación se guardó correctamente.",
       });
+      setModalVisible(false);
       router.back();
     } catch (error) {
       console.error("Error al registrar el Planning:", error);
@@ -109,11 +153,14 @@ const CreacionPlanningScreen = () => {
     }
   };
 
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.containerTexto}>
         <Text style={styles.texto}>
-          {" "}
           INGRESÁ LA FECHA DE INICIO DE TU PLANNING
         </Text>
       </View>
@@ -126,29 +173,61 @@ const CreacionPlanningScreen = () => {
       </View>
 
       <View style={styles.containerTexto}>
-        <Text style={styles.texto}> SELECCIONÁ UN TIPO DE PLANIFICACIÓN</Text>
+        <Text style={styles.texto}>SELECCIONÁ UN TIPO DE PLANIFICACIÓN</Text>
       </View>
 
-      {isLoading ? (
-        <LoadingIndicator></LoadingIndicator>
-      ) : (
-        <TipoPlanningSelector
-          tipoPlannings={tipoPlannings}
-          onSelection={(planning) => {
-            if (planning.id === -1) {
-              registrarPlanPersonalizado();
-            } else {
-              setSelectedPlanning(planning.id);
-            }
-          }}
-        />
-      )}
+      <TipoPlanningSelector
+        tipoPlannings={tipoPlannings}
+        onSelection={(planning) => {
+          if (planning.id === -1) {
+            registrarPlanPersonalizado();
+          } else {
+            setSelectedPlanning(planning.id);
+          }
+        }}
+      />
+
       <CustomButton
-        title="GUARDAR PLANNING"
-        onPress={registrarPlanningHandler}
+        title="VER PREVISUALIZACIÓN"
+        onPress={obtenerFechas}
         backgroundColor={Colors.rosa.rosaPetitte}
         textColor={Colors.rosa.rosaOscuro}
-      ></CustomButton>
+      />
+
+      {/* Modal para CalendarioPlanning */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <CalendarioPlanning
+              fechasAsignadasCreador={fechasAsignadasCreador}
+              fechasAsignadasParticipe={fechasAsignadasParticipe}
+            />
+            <View style={styles.modalButtons}>
+              <CustomButton
+                title="CONFIRMAR"
+                onPress={registrarPlanningHandler}
+                backgroundColor={Colors.verde.verdeClaro}
+                textColor={Colors.verde.verdeMuyOscuro}
+              />
+              <CustomButton
+                title="REGRESAR"
+                onPress={() => setModalVisible(false)}
+                backgroundColor={Colors.gris.normal}
+                textColor="white"
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -173,6 +252,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    height: "52%",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginTop: 40,
+    width: "100%",
+    marginLeft: -30,
   },
 });
 

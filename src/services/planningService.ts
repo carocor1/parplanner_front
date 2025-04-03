@@ -64,3 +64,22 @@ export const rechazarPlanning = async (
     throw error;
   }
 };
+
+export const obtenerPrevisualizacionPlanning = async (
+  fechaInicio: Date,
+  tipoPlanningId: number
+): Promise<{
+  fechasAsignadasCreador: string[];
+  fechasAsignadasParticipe: string[];
+}> => {
+  try {
+    const response = await api.post("/planning/previsualizar", {
+      fechaInicio,
+      tipoPlanningId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener la previsualización del planning:", error);
+    throw error;
+  }
+};

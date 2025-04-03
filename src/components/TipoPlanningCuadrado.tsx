@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { TipoPlanning } from "@/src/interfaces/TipoPlanning";
 
@@ -18,12 +24,13 @@ const TipoPlanningSelector: React.FC<TipoPlanningSelectorProps> = ({
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}
       renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => onSelection(item)}
-        >
-          <Icon name="calendar-month" size={60} color={item.id === -1 ? "#000" : "#4a90e2"}  />
-          <Text style={styles.cardText}>{item.nombre}</Text> 
+        <TouchableOpacity style={styles.card} onPress={() => onSelection(item)}>
+          <Icon
+            name="calendar-month"
+            size={60}
+            color={item.id === -1 ? "#000" : "#4a90e2"}
+          />
+          <Text style={styles.cardText}>{item.nombre}</Text>
         </TouchableOpacity>
       )}
     />
