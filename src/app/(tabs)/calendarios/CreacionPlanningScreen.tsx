@@ -46,7 +46,7 @@ const CreacionPlanningScreen = () => {
     if (planningId !== undefined && planningId !== null) {
       setSelectedPlanning(parseInt(planningId as string, 10));
       setFechaInicio(null);
-      router.push("/(tabs)/calendarios/CalendarioScreen");
+      router.back();
     }
   }, [planningId]);
 
@@ -97,7 +97,7 @@ const CreacionPlanningScreen = () => {
         title: "Éxito",
         textBody: "Tu planificación se guardó correctamente.",
       });
-      router.push("/(tabs)/calendarios/CalendarioScreen");
+      router.back();
     } catch (error) {
       console.error("Error al registrar el Planning:", error);
       Toast.show({
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   containerTexto: {
     backgroundColor: Colors.marron.marronClaro,

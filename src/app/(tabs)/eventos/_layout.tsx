@@ -2,13 +2,13 @@ import React from "react";
 import { Stack } from "expo-router";
 import Colors from "@/src/constants/Colors";
 
-export default function CalendarioLayout() {
+export default function EventosLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="PlanningScreen"
+        name="EventosScreen"
         options={{
-          title: "Planning",
+          title: "Eventos",
           headerStyle: {
             backgroundColor: Colors.verde.verdeOscuro,
           },
@@ -16,19 +16,9 @@ export default function CalendarioLayout() {
         }}
       />
       <Stack.Screen
-        name="CreacionPlanningScreen"
+        name="RegistrarEventoScreen"
         options={{
-          title: "Crear Planning",
-          headerStyle: {
-            backgroundColor: Colors.verde.verdeOscuro,
-          },
-          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
-        }}
-      />
-      <Stack.Screen
-        name="CreacionTipoPlanningPersonalizadoScreen"
-        options={{
-          title: "Tipo Planning Personalizado",
+          title: "Registrar Evento",
           headerStyle: {
             backgroundColor: Colors.verde.verdeOscuro,
           },

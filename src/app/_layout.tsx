@@ -54,20 +54,6 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="AlergiasScreen" options={{ title: "Alergias" }} />
-          <Stack.Screen
-            name="DocumentoScreen"
-            options={{ title: "Tipo Planning Personalizado", headerStyle: {backgroundColor: Colors.verde.verdeOscuro,},headerTintColor: Colors.verde.verdeMuyMuyOscuro,}}
-          />
-          <Stack.Screen
-            name="HistorialClinicoScreen"
-            options={{ title: "Historial Clínico" }}
-          />
-          <Stack.Screen name="VacunasScreen" options={{ title: "Vacunas" }} />
-          <Stack.Screen
-            name="RegistroUsuarioScreen"
-            options={{ title: "Registro Usuario", headerShown: false }}
-          />
           <Stack.Screen
             name="CambiarContraseniaScreen"
             options={{ headerShown: false }}

@@ -5,20 +5,17 @@ import {
   TextInput,
   View,
   ScrollView,
-  Switch,
   TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
-
 import DatePickerEvento from "@/src/components/DatePickerEvento";
 import TimePickerEvento from "@/src/components/TimePickerEvento";
 import { registrarEvento } from "@/src/services/evento";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
-
 import Colors from "@/src/constants/Colors";
+import LoadingIndicator from "@/src/components/LoadingIndicator";
 
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-const RegistrarCompromisoScreen = () => {
+const RegistrarEventoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [diaEvento, setDiaEvento] = useState("");
   const [horaInicio, setHoraInicio] = useState("");
@@ -26,8 +23,6 @@ const RegistrarCompromisoScreen = () => {
   const [alarmaCreador, setAlarmaCreador] = useState(false);
   const [errors, setErrors] = useState("");
   const [loading, setLoading] = useState(false);
-  
-
   const router = useRouter();
 
   const validarInput = () => {
@@ -46,23 +41,26 @@ const RegistrarCompromisoScreen = () => {
       setErrors("El campo 'Hora de Inicio' es obligatorio.");
       return false;
     }
-
     return true;
   };
 
   const registrarCompromiso = async () => {
     if (!validarInput()) {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: errors,
+      });
       return;
     }
     setLoading(true);
-
     try {
       if (nombre && diaEvento && horaInicio) {
         await registrarEvento(
-          nombre, 
-          diaEvento, 
-          horaInicio, 
-          horaFin, 
+          nombre,
+          diaEvento,
+          horaInicio,
+          horaFin,
           alarmaCreador
         );
         setNombre("");
@@ -70,7 +68,7 @@ const RegistrarCompromisoScreen = () => {
         setHoraInicio("");
         setHoraFin("");
         setAlarmaCreador(false);
-      
+
         router.back();
       }
     } catch (error) {
@@ -82,19 +80,14 @@ const RegistrarCompromisoScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
 
+  if (loading) {
+    return <LoadingIndicator />;
   }
 
-  const noGuardarCompromiso = () => {
-    router.back();
-  };
-  
-
   return (
-    
     <ScrollView contentContainerStyle={styles.container}>
-      
-      
       <View style={styles.containerTitulo}>
         <Text style={styles.titulo}>EVENTO</Text>
       </View>
@@ -110,10 +103,15 @@ const RegistrarCompromisoScreen = () => {
       </View>
       <View style={styles.card}>
         <View style={styles.inputContainer}>
-          <DatePickerEvento onDateChange={(date) => { const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, "0"); 
-            const day = String(date.getDate()).padStart(2, "0"); 
-            const formattedDate = `${year}-${month}-${day}`; setDiaEvento(formattedDate); }}minimumDate={new Date()} 
+          <DatePickerEvento
+            onDateChange={(date) => {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, "0");
+              const day = String(date.getDate()).padStart(2, "0");
+              const formattedDate = `${year}-${month}-${day}`;
+              setDiaEvento(formattedDate);
+            }}
+            minimumDate={new Date()}
           />
 
           <TimePickerEvento
@@ -127,18 +125,19 @@ const RegistrarCompromisoScreen = () => {
               onTimeChange={(time) => setHoraFin(time)}
             ></TimePickerEvento>
           </View>
-
         </View>
       </View>
-            
+
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonCancelar} onPress={noGuardarCompromiso}> 
+        <TouchableOpacity
+          style={styles.buttonCancelar}
+          onPress={() => router.back()}
+        >
           <Text style={styles.buttonTextCancelar}>CANCELAR</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={registrarCompromiso}> 
+        <TouchableOpacity style={styles.button} onPress={registrarCompromiso}>
           <Text style={styles.buttonText}>GUARDAR</Text>
         </TouchableOpacity>
-        
       </View>
     </ScrollView>
   );
@@ -230,15 +229,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   containerTitulo: {
-    position: "absolute", 
-    top: 0, 
-    left: 0, 
-    right: 0, 
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
     backgroundColor: Colors.rosa.rosaPetitte,
     borderBottomLeftRadius: 60,
     borderBottomRightRadius: 60,
     alignItems: "center",
-    height: "16%", 
+    height: "16%",
     padding: 10,
     justifyContent: "center",
   },
@@ -252,4 +251,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegistrarCompromisoScreen;
+export default RegistrarEventoScreen;

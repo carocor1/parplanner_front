@@ -29,10 +29,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendarios"
         options={{
-          title: "Calendario",
+          title: "Planning",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="calendar" color={color} />
+            <MaterialIcons name="event" color={color} size={24} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="eventos"
+        options={{
+          title: "Eventos",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="schedule" color={color} size={24} />
           ),
         }}
       />
@@ -47,21 +57,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="DocumentosScreen"
-        options={{
-          title: "Documentos",
-          tabBarIcon: ({ color }) => <TabBarIcon name="child" color={color} />,
-          headerStyle: {
-            backgroundColor: "#96ac60",
-          },
-          headerTintColor: "#fff",
-        }}
-      />
-      <Tabs.Screen
         name="perfil"
         options={{
           title: "Perfil",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="person" color={color} size={24} />
+          ),
           headerShown: false,
           headerStyle: {
             backgroundColor: "#96ac60",
