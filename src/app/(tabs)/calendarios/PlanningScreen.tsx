@@ -1,5 +1,11 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import React, { useCallback, useState } from "react";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
@@ -14,6 +20,7 @@ import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
 import CustomButton from "@/src/components/CustomButton";
 import Colors from "@/src/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import CustomHeader from "@/src/components/CustomHeader";
 
 export default function DocumentoScreen() {
   const [planning, setPlanning] = useState<Planning | null>(null);
@@ -102,20 +109,30 @@ export default function DocumentoScreen() {
         <View>
           {planning ? (
             <>
-              {(esPendiente)&& <View style={styles.containerTitulo}>
-                <Text style={styles.titulo}>PLANNING PROPUESTO</Text>
-              </View>}
-              {(esAprobado)&& <View style={styles.containerTitulo}>
-                <Text style={styles.titulo}>PLANNING ACTIVO</Text>
-              </View>}
-              {(!esAprobado &&!esPendiente)&& <View style={styles.containerTitulo}>
-                <Text style={styles.titulo}>PLANNING</Text>
-              </View>}
+              {esPendiente && (
+                <CustomHeader
+                  title="PLANNING PROPUESTO"
+                  backgroundColor={Colors.rosa.rosaPetitte}
+                  textColor={Colors.rosa.rosaOscuro}
+                />
+              )}
+              {esAprobado && (
+                <CustomHeader
+                  title="PLANNING ACTIVO"
+                  backgroundColor={Colors.rosa.rosaPetitte}
+                  textColor={Colors.rosa.rosaOscuro}
+                />
+              )}
+              {!esAprobado && !esPendiente && (
+                <CustomHeader
+                  title="PLANNING"
+                  backgroundColor={Colors.rosa.rosaPetitte}
+                  textColor={Colors.rosa.rosaOscuro}
+                />
+              )}
               <View style={styles.PlanningsContainer}>
                 <View style={styles.estiloAlineacion}>
                   <View style={esPendiente ? { flex: 0.5 } : { flex: 0.6 }}>
-                    
-
                     {esPendiente && (
                       <Text
                         style={
@@ -192,31 +209,39 @@ export default function DocumentoScreen() {
                 {esPendiente && esCreador && (
                   <View style={styles.containerPlanning}>
                     <Text style={styles.textoPlanning}>
-                    {planning.usuario_participe.nombre.toUpperCase()} DEBERÁ APROBAR EL PLANNING QUE PROPUSISTE
-                  </Text>
+                      {planning.usuario_participe.nombre.toUpperCase()} DEBERÁ
+                      APROBAR EL PLANNING QUE PROPUSISTE
+                    </Text>
                   </View>
                 )}
               </View>
             </>
           ) : (
             <View style={styles.container}>
-
               <View style={styles.containerTituloNoPlanning}>
                 <Text style={styles.tituloNoPlanning}>PLANNING</Text>
               </View>
 
               <View style={styles.sinPlanningsContainer}>
-              <MaterialIcons name="calendar-month" size={200} color="lightgray" />
-              <Text style={styles.textoSinPlanning}>¡Registrá un nuevo Planning para comenzar!</Text>
+                <MaterialIcons
+                  name="calendar-month"
+                  size={200}
+                  color="lightgray"
+                />
+                <Text style={styles.textoSinPlanning}>
+                  ¡Registrá un nuevo Planning para comenzar!
+                </Text>
 
-              <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/calendarios/CreacionPlanningScreen")}>
-                <Text style={styles.buttonText}>REGISTRAR PLANNING</Text>
-              </TouchableOpacity>
-              
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() =>
+                    router.push("/(tabs)/calendarios/CreacionPlanningScreen")
+                  }
+                >
+                  <Text style={styles.buttonText}>REGISTRAR PLANNING</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            
-
           )}
         </View>
       </ScrollView>
@@ -229,10 +254,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     justifyContent: "center",
-
   },
   PlanningsContainer: {
-    marginTop: 20,
+    marginTop: 130,
     backgroundColor: "white",
     borderRadius: 15,
     alignSelf: "center",
@@ -246,14 +270,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  titulo: {
-    fontSize: 26,
-    fontWeight: "bold",
-    alignSelf: "center",
-    marginBottom: 10,
-    textAlign: "center",
-    color: Colors.rosa.rosaOscuro,
-  },
+
   textoNegro: {
     color: Colors.negro.negroOscuro,
     fontWeight: "bold",
@@ -305,16 +322,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 0.4,
   },
-  containerTitulo: {
-    backgroundColor: Colors.rosa.rosaPetitte,
-    borderBottomLeftRadius: 60,
-    borderBottomRightRadius: 60,
-    alignItems: "center",
-    height: "16%",
-    width: "100%",
-    padding: 10,
-    justifyContent: "center",
-  },
   textoPlanning: {
     color: Colors.marron.marronNormal,
     fontWeight: "bold",
@@ -352,15 +359,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    marginTop:20, 
-    marginBottom:40
+    marginTop: 20,
+    marginBottom: 40,
   },
   textoSinPlanning: {
     color: Colors.lila.lilaNormal,
     fontWeight: "bold",
     fontSize: 25,
     textAlign: "center",
-    marginTop:20
+    marginTop: 20,
   },
   button: {
     backgroundColor: Colors.marron.marronClaro,
