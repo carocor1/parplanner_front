@@ -1,15 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import GastoItem from "@/src/components/GastoItem";
-import { FontAwesome } from "@expo/vector-icons";
 import { Gasto } from "@/src/interfaces/GastoInterface";
 import {
   getGastosByProgenitor,
