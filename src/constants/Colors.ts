@@ -35,6 +35,7 @@ export default {
     rojoClaro: "#f6cacc",
     rojoOscuro: "#dd2c2f",
     rojoNegociando: "#d62828",
+    rojoNormal: "#d86c5a",
   },
   naranja: {
     naranjaClaro: "#FFE5B4",
@@ -54,18 +55,17 @@ export default {
     claro: "#ced4da",
     oscuro: "#555",
     normal: "#cccccc",
+    muymuyClaro: "#f9f9f9",
   },
   lila: {
     lilaNormal: "#6A5ACD",
     lilaMuyClaro: "rgba(255, 255, 255, 0.7)",
-    lilaClaro:"rgb(201, 189, 224)"
-   
+    lilaClaro: "rgb(201, 189, 224)",
   },
   rosa: {
     rosaNormal: "#666",
-    rosaPetitte: "rgb(238, 183, 195)", 
-    rosaOscuro:"rgb(179, 114, 128)"
-    
+    rosaPetitte: "rgb(238, 183, 195)",
+    rosaOscuro: "rgb(179, 114, 128)",
   },
   amarillo: {
     amarilloNormal: "#cd8d0d",
