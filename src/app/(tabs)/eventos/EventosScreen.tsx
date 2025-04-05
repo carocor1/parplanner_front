@@ -1,30 +1,38 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
+import React, { useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { getEventos } from "@/src/services/evento";
-import { Evento } from "@/src/interfaces/EventoInteface";
 import EventoItem from "@/src/components/EventoItem";
 import Colors from "@/src/constants/Colors";
 import FloatingActionButton from "@/src/components/FloatingActionButton";
+import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
+import CustomButton from "@/src/components/CustomButton";
+import { getProgenitorIdFromToken } from "@/src/utils/storage";
+import { getEventos } from "@/src/services/eventoService";
+import { Evento } from "@/src/interfaces/EventoInteface";
 
 const EventosScreen = () => {
   const [loading, setLoading] = useState(true);
   const [listaEventos, setListaEventos] = useState<Evento[]>([]);
   const [usuarioLogueadoId, setUsuarioLogueadoId] = useState(0);
+  const [fechasEventos, setFechasEventos] = useState<string[]>([]);
 
   const fetchEventos = async () => {
     try {
+      const id = await getProgenitorIdFromToken();
+      if (id) {
+        setUsuarioLogueadoId(id);
+      }
       setLoading(true);
       const eventos = await getEventos();
       setListaEventos(eventos);
+      if (listaEventos.length > 0) {
+        const fechasFormateadas = eventos.map(
+          (evento) => new Date(evento.diaEvento).toISOString().split("T")[0]
+        );
+        setFechasEventos(fechasFormateadas);
+      }
     } catch (error) {
       console.error("Error al recuperar los eventos:", error);
     } finally {
@@ -32,7 +40,6 @@ const EventosScreen = () => {
     }
   };
 
-  // Recargar eventos cada vez que la pantalla se pone en foco
   useFocusEffect(
     React.useCallback(() => {
       fetchEventos();
@@ -49,16 +56,18 @@ const EventosScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerTitulo}>
-        <Text style={styles.titulo}>EVENTOS</Text>
-      </View>
-
       {listaEventos.length > 0 && (
         <View style={styles.containerTexto}>
           <Text style={styles.texto}>PENDIENTES</Text>
         </View>
       )}
-
+      <View style={styles.calendarioContainer}>
+        <CalendarioPlanning
+          fechasAsignadasCreador={fechasEventos}
+          fechasAsignadasParticipe={[]}
+          eventos={listaEventos}
+        />
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {listaEventos.length > 0 ? (
           listaEventos.map((evento) => (
@@ -71,17 +80,20 @@ const EventosScreen = () => {
           ))
         ) : (
           <View style={styles.sinEventosContainer}>
-            <MaterialIcons name="event" size={200} color="lightgray" />
+            <MaterialIcons name="event" size={160} color="lightgray" />
             <Text style={styles.textoSinEvento}>
               No hay eventos disponibles. ¡Crea uno!
             </Text>
-
-            <TouchableOpacity style={styles.button} onPress={registrarEvento}>
-              <Text style={styles.buttonText}>CREAR EVENTO</Text>
-            </TouchableOpacity>
+            <CustomButton
+              title="CREAR EVENTO"
+              backgroundColor={Colors.marron.marronClaro}
+              textColor={Colors.marron.marronNormal}
+              onPress={registrarEvento}
+            ></CustomButton>
           </View>
         )}
       </ScrollView>
+
       {listaEventos.length > 0 && (
         <FloatingActionButton
           onPress={() => router.push("/(tabs)/eventos/RegistrarEventoScreen")}
@@ -99,36 +111,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-
   EventosContainer: {
     backgroundColor: "white",
     justifyContent: "flex-start",
     marginTop: 20,
     flex: 1,
-  },
-  noEventosText: {
-    textAlign: "center",
-    fontSize: 16,
-    color: "gray",
-    marginTop: 20,
-  },
-  containerTitulo: {
-    backgroundColor: Colors.rosa.rosaPetitte,
-    borderBottomLeftRadius: 60,
-    borderBottomRightRadius: 60,
-    alignItems: "center",
-    height: "16%",
-    width: "100%",
-    padding: 10,
-    justifyContent: "center",
-  },
-  titulo: {
-    fontSize: 26,
-    fontWeight: "bold",
-    alignSelf: "center",
-    marginBottom: 10,
-    textAlign: "center",
-    color: Colors.rosa.rosaOscuro,
   },
   texto: {
     color: Colors.lila.lilaNormal,
@@ -136,39 +123,29 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
   },
+  calendarioContainer: {
+    margin: 10,
+    backgroundColor: "white",
+    width: "100%",
+    height: 310,
+  },
   containerTexto: {
     backgroundColor: Colors.lila.lilaClaro,
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 0,
     width: "100%",
-    marginTop: 40,
   },
   textoSinEvento: {
     color: Colors.lila.lilaNormal,
     fontWeight: "bold",
     fontSize: 25,
     textAlign: "center",
-    marginTop: 20,
   },
   sinEventosContainer: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-  },
-  button: {
-    backgroundColor: Colors.marron.marronClaro,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 30,
-  },
-  buttonText: {
-    color: Colors.marron.marronNormal,
-    fontWeight: "bold",
-    fontSize: 24,
+    padding: 60,
   },
 });

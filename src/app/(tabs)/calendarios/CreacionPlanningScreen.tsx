@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Modal,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, StyleSheet, Text, Modal, TouchableOpacity } from "react-native";
 import TipoPlanningSelector from "@/src/components/TipoPlanningCuadrado";
 import { getTipoPlanning } from "@/src/services/tipoPlanningService";
 import { TipoPlanning } from "@/src/interfaces/TipoPlanning";
@@ -264,12 +257,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
-    height: "52%",
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: 40,
     width: "100%",
     marginLeft: -30,
   },
