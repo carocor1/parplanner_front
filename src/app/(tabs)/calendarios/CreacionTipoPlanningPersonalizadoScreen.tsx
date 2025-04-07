@@ -1,23 +1,18 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, TextInput, ScrollView } from "react-native";
 import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Calendario from "@/src/components/ComponenteCalendario";
 import Colors from "@/src/constants/Colors";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { registrarTipoPlanning } from "@/src/services/tipoPlanningService";
+import CustomButton from "@/src/components/CustomButton";
 const CreacionTipoPlanningPersonalizadoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [fechasCreador, setFechasCreador] = useState<string[]>([]);
   const [fechasParticipante, setFechasParticipante] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [resultado, setResultado] = useState<string | number[]>("");
+  const planningRechazandoId = useLocalSearchParams() as {
+    planningRechazandoId?: string;
+  };
 
   const router = useRouter();
 
@@ -56,13 +51,12 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
 
     const calcularDiasConsecutivos = (fechas: string[]): number[] => {
       if (fechas.length === 0) return [];
+
       const fechasOrdenadas = fechas.sort(
         (a, b) => new Date(a).getTime() - new Date(b).getTime()
       );
-
       let grupos: number[] = [];
       let contador = 1;
-
       for (let i = 1; i < fechasOrdenadas.length; i++) {
         const fechaActual = new Date(fechasOrdenadas[i]);
         const fechaAnterior = new Date(fechasOrdenadas[i - 1]);
@@ -77,7 +71,6 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
           contador = 1;
         }
       }
-
       grupos.push(contador);
       return grupos;
     };
@@ -90,19 +83,12 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
       if (i < gruposCreador.length) resultado.push(gruposCreador[i]);
       if (i < gruposParticipante.length) resultado.push(gruposParticipante[i]);
     }
-
     return resultado;
   };
 
   const evaluarVector = (vector: number[]): number[] => {
     const contador = vector.length;
-
-    if (contador < 2 || contador > 4) {
-      Toast.show({
-        type: ALERT_TYPE.WARNING,
-        title: "Error",
-        textBody: "La distribución debe ser equitativa",
-      });
+    if (contador < 2) {
       return [];
     }
 
@@ -112,7 +98,7 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
       let nuevovector = [...vector];
       let contador2 = 0;
 
-      while (suma < 14) {
+      while (suma < 14 && suma + vector[contador2] <= 14) {
         nuevovector.push(vector[contador2]);
         suma += vector[contador2];
         contador2 = (contador2 + 1) % vector.length;
@@ -121,56 +107,60 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
       if (suma === 14) {
         return nuevovector;
       } else {
-        Toast.show({
-          type: ALERT_TYPE.WARNING,
-          title: "Error",
-          textBody: "La distribución debe ser equitativa.",
-        });
         return [];
       }
     } else if (suma === 14) {
       return vector;
     } else {
-      Toast.show({
-        type: ALERT_TYPE.WARNING,
-        title: "Error",
-        textBody: "La distribución debe ser equitativa.",
-      });
       return [];
     }
   };
 
-  const registrarCompromiso = async () => {
+  const crearTipoPlanning = async () => {
     if (!validateInput()) {
       return;
     }
-
-    try {
-      const vectorIntercalado = calcularVectorIntercalado(
-        fechasCreador,
-        fechasParticipante
-      );
-      const evaluacion = evaluarVector(vectorIntercalado);
-
-      setResultado(evaluacion);
-
-      const response = await registrarTipoPlanning(nombre, evaluacion);
-
-      router.push({
-        pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
-        params: { planningId: response.id },
-      });
-
-      setNombre("");
-      setFechasCreador([]);
-      setFechasParticipante([]);
-      setResultado([]);
-    } catch (error) {
+    const vectorIntercalado = calcularVectorIntercalado(
+      fechasCreador,
+      fechasParticipante
+    );
+    const evaluacion = evaluarVector(vectorIntercalado);
+    if (evaluacion.length === 0) {
       Toast.show({
-        type: ALERT_TYPE.DANGER,
-        title: "Érror",
-        textBody: "Error al crear un tipo de planning.",
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: "La distribución no es equitativa",
       });
+      return;
+    } else {
+      try {
+        const response = await registrarTipoPlanning(nombre, evaluacion);
+        if (response.id) {
+          Toast.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: "Éxito",
+            textBody: "Tu tipo de planning se guardó correctamente.",
+          });
+          console.log("planning rechazado:", planningRechazandoId);
+          router.push({
+            pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
+            params: {
+              planningId: response.id,
+              planningRechazandoId: planningRechazandoId?.planningRechazandoId,
+            },
+          });
+        }
+        setNombre("");
+        setFechasCreador([]);
+        setFechasParticipante([]);
+      } catch (error) {
+        Toast.show({
+          type: ALERT_TYPE.DANGER,
+          title: "Error",
+          textBody:
+            "Hubo un problema al guardar la planificación. Por favor, inténtalo de nuevo.",
+        });
+      }
     }
   };
 
@@ -179,7 +169,7 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
       <View>
         <View style={styles.inputContainer}>
           <TextInput
-            style={[styles.input, error && styles.inputError]}
+            style={[styles.input]}
             placeholder="Nombre"
             value={nombre}
             onChangeText={setNombre}
@@ -193,9 +183,12 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={registrarCompromiso}>
-          <Text style={styles.buttonText}>REGISTRAR TIPO DE PLANNING</Text>
-        </TouchableOpacity>
+        <CustomButton
+          onPress={crearTipoPlanning}
+          title="REGISTRAR TIPO DE PLANNING"
+          backgroundColor={Colors.marron.marronClaro}
+          textColor={Colors.marron.marronNormal}
+        ></CustomButton>
       </View>
     </ScrollView>
   );
@@ -207,7 +200,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   inputContainer: {
     marginBottom: 15,
@@ -218,27 +211,10 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 20,
   },
-
   input: {
     padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-  },
-  inputError: {
-    borderColor: "#ff0000",
-  },
-  button: {
-    backgroundColor: Colors.marron.marronClaro,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: Colors.marron.marronNormal,
-    fontWeight: "bold",
-    fontSize: 20,
   },
 });

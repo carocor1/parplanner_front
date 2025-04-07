@@ -21,6 +21,7 @@ import CustomButton from "@/src/components/CustomButton";
 import Colors from "@/src/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CustomHeader from "@/src/components/CustomHeader";
+import CustomTextBox from "@/src/components/CustomTextBox";
 
 export default function DocumentoScreen() {
   const [planning, setPlanning] = useState<Planning | null>(null);
@@ -207,12 +208,11 @@ export default function DocumentoScreen() {
                   </View>
                 )}
                 {esPendiente && esCreador && (
-                  <View style={styles.containerPlanning}>
-                    <Text style={styles.textoPlanning}>
-                      {planning.usuario_participe.nombre.toUpperCase()} DEBERÁ
-                      APROBAR EL PLANNING QUE PROPUSISTE
-                    </Text>
-                  </View>
+                  <CustomTextBox
+                    text={`${planning.usuario_participe.nombre.toUpperCase()} DEBERÁ APROBAR EL PLANNING QUE PROPUSISTE`}
+                    backgroundColor={Colors.marron.marronClaro}
+                    textColor={Colors.marron.marronNormal}
+                  ></CustomTextBox>
                 )}
               </View>
             </>
@@ -321,22 +321,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 0.4,
-  },
-  textoPlanning: {
-    color: Colors.marron.marronNormal,
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  containerPlanning: {
-    backgroundColor: Colors.marron.marronClaro,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 10,
-    width: "100%",
   },
   containerTituloNoPlanning: {
     backgroundColor: Colors.rosa.rosaPetitte,

@@ -31,6 +31,7 @@ const EventosScreen = () => {
         const fechasFormateadas = eventos.map(
           (evento) => new Date(evento.diaEvento).toISOString().split("T")[0]
         );
+        console.log(fechasFormateadas);
         setFechasEventos(fechasFormateadas);
       }
     } catch (error) {

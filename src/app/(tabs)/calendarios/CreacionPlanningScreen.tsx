@@ -15,6 +15,7 @@ import {
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import CustomButton from "@/src/components/CustomButton";
 import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
+import CustomTextBox from "@/src/components/CustomTextBox";
 
 const CreacionPlanningScreen = () => {
   const [tipoPlannings, setTipoPlannings] = useState<TipoPlanning[]>([]);
@@ -30,7 +31,7 @@ const CreacionPlanningScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
   const searchParams = useLocalSearchParams();
-  const planningId = searchParams.planningId;
+  const tipoPlanningId = searchParams.planningId;
   const { planningRechazandoId } = useLocalSearchParams();
 
   useEffect(() => {
@@ -52,16 +53,11 @@ const CreacionPlanningScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (planningId !== undefined && planningId !== null) {
-      setSelectedPlanning(parseInt(planningId as string, 10));
-      setFechaInicio(null);
-      router.back();
+    if (tipoPlanningId !== undefined && tipoPlanningId !== null) {
+      setSelectedPlanning(parseInt(tipoPlanningId as string, 10));
     }
-  }, [planningId]);
-
-  const registrarPlanPersonalizado = () => {
-    router.push("/(tabs)/calendarios/CreacionTipoPlanningPersonalizadoScreen");
-  };
+  }, [tipoPlanningId]);
+  ("");
 
   const validateInput = () => {
     const validationRules = [
@@ -116,10 +112,15 @@ const CreacionPlanningScreen = () => {
     if (!validateInput()) {
       return;
     }
-
     try {
       if (planningRechazandoId) {
         const planningIdParseado = parseInt(planningRechazandoId as string, 10);
+        console.log(
+          "Planning rechazado:",
+          planningIdParseado,
+          fechaInicio,
+          selectedPlanning
+        );
         await rechazarPlanning(
           planningIdParseado,
           fechaInicio!,
@@ -134,7 +135,7 @@ const CreacionPlanningScreen = () => {
         textBody: "Tu planificación se guardó correctamente.",
       });
       setModalVisible(false);
-      router.back();
+      router.push("/calendarios/PlanningScreen");
     } catch (error) {
       console.error("Error al registrar el Planning:", error);
       Toast.show({
@@ -152,11 +153,11 @@ const CreacionPlanningScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerTexto}>
-        <Text style={styles.texto}>
-          INGRESÁ LA FECHA DE INICIO DE TU PLANNING
-        </Text>
-      </View>
+      <CustomTextBox
+        text="INGRESÁ LA FECHA DE INICIO DE TU PLANNING"
+        backgroundColor={Colors.marron.marronClaro}
+        textColor={Colors.marron.marronNormal}
+      ></CustomTextBox>
 
       <View>
         <DatePickerEvento
@@ -165,17 +166,23 @@ const CreacionPlanningScreen = () => {
         />
       </View>
 
-      <View style={styles.containerTexto}>
-        <Text style={styles.texto}>SELECCIONÁ UN TIPO DE PLANIFICACIÓN</Text>
-      </View>
+      <CustomTextBox
+        text="SELECCIONÁ UN TIPO DE PLANIFICACIÓN"
+        backgroundColor={Colors.marron.marronClaro}
+        textColor={Colors.marron.marronNormal}
+      ></CustomTextBox>
 
       <TipoPlanningSelector
         tipoPlannings={tipoPlannings}
-        onSelection={(planning) => {
-          if (planning.id === -1) {
-            registrarPlanPersonalizado();
+        onSelection={(tipoPlanning) => {
+          if (tipoPlanning.id === -1) {
+            router.push({
+              pathname:
+                "/(tabs)/calendarios/CreacionTipoPlanningPersonalizadoScreen",
+              params: { planningRechazandoId },
+            });
           } else {
-            setSelectedPlanning(planning.id);
+            setSelectedPlanning(tipoPlanning.id);
           }
         }}
       />
@@ -230,21 +237,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
-  },
-  containerTexto: {
-    backgroundColor: Colors.marron.marronClaro,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-    width: "100%",
-  },
-  texto: {
-    color: Colors.marron.marronNormal,
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
   },
   modalOverlay: {
     flex: 1,
