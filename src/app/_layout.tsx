@@ -86,6 +86,10 @@ function RootLayoutNav() {
             name="RegistroHijoOIngresoCodigoScreen"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="RegistroUsuarioScreen"
+            options={{ headerShown: false }}
+          />
         </Stack>
       </ThemeProvider>
     </AlertNotificationRoot>
