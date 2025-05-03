@@ -1,50 +1,53 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { TipoPlanning } from "@/src/interfaces/TipoPlanning";
 import Colors from "../constants/Colors";
 
-type TipoPlanningSelectorProps = {
-  tipoPlannings: TipoPlanning[];
+type TipoPlanningCuadradoProps = {
+  tipoPlanning: TipoPlanning;
+  isSelected: boolean;
   onSelection: (selected: TipoPlanning) => void;
 };
 
-const TipoPlanningSelector: React.FC<TipoPlanningSelectorProps> = ({
-  tipoPlannings,
+const planningImages: { [key: string]: any } = {
+  "2-5-2-5": require("../assets/images/2-5-2-5.png"),
+  "4-3-4-3": require("../assets/images/4-3-4-3.png"),
+  "5-2-2-5": require("../assets/images/5-2-2-5.png"),
+  "Plan Personalizado": require("../assets/images/personalizado.png"),
+};
+
+const TipoPlanningCuadrado: React.FC<TipoPlanningCuadradoProps> = ({
+  tipoPlanning,
+  isSelected,
   onSelection,
 }) => {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  const handleSelection = (item: TipoPlanning) => {
-    setSelectedId(item.id);
-    onSelection(item);
-  };
+  const planningImage =
+    planningImages[tipoPlanning.nombre] || planningImages["Plan Personalizado"];
 
   return (
-    <FlatList
-      data={tipoPlannings}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={[styles.card, selectedId === item.id && styles.selectedCard]}
-          onPress={() => handleSelection(item)}
-        >
-          <Icon name="calendar-month" size={60} color={Colors.azul.celeste} />
-          <Text style={styles.cardText}>{item.nombre}</Text>
-        </TouchableOpacity>
+    <TouchableOpacity
+      style={[styles.card, isSelected && styles.selectedCard]}
+      onPress={() => onSelection(tipoPlanning)}
+    >
+      {planningImage && (
+        <Image
+          source={planningImage}
+          style={styles.image}
+          resizeMode="contain"
+        />
       )}
-    />
+      <Text style={styles.cardText}>{tipoPlanning.nombre}</Text>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
+    flexBasis: "46%",
+    aspectRatio: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    margin: 10,
+    margin: "2%",
     backgroundColor: "white",
     borderRadius: 10,
     elevation: 3,
@@ -59,11 +62,16 @@ const styles = StyleSheet.create({
     borderColor: Colors.azul.celeste,
   },
   cardText: {
-    marginTop: 10,
     fontSize: 16,
-    color: Colors.negro.negroNormal,
+    color: Colors.gris.oscuro,
+    fontWeight: "bold",
     textAlign: "center",
+  },
+  image: {
+    width: "80%", // Ajusta el tamaño de la imagen dentro del cuadrado
+    height: "80%",
+    marginBottom: -10,
   },
 });
 
-export default TipoPlanningSelector;
+export default TipoPlanningCuadrado;

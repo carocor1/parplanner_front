@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Modal, TouchableOpacity } from "react-native";
-import TipoPlanningSelector from "@/src/components/TipoPlanningCuadrado";
 import { getTipoPlanning } from "@/src/services/tipoPlanningService";
 import { TipoPlanning } from "@/src/interfaces/TipoPlanning";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -16,6 +15,7 @@ import LoadingIndicator from "@/src/components/LoadingIndicator";
 import CustomButton from "@/src/components/CustomButton";
 import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
 import CustomTextBox from "@/src/components/CustomTextBox";
+import TipoPlanningCuadrado from "@/src/components/TipoPlanningCuadrado";
 
 const CreacionPlanningScreen = () => {
   const [tipoPlannings, setTipoPlannings] = useState<TipoPlanning[]>([]);
@@ -32,17 +32,15 @@ const CreacionPlanningScreen = () => {
   const router = useRouter();
   const searchParams = useLocalSearchParams();
   const tipoPlanningId = searchParams.planningId;
+  const fechaInicioParams = searchParams.fechaInicio;
+  const nombreTipoPlan = searchParams.nombreTipoPlan;
   const { planningRechazandoId } = useLocalSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getTipoPlanning();
-        const personalizado: Partial<TipoPlanning> = {
-          id: -1,
-          nombre: "Diseñar Plan Personalizado",
-        };
-        setTipoPlannings([...data, personalizado as TipoPlanning]);
+        setTipoPlannings(data);
       } catch (error) {
         console.error("Error al recuperar los tipos de planificación:", error);
       } finally {
@@ -53,11 +51,38 @@ const CreacionPlanningScreen = () => {
   }, []);
 
   useEffect(() => {
+    console.log("PARAMETROS: ", searchParams);
     if (tipoPlanningId !== undefined && tipoPlanningId !== null) {
-      setSelectedPlanning(parseInt(tipoPlanningId as string, 10));
+      const parsedId = parseInt(tipoPlanningId as string, 10);
+      setSelectedPlanning(parsedId);
+      const personalizado: Partial<TipoPlanning> = {
+        id: parsedId,
+        nombre: nombreTipoPlan as string,
+      };
+      setTipoPlannings((prev) => {
+        if (!prev.some((planning) => planning.id === parsedId)) {
+          return [...prev, personalizado as TipoPlanning];
+        }
+        return prev;
+      });
+    } else {
+      console.log("tipoPlannings", tipoPlannings);
+      const personalizado: Partial<TipoPlanning> = {
+        id: -1,
+        nombre: "Plan Personalizado",
+      };
+      setTipoPlannings((prev) => {
+        if (!prev.some((planning) => planning.id === -1)) {
+          return [...prev, personalizado as TipoPlanning];
+        }
+        return prev;
+      });
     }
-  }, [tipoPlanningId]);
-  ("");
+
+    if (fechaInicioParams !== undefined && fechaInicioParams !== null) {
+      setFechaInicio(new Date(fechaInicioParams as string));
+    }
+  }, [tipoPlanningId, fechaInicioParams, tipoPlannings]);
 
   const validateInput = () => {
     const validationRules = [
@@ -163,6 +188,7 @@ const CreacionPlanningScreen = () => {
         <DatePickerEvento
           onDateChange={(date) => setFechaInicio(date)}
           minimumDate={new Date()}
+          selectedDate={fechaInicio}
         />
       </View>
 
@@ -172,20 +198,34 @@ const CreacionPlanningScreen = () => {
         textColor={Colors.marron.marronNormal}
       ></CustomTextBox>
 
-      <TipoPlanningSelector
-        tipoPlannings={tipoPlannings}
-        onSelection={(tipoPlanning) => {
-          if (tipoPlanning.id === -1) {
-            router.push({
-              pathname:
-                "/(tabs)/calendarios/CreacionTipoPlanningPersonalizadoScreen",
-              params: { planningRechazandoId },
-            });
-          } else {
-            setSelectedPlanning(tipoPlanning.id);
-          }
-        }}
-      />
+      <View style={styles.planningContainer}>
+        {tipoPlannings.map((tipoPlanning) => (
+          <TipoPlanningCuadrado
+            key={tipoPlanning.id}
+            tipoPlanning={tipoPlanning}
+            isSelected={selectedPlanning === tipoPlanning.id}
+            onSelection={(selectedPlanning) => {
+              if (selectedPlanning.id === -1) {
+                console.log("------------------------------------------");
+                console.log("PANTALLA DE CREACION PLANNING");
+                console.log("Planning rechazado:", planningRechazandoId);
+                console.log("fechaInicioString:", fechaInicio?.toISOString());
+                console.log("------------------------------------------");
+                router.push({
+                  pathname:
+                    "/(tabs)/calendarios/CreacionTipoPlanningPersonalizadoScreen",
+                  params: {
+                    planningRechazado: planningRechazandoId,
+                    fechaInicio: fechaInicio?.toISOString(),
+                  },
+                });
+              } else {
+                setSelectedPlanning(selectedPlanning.id);
+              }
+            }}
+          />
+        ))}
+      </View>
 
       <CustomButton
         title="VER PREVISUALIZACIÓN"
@@ -255,6 +295,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     width: "100%",
     marginLeft: -30,
+  },
+  planningContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap", // Permite que los cuadrados se distribuyan en varias filas
+    justifyContent: "space-between", // Espaciado uniforme entre los cuadrados
+    padding: 10,
   },
 });
 

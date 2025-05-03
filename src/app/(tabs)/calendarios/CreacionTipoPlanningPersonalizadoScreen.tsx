@@ -10,10 +10,10 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
   const [nombre, setNombre] = useState("");
   const [fechasCreador, setFechasCreador] = useState<string[]>([]);
   const [fechasParticipante, setFechasParticipante] = useState<string[]>([]);
-  const planningRechazandoId = useLocalSearchParams() as {
-    planningRechazandoId?: string;
+  const searchParams = useLocalSearchParams();
+  const fechaInicio = useLocalSearchParams() as {
+    fechaInicio?: string;
   };
-
   const router = useRouter();
 
   const validateInput = () => {
@@ -141,12 +141,20 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
             title: "Éxito",
             textBody: "Tu tipo de planning se guardó correctamente.",
           });
-          console.log("planning rechazado:", planningRechazandoId);
+          console.log("------------------------------------------");
+
+          console.log("PANTALLA DE TIPO PLANNING PERSONALIZADO");
+          console.log("planning rechazado:", searchParams.planningRechazado);
+          console.log("fechaInicioTipoPlanning:", fechaInicio?.fechaInicio);
+          console.log("tipoPlanningId", response.id);
+          console.log("------------------------------------------");
           router.push({
             pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
             params: {
               planningId: response.id,
-              planningRechazandoId: planningRechazandoId?.planningRechazandoId,
+              planningRechazandoId: searchParams.planningRechazado,
+              fechaInicio: fechaInicio?.fechaInicio,
+              nombreTipoPlan: response.nombre,
             },
           });
         }
