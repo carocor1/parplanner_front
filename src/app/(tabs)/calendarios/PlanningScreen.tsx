@@ -69,6 +69,21 @@ export default function DocumentoScreen() {
     }
   };
 
+  const expirarPlanning = () => {
+    if (planning) {
+      router.push({
+        pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
+        params: { planningExpiradoId: planning.id },
+      });
+    } else {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: "Error",
+        textBody: "No se puede expirar el planning porque falta información.",
+      });
+    }
+  };
+
   const rechazarSolicitudPlanning = () => {
     if (planning) {
       router.push({
@@ -213,6 +228,25 @@ export default function DocumentoScreen() {
                     backgroundColor={Colors.marron.marronClaro}
                     textColor={Colors.marron.marronNormal}
                   ></CustomTextBox>
+                )}
+                {esAprobado && (
+                  <View style={{ marginTop: 40 }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        marginBottom: -10,
+                        color: Colors.gris.oscuro,
+                      }}
+                    >
+                      ¿No querés seguir manteniendo este planning activo?
+                    </Text>
+                    <CustomButton
+                      onPress={expirarPlanning}
+                      title="PROPONER NUEVO PLANNING"
+                      backgroundColor={Colors.azul.azulOscuro}
+                      textColor={Colors.azul.azulClaro}
+                    ></CustomButton>
+                  </View>
                 )}
               </View>
             </>

@@ -65,6 +65,23 @@ export const rechazarPlanning = async (
   }
 };
 
+export const expirarPlanning = async (
+  planningId: number,
+  fechaInicio: Date,
+  tipoPlanningId: number
+) => {
+  try {
+    const response = await api.post(`/planning/expirar/${planningId}`, {
+      fechaInicio,
+      tipoPlanningId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al rechazar el planning:", error);
+    throw error;
+  }
+};
+
 export const obtenerPrevisualizacionPlanning = async (
   fechaInicio: Date,
   tipoPlanningId: number

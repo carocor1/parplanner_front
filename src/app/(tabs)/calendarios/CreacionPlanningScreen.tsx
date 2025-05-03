@@ -10,6 +10,7 @@ import {
   rechazarPlanning,
   registrarPlanning,
   obtenerPrevisualizacionPlanning,
+  expirarPlanning,
 } from "@/src/services/planningService";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import CustomButton from "@/src/components/CustomButton";
@@ -34,11 +35,14 @@ const CreacionPlanningScreen = () => {
   const tipoPlanningId = searchParams.planningId;
   const fechaInicioParams = searchParams.fechaInicio;
   const nombreTipoPlan = searchParams.nombreTipoPlan;
+  const planningExpiradoId = searchParams.planningExpiradoId;
   const { planningRechazandoId } = useLocalSearchParams();
 
   useEffect(() => {
+    console.log("PARAMETROS: ", searchParams);
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const data = await getTipoPlanning();
         setTipoPlannings(data);
       } catch (error) {
@@ -51,7 +55,6 @@ const CreacionPlanningScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log("PARAMETROS: ", searchParams);
     if (tipoPlanningId !== undefined && tipoPlanningId !== null) {
       const parsedId = parseInt(tipoPlanningId as string, 10);
       setSelectedPlanning(parsedId);
@@ -66,7 +69,6 @@ const CreacionPlanningScreen = () => {
         return prev;
       });
     } else {
-      console.log("tipoPlannings", tipoPlannings);
       const personalizado: Partial<TipoPlanning> = {
         id: -1,
         nombre: "Plan Personalizado",
@@ -140,19 +142,22 @@ const CreacionPlanningScreen = () => {
     try {
       if (planningRechazandoId) {
         const planningIdParseado = parseInt(planningRechazandoId as string, 10);
-        console.log(
-          "Planning rechazado:",
-          planningIdParseado,
-          fechaInicio,
-          selectedPlanning
-        );
         await rechazarPlanning(
           planningIdParseado,
           fechaInicio!,
           selectedPlanning!
         );
       } else {
-        await registrarPlanning(fechaInicio!, selectedPlanning!);
+        if (planningExpiradoId) {
+          const planningIdParseado = parseInt(planningExpiradoId as string, 10);
+          await expirarPlanning(
+            planningIdParseado,
+            fechaInicio!,
+            selectedPlanning!
+          );
+        } else {
+          await registrarPlanning(fechaInicio!, selectedPlanning!);
+        }
       }
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
@@ -206,16 +211,12 @@ const CreacionPlanningScreen = () => {
             isSelected={selectedPlanning === tipoPlanning.id}
             onSelection={(selectedPlanning) => {
               if (selectedPlanning.id === -1) {
-                console.log("------------------------------------------");
-                console.log("PANTALLA DE CREACION PLANNING");
-                console.log("Planning rechazado:", planningRechazandoId);
-                console.log("fechaInicioString:", fechaInicio?.toISOString());
-                console.log("------------------------------------------");
                 router.push({
                   pathname:
                     "/(tabs)/calendarios/CreacionTipoPlanningPersonalizadoScreen",
                   params: {
                     planningRechazado: planningRechazandoId,
+                    planningExpiradoId: planningExpiradoId,
                     fechaInicio: fechaInicio?.toISOString(),
                   },
                 });
@@ -298,8 +299,8 @@ const styles = StyleSheet.create({
   },
   planningContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // Permite que los cuadrados se distribuyan en varias filas
-    justifyContent: "space-between", // Espaciado uniforme entre los cuadrados
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     padding: 10,
   },
 });

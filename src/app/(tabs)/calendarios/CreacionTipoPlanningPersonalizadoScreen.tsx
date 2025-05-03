@@ -141,13 +141,6 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
             title: "Éxito",
             textBody: "Tu tipo de planning se guardó correctamente.",
           });
-          console.log("------------------------------------------");
-
-          console.log("PANTALLA DE TIPO PLANNING PERSONALIZADO");
-          console.log("planning rechazado:", searchParams.planningRechazado);
-          console.log("fechaInicioTipoPlanning:", fechaInicio?.fechaInicio);
-          console.log("tipoPlanningId", response.id);
-          console.log("------------------------------------------");
           router.push({
             pathname: "/(tabs)/calendarios/CreacionPlanningScreen",
             params: {
@@ -155,6 +148,7 @@ const CreacionTipoPlanningPersonalizadoScreen = () => {
               planningRechazandoId: searchParams.planningRechazado,
               fechaInicio: fechaInicio?.fechaInicio,
               nombreTipoPlan: response.nombre,
+              planningExpiradoId: searchParams.planningExpiradoId,
             },
           });
         }
