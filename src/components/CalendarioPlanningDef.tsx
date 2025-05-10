@@ -25,43 +25,73 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
 }) => {
   const [markedDates, setMarkedDates] = useState<{ [key: string]: any }>({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [eventosSeleccionados, setEventosSeleccionados] = useState<Evento[]>(
-    []
-  );
+  const [eventosSeleccionados, setEventosSeleccionados] = useState<Evento[]>([]);
 
   useEffect(() => {
-    const marcarFechas = () => {
-      const fechasMarcadas: { [key: string]: any } = {};
 
-      fechasAsignadasCreador.forEach((fecha) => {
-        fechasMarcadas[fecha] = {
-          selected: true,
-          selectedColor: Colors.naranja.naranjaClaro,
-          selectedTextColor: "black",
+    if (!eventos.length && !fechasAsignadasCreador.length && !fechasAsignadasParticipe.length) return;
+
+    const fechasMarcadas: { [key: string]: any } = {};
+
+    fechasAsignadasCreador.forEach((fecha) => {
+      fechasMarcadas[fecha] = {
+        selected: true,
+        selectedColor: Colors.naranja.naranjaClaro,
+        selectedTextColor: "black",
+      };
+    });
+
+    fechasAsignadasParticipe.forEach((fecha) => {
+      fechasMarcadas[fecha] = {
+        selected: true,
+        selectedColor: Colors.lila.lilaClaro,
+        selectedTextColor: "black",
+      };
+    });
+
+    eventos.forEach((evento) => {
+      const fecha = new Date(evento.diaEvento).toISOString().split("T")[0];
+
+      if (fechasMarcadas[fecha]) {
+        fechasMarcadas[fecha].customStyles = {
+          container: {
+            borderWidth: 2,
+            borderColor: "black",
+            borderRadius: 20,
+          },
+          text: {
+            color: "black",
+            fontWeight: "bold",
+          },
         };
-      });
-
-      fechasAsignadasParticipe.forEach((fecha) => {
+      } else {
         fechasMarcadas[fecha] = {
-          selected: true,
-          selectedColor: Colors.lila.lilaClaro,
-          selectedTextColor: "black",
+          customStyles: {
+            container: {
+              borderWidth: 2,
+              borderColor: "black",
+              borderRadius: 20,
+            },
+            text: {
+              color: "black",
+              fontWeight: "bold",
+            },
+          },
         };
-      });
+      }
+    });
 
-      setMarkedDates(fechasMarcadas);
-    };
-
-    marcarFechas();
-  }, [fechasAsignadasCreador, fechasAsignadasParticipe]);
-
+    setMarkedDates((prevMarkedDates) => {
+      if (JSON.stringify(prevMarkedDates) === JSON.stringify(fechasMarcadas)) return prevMarkedDates;
+      return fechasMarcadas;
+    });
+  }, [fechasAsignadasCreador, fechasAsignadasParticipe, eventos]); 
   const hoy = new Date();
   const fechaActual = hoy.toISOString().split("T")[0];
 
   const handleDayPress = (day: { dateString: string }) => {
     const eventosDelDia = eventos.filter(
-      (e) =>
-        new Date(e.diaEvento).toISOString().split("T")[0] === day.dateString
+      (e) => new Date(e.diaEvento).toISOString().split("T")[0] === day.dateString
     );
     if (eventosDelDia.length > 0) {
       setEventosSeleccionados(eventosDelDia);
@@ -73,7 +103,7 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
     <View style={styles.container}>
       <Calendar
         markedDates={markedDates}
-        markingType={"multi-dot"}
+        markingType={"custom"} 
         locale={"es"}
         minDate={fechaActual}
         disableMonthChange={false}
@@ -101,21 +131,13 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
                 renderItem={({ item }) => (
                   <View style={styles.eventoContainer}>
                     <Text style={styles.eventoNombre}>{item.nombre}</Text>
-                    <Text style={styles.modalText}>
-                      <Text style={{ fontWeight: "bold" }}>Hora Inicio:</Text>{" "}
-                      {item.horaInicio}
-                    </Text>
-                    <Text style={styles.modalText}>
-                      <Text style={{ fontWeight: "bold" }}>Hora Fin:</Text>{" "}
-                      {item.horaFin}
-                    </Text>
+                    <Text style={styles.modalText}>Hora Inicio: {item.horaInicio}</Text>
+                    <Text style={styles.modalText}>Hora Fin: {item.horaFin}</Text>
                   </View>
                 )}
               />
             ) : (
-              <Text style={styles.modalText}>
-                No hay eventos para este día.
-              </Text>
+              <Text style={styles.modalText}>No hay eventos para este día.</Text>
             )}
             <CustomButton
               title="CERRAR"
@@ -166,7 +188,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingHorizontal: 110,
   },
-
   eventoNombre: {
     fontSize: 18,
     fontWeight: "bold",

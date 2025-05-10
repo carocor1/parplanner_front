@@ -6,11 +6,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import EventoItem from "@/src/components/EventoItem";
 import Colors from "@/src/constants/Colors";
 import FloatingActionButton from "@/src/components/FloatingActionButton";
-import CalendarioPlanning from "@/src/components/CalendarioPlanningDef";
 import CustomButton from "@/src/components/CustomButton";
 import { getProgenitorIdFromToken } from "@/src/utils/storage";
 import { getEventos } from "@/src/services/eventoService";
 import { Evento } from "@/src/interfaces/EventoInteface";
+
+
 
 const EventosScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -58,18 +59,13 @@ const EventosScreen = () => {
   return (
     <View style={styles.container}>
       {listaEventos.length > 0 && (
+        
         <View style={styles.containerTexto}>
           <Text style={styles.texto}>PENDIENTES</Text>
         </View>
       )}
-      <View style={styles.calendarioContainer}>
-        <CalendarioPlanning
-          fechasAsignadasCreador={fechasEventos}
-          fechasAsignadasParticipe={[]}
-          eventos={listaEventos}
-        />
-      </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+
+      <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
         {listaEventos.length > 0 ? (
           listaEventos.map((evento) => (
             <EventoItem
@@ -109,13 +105,14 @@ export default EventosScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "white",
   },
   EventosContainer: {
     backgroundColor: "white",
     justifyContent: "flex-start",
     marginTop: 20,
+    marginBottom:20,
     flex: 1,
   },
   texto: {
@@ -132,11 +129,13 @@ const styles = StyleSheet.create({
   },
   containerTexto: {
     backgroundColor: Colors.lila.lilaClaro,
-    padding: 10,
-    borderRadius: 5,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    padding:20, 
+    height:100
   },
   textoSinEvento: {
     color: Colors.lila.lilaNormal,
@@ -148,5 +147,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 60,
+    flexGrow:1
+  },
+  scrollViewContainer: {
+    marginTop: 50,
   },
 });

@@ -22,6 +22,9 @@ import Colors from "@/src/constants/Colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CustomHeader from "@/src/components/CustomHeader";
 import CustomTextBox from "@/src/components/CustomTextBox";
+import { Evento } from "@/src/interfaces/EventoInteface";
+import { getEventos } from "@/src/services/eventoService";
+
 
 export default function DocumentoScreen() {
   const [planning, setPlanning] = useState<Planning | null>(null);
@@ -29,6 +32,8 @@ export default function DocumentoScreen() {
   const [progenitorLogueadoId, setProgenitorLogueadoId] = useState<
     number | null
   >(null);
+  const [listaEventos, setListaEventos] = useState<Evento[]>([]);
+  const [fechasEventos, setFechasEventos] = useState<string[]>([]);
 
   const fetchUltimoPlanning = async () => {
     setLoading(true);
@@ -52,6 +57,35 @@ export default function DocumentoScreen() {
       setLoading(false);
     }
   };
+
+  const fetchEventos = async () => {
+      try {
+        const id = await getProgenitorIdFromToken();
+        if (id) {
+          setProgenitorLogueadoId(id);
+        }
+        setLoading(true);
+        const eventos = await getEventos();
+        setListaEventos(eventos);
+        if (listaEventos.length > 0) {
+          const fechasFormateadas = eventos.map(
+            (evento) => new Date(evento.diaEvento).toISOString().split("T")[0]
+          );
+          console.log(fechasFormateadas);
+          setFechasEventos(fechasFormateadas);
+        }
+      } catch (error) {
+        console.error("Error al recuperar los eventos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchEventos();
+      }, [])
+    );
 
   const aprobarSolicitudPlanning = async () => {
     try {
@@ -187,6 +221,7 @@ export default function DocumentoScreen() {
                 <CalendarioPlanning
                   fechasAsignadasCreador={planning.fechasAsignadasCreador}
                   fechasAsignadasParticipe={planning.fechasAsignadasParticipe}
+                  eventos={listaEventos}
                 />
 
                 <View style={styles.fechasAsignadasContainer}>
@@ -243,8 +278,8 @@ export default function DocumentoScreen() {
                     <CustomButton
                       onPress={expirarPlanning}
                       title="PROPONER NUEVO PLANNING"
-                      backgroundColor={Colors.azul.azulOscuro}
-                      textColor={Colors.azul.azulClaro}
+                      backgroundColor={Colors.marron.marronClaro}
+                      textColor={Colors.marron.marronNormal}
                     ></CustomButton>
                   </View>
                 )}

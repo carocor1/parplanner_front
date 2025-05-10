@@ -64,7 +64,7 @@ const DatePickerEvento: React.FC<DatePickerEventoProps> = ({
       {showPicker && (
         <DateTimePicker
           mode="date"
-          display="spinner"
+          display="calendar"
           value={currentDate || new Date()} // Usa la fecha actual si no hay selección previa
           onChange={handleDateChange}
           minimumDate={minimumDate} // Límite inferior para las fechas seleccionables
