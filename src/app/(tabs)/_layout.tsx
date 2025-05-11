@@ -29,16 +29,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="eventos"
-        options={{
-          title: "Eventos",
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="schedule" color={color} size={24} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="gastos"
         options={{
           title: "Gastos",

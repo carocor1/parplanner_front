@@ -35,6 +35,16 @@ export default function CalendarioLayout() {
           headerTintColor: Colors.verde.verdeMuyMuyOscuro,
         }}
       />
+      <Stack.Screen
+        name="RegistrarEventoScreen"
+        options={{
+          title: "Registrar Evento",
+          headerStyle: {
+            backgroundColor: Colors.verde.verdeOscuro,
+          },
+          headerTintColor: Colors.verde.verdeMuyMuyOscuro,
+        }}
+      />
     </Stack>
   );
 }
