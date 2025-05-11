@@ -1,39 +1,14 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Colors from "../constants/Colors";
 
 import { Evento } from "../interfaces/EventoInteface";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
-import { getEventos } from "../services/eventoService";
 
 interface EventoItemProps {
   evento: Evento;
-  usuarioLogueadoId: number;
-  onRecargar: () => void;
 }
 
-const EventoItem: React.FC<EventoItemProps> = ({
-  evento,
-  usuarioLogueadoId,
-  onRecargar,
-}) => {
-  const esCreador = evento.usuario_creador.id === usuarioLogueadoId;
-  const [loading, setLoading] = useState(true);
-  const fetchEventos = async () => {
-    try {
-      setLoading(true);
-      const eventos = await getEventos();
-    } catch (error) {
-      console.error("Error al recuperar los eventos:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEventos();
-  }, []);
+const EventoItem: React.FC<EventoItemProps> = ({ evento }) => {
   const fechaFormateada = new Date(evento.diaEvento).toLocaleDateString(
     "es-ES",
     {

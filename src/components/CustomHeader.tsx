@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 60,
     borderBottomRightRadius: 60,
     alignItems: "center",
-    height: "16%",
+    height: "10%",
     justifyContent: "center",
   },
   headerText: {
