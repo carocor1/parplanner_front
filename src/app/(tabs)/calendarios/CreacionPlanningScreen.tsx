@@ -39,7 +39,6 @@ const CreacionPlanningScreen = () => {
   const { planningRechazandoId } = useLocalSearchParams();
 
   useEffect(() => {
-    console.log("PARAMETROS: ", searchParams);
     const fetchData = async () => {
       try {
         setIsLoading(true);
