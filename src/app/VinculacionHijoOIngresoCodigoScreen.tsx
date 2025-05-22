@@ -2,23 +2,52 @@ import { useRouter } from "expo-router";
 import SaveButton from "../components/SaveButton";
 import { Text, View } from "../components/Themed";
 import { StyleSheet } from "react-native";
-import { useState } from "react";
-import { verificarCodigoVinculacion } from "../services/hijoService";
+import { useEffect, useRef, useState } from "react";
+import {
+  verificarCodigoVinculacion,
+  verificarSegundoProgenitorAsociado,
+  enviarCodigoDeVinculacion,
+} from "../services/hijoService";
 import CancelButton from "../components/CancelButton";
-import { enviarCodigoDeVinculacion } from "../services/hijoService";
 import CustomTextInput from "../components/TextInput";
 import Colors from "../constants/Colors";
 import { Toast, ALERT_TYPE } from "react-native-alert-notification";
 import SmallLoadingIndicator from "../components/SmallLoadingIndicator";
 import CustomCodeInput from "../components/CustomCodeInput";
 
-const vinculacionHijoOIngresoCodigoScreen = () => {
+const VinculacionHijoOIngresoCodigoScreen = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [email, setEmail] = useState("");
   const [loadingEnvioCodigo, setLoadingEnvioCodigo] = useState(false);
   const [loadingVerificarCodigo, setLoadingVerificarCodigo] = useState(false);
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (codigoEnviado) {
+      pollingRef.current = setInterval(async () => {
+        try {
+          const vinculado = await verificarSegundoProgenitorAsociado();
+          if (vinculado) {
+            Toast.show({
+              type: ALERT_TYPE.SUCCESS,
+              title: "¡Listo!",
+              textBody: "El otro progenitor ya se vinculó.",
+            });
+            clearInterval(pollingRef.current!);
+            router.push("/(tabs)/gastos/GastosScreen");
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }, 3000);
+    }
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [codigoEnviado]);
 
   const verificarCodigo = async () => {
     if (value.length !== 6) {
@@ -33,7 +62,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
       setLoadingVerificarCodigo(true);
       await verificarCodigoVinculacion(value);
       setLoadingVerificarCodigo(false);
-      router.push("/(tabs)/gastos/");
+      router.push("/(tabs)/gastos/GastosScreen");
     } catch (error) {
       setLoadingVerificarCodigo(false);
       Toast.show({
@@ -70,6 +99,7 @@ const vinculacionHijoOIngresoCodigoScreen = () => {
       setLoadingEnvioCodigo(true);
       await enviarCodigoDeVinculacion(email);
       setLoadingEnvioCodigo(false);
+      setCodigoEnviado(true); // Activa el polling
       Toast.show({
         type: ALERT_TYPE.SUCCESS,
         title: "Éxito",
@@ -192,4 +222,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default vinculacionHijoOIngresoCodigoScreen;
+export default VinculacionHijoOIngresoCodigoScreen;

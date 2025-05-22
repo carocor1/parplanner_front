@@ -29,7 +29,7 @@ const registroHijoOIngresoCodigoScreen = () => {
       console.log(value);
       await verificarCodigoVinculacion(value);
       setLoading(false);
-      router.push("/(tabs)/gastos/gasto");
+      router.push("./(tabs)/gastos/GastosScreen");
     } catch (error) {
       setLoading(false);
       Toast.show({

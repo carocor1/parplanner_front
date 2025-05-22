@@ -25,11 +25,17 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
 }) => {
   const [markedDates, setMarkedDates] = useState<{ [key: string]: any }>({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [eventosSeleccionados, setEventosSeleccionados] = useState<Evento[]>([]);
+  const [eventosSeleccionados, setEventosSeleccionados] = useState<Evento[]>(
+    []
+  );
 
   useEffect(() => {
-
-    if (!eventos.length && !fechasAsignadasCreador.length && !fechasAsignadasParticipe.length) return;
+    if (
+      !eventos.length &&
+      !fechasAsignadasCreador.length &&
+      !fechasAsignadasParticipe.length
+    )
+      return;
 
     const fechasMarcadas: { [key: string]: any } = {};
 
@@ -82,16 +88,18 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
     });
 
     setMarkedDates((prevMarkedDates) => {
-      if (JSON.stringify(prevMarkedDates) === JSON.stringify(fechasMarcadas)) return prevMarkedDates;
+      if (JSON.stringify(prevMarkedDates) === JSON.stringify(fechasMarcadas))
+        return prevMarkedDates;
       return fechasMarcadas;
     });
-  }, [fechasAsignadasCreador, fechasAsignadasParticipe, eventos]); 
+  }, [fechasAsignadasCreador, fechasAsignadasParticipe, eventos]);
   const hoy = new Date();
   const fechaActual = hoy.toISOString().split("T")[0];
 
   const handleDayPress = (day: { dateString: string }) => {
     const eventosDelDia = eventos.filter(
-      (e) => new Date(e.diaEvento).toISOString().split("T")[0] === day.dateString
+      (e) =>
+        new Date(e.diaEvento).toISOString().split("T")[0] === day.dateString
     );
     if (eventosDelDia.length > 0) {
       setEventosSeleccionados(eventosDelDia);
@@ -103,7 +111,7 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
     <View style={styles.container}>
       <Calendar
         markedDates={markedDates}
-        markingType={"custom"} 
+        markingType={"custom"}
         locale={"es"}
         minDate={fechaActual}
         disableMonthChange={false}
@@ -131,13 +139,19 @@ const CalendarioPlanning: React.FC<CalendarioPlanningProps> = ({
                 renderItem={({ item }) => (
                   <View style={styles.eventoContainer}>
                     <Text style={styles.eventoNombre}>{item.nombre}</Text>
-                    <Text style={styles.modalText}>Hora Inicio: {item.horaInicio}</Text>
-                    <Text style={styles.modalText}>Hora Fin: {item.horaFin}</Text>
+                    <Text style={styles.modalText}>
+                      Hora Inicio: {item.horaInicio}
+                    </Text>
+                    <Text style={styles.modalText}>
+                      Hora Fin: {item.horaFin}
+                    </Text>
                   </View>
                 )}
               />
             ) : (
-              <Text style={styles.modalText}>No hay eventos para este día.</Text>
+              <Text style={styles.modalText}>
+                No hay eventos para este día.
+              </Text>
             )}
             <CustomButton
               title="CERRAR"
